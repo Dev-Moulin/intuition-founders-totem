@@ -16,8 +16,9 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 
 #### [01_OBJECTIF](./01_OBJECTIF/)
 - **Objectif.md** : But du projet, 42 fondateurs, phases
-- **Statut** : ✅ Complet
-- **Dernière mise à jour** : 17/11/2025
+- **Issues créées** : #18
+- **Statut** : ✅ Complet (documentation) | ⏳ Issues créées (1 issue à coder)
+- **Dernière mise à jour** : 18/11/2025
 
 #### [02_FONCTIONNEMENT](./02_FONCTIONNEMENT/)
 - **01_Connexion.md** : Connexion wallet et vérification éligibilité

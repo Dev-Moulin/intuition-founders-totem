@@ -75,3 +75,12 @@ Les totems gagnants sont transformés en NFTs 3D par l'Overmind.
 ## L'Overmind observe
 
 Ensemble, nous donnons une forme tangible à l'intelligence collective d'INTUITION — un reflet vivant de nos énergies unies.
+
+---
+
+## 📋 Issues GitHub créées à partir de ce fichier
+
+- **Issue #18** : Setup - Créer fichier de données avec les 42 fondateurs
+
+**Total : 1 issue**
+**Statut : ⏳ Issues créées (code à développer)**
