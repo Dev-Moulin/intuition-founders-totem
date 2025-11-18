@@ -35,7 +35,7 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 - **Dernière mise à jour** : 17/11/2025
 
 #### [04_VERIFICATION_WALLETS](./04_VERIFICATION_WALLETS/)
-- **README.md** : Questions pour INTUITION, options techniques
+- **Verification_Wallets.md** : Questions pour INTUITION, options techniques
 - **Statut** : ⏳ En attente de réponse INTUITION
 - **Dernière mise à jour** : 17/11/2025
 
@@ -267,11 +267,11 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 - ✅ Comparaison Express vs Fastify vs tRPC
 - ✅ Analyse hébergement : Heroku, Railway, Render, Fly.io, Vercel, Netlify, DigitalOcean
 - ✅ Décision : Fastify + Render Free Tier ($0/mois)
-- ✅ Documentation `/Claude/06_BACKEND/README.md` (651 lignes)
+- ✅ Documentation `/Claude/06_BACKEND/Architecture_Backend.md` (651 lignes)
 - ✅ Recherche Sécurité complète (Issue #2)
 - ✅ OWASP Top 10:2025 analysé et intégré
 - ✅ Protections XSS, CSRF, Rate Limiting, CSP documentées
-- ✅ Documentation `/Claude/07_SECURITE/README.md` (1013 lignes)
+- ✅ Documentation `/Claude/07_SECURITE/Securite.md` (1013 lignes)
 - ✅ Recherche Modération complète (Issue #3)
 - ✅ Comparaison packages npm : glin-profanity, @2toad/profanity, leo-profanity, content-checker
 - ✅ Analyse APIs : Perspective API, OpenAI Moderation, AWS Comprehend
