@@ -22,11 +22,12 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 
 #### [02_FONCTIONNEMENT](./02_FONCTIONNEMENT/)
 - **01_Connexion.md** : Connexion wallet et vérification éligibilité
+  - **Issues créées** : #19, #20, #21, #22, #23, #24
+  - **Statut** : ✅ Complet (documentation) | ⏳ Issues créées (6 issues à coder)
 - **02_Propositions.md** : Création d'Atoms et Triples
 - **05_Vote.md** : Système de vote avec $TRUST
 - **04_Resultats.md** : Affichage des résultats
-- **Statut** : ✅ Complet et vérifié (queries GraphQL corrigées)
-- **Dernière mise à jour** : 17/11/2025
+- **Dernière mise à jour** : 18/11/2025
 
 #### [03_TECHNOLOGIES](./03_TECHNOLOGIES/)
 - **INTUITION_Protocol.md** : Atoms, Triples, Signals, SDK

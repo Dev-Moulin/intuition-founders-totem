@@ -92,3 +92,17 @@ function ConnectButton() {
 - ✅ Pas de frais à la connexion
 - ✅ Le site ne demande jamais la clé privée
 - ✅ Vérification côté serveur de la whitelist pour éviter les contournements
+
+---
+
+## 📋 Issues GitHub créées à partir de ce fichier
+
+- **Issue #19** : Frontend - Setup wagmi + RainbowKit pour connexion wallet
+- **Issue #20** : Frontend - Créer composant ConnectButton avec RainbowKit
+- **Issue #21** : Frontend - Gérer la vérification du réseau Base Mainnet
+- **Issue #22** : Backend - Créer endpoint de vérification whitelist
+- **Issue #23** : Frontend - Créer composant NotEligible (message d'erreur)
+- **Issue #24** : Frontend - Afficher les informations du wallet connecté
+
+**Total : 6 issues**
+**Statut : ⏳ Issues créées (code à développer)**
