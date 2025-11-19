@@ -7,6 +7,7 @@ export interface FounderData {
   fullBio?: string;
   twitter?: string | null;
   linkedin?: string | null;
+  atomId?: string; // INTUITION Atom ID (Hex) - sera renseigné après création on-chain
 }
 
 interface FounderCardProps {
