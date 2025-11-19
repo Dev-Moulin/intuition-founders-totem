@@ -5,7 +5,7 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 
 import { config } from './config/wagmi';
-import { WalletConnectButton } from './components/ConnectButton';
+import { Layout } from './components/Layout';
 
 const queryClient = new QueryClient();
 
@@ -20,15 +20,16 @@ function App() {
             borderRadius: 'medium',
           })}
         >
-          <div className="app">
-            <header>
-              <h1>INTUITION Founders Totem</h1>
-              <WalletConnectButton />
-            </header>
-            <main>
-              <p>Connect your wallet to propose and vote for founder totems.</p>
-            </main>
-          </div>
+          <Layout>
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Welcome to Founders Totem
+              </h2>
+              <p className="text-white/70">
+                Connect your wallet to propose and vote for founder totems.
+              </p>
+            </div>
+          </Layout>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

@@ -13,8 +13,8 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 ### 📊 Bilan des issues GitHub
 
 - **Total issues créées** : 70 issues (#1-70)
-- **Issues ouvertes** : 50 issues (prêtes à coder)
-- **Issues fermées** : 20 issues (recherches/documentation + développement terminé)
+- **Issues ouvertes** : 49 issues (prêtes à coder)
+- **Issues fermées** : 21 issues (recherches/documentation + développement terminé)
 
 ### ✅ Issues terminées (développement)
 
@@ -22,6 +22,7 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 - **#19** : ✅ Setup wagmi + RainbowKit pour connexion wallet (Done - 19/11/2025)
 - **#20** : ✅ Créer composant ConnectButton avec RainbowKit (Done - 19/11/2025)
 - **#21** : ✅ Setup Tailwind CSS (Done - 19/11/2025)
+- **#22** : ✅ Créer composant Layout avec Header/Footer (Done - 19/11/2025)
 
 ### 🎯 Plan de démarrage recommandé
 
@@ -30,7 +31,7 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 2. ✅ **#19** - Setup wagmi + RainbowKit pour connexion wallet (Done)
 3. ✅ **#20** - Créer composant ConnectButton avec RainbowKit (Done)
 4. ✅ **#21** - Setup Tailwind CSS (Done)
-5. **#22** - Créer composant Layout avec Header/Footer
+5. ✅ **#22** - Créer composant Layout avec Header/Footer (Done)
 6. **#23** - Créer composant NotEligible (message d'erreur)
 7. **#24** - Créer composant FounderCard
 
