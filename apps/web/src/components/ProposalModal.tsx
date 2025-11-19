@@ -1,55 +1,115 @@
 import { useState } from 'react';
 import type { FounderData } from './FounderCard';
+import type { Hex } from 'viem';
 
 interface ProposalModalProps {
   founder: FounderData;
+  founderAtomId?: Hex; // Atom ID du fondateur sur INTUITION
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ProposalFormData) => void;
   isLoading?: boolean;
+  existingPredicates?: Array<{ id: Hex; label: string }>;
+  existingObjects?: Array<{ id: Hex; label: string }>;
 }
 
 export interface ProposalFormData {
   founderId: string;
-  totemName: string;
-  description: string;
-  imageUrl?: string;
+  founderAtomId?: Hex;
+  predicate: string | Hex; // String = créer nouvel atom, Hex = utiliser existant
+  object: string | Hex; // String = créer nouvel atom, Hex = utiliser existant
+  trustAmount: string;
 }
+
+// Predicates par défaut proposés
+const DEFAULT_PREDICATES = [
+  'is represented by',
+  'has totem',
+  'is symbolized by',
+  'is associated with',
+];
 
 export function ProposalModal({
   founder,
+  founderAtomId,
   isOpen,
   onClose,
   onSubmit,
   isLoading = false,
+  existingPredicates = [],
+  existingObjects = [],
 }: ProposalModalProps) {
-  const [totemName, setTotemName] = useState('');
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  // Predicate state
+  const [predicateMode, setPredicateMode] = useState<'select' | 'create'>('select');
+  const [selectedPredicate, setSelectedPredicate] = useState<Hex | ''>('');
+  const [newPredicate, setNewPredicate] = useState('');
+
+  // Object state
+  const [objectMode, setObjectMode] = useState<'select' | 'create'>('create');
+  const [selectedObject, setSelectedObject] = useState<Hex | ''>('');
+  const [newObject, setNewObject] = useState('');
+
+  // Trust amount
+  const [trustAmount, setTrustAmount] = useState('0.001');
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const predicate = predicateMode === 'create'
+      ? newPredicate.trim()
+      : selectedPredicate;
+
+    const object = objectMode === 'create'
+      ? newObject.trim()
+      : selectedObject;
+
+    if (!predicate || !object) return;
+
     onSubmit({
       founderId: founder.id,
-      totemName: totemName.trim(),
-      description: description.trim(),
-      imageUrl: imageUrl.trim() || undefined,
+      founderAtomId,
+      predicate,
+      object,
+      trustAmount,
     });
   };
 
   const handleClose = () => {
     if (!isLoading) {
-      setTotemName('');
-      setDescription('');
-      setImageUrl('');
+      setPredicateMode('select');
+      setSelectedPredicate('');
+      setNewPredicate('');
+      setObjectMode('create');
+      setSelectedObject('');
+      setNewObject('');
+      setTrustAmount('0.001');
       onClose();
     }
   };
 
-  const isFormValid = totemName.trim().length > 0 && description.trim().length > 0;
+  const isPredicateValid = predicateMode === 'create'
+    ? newPredicate.trim().length > 0
+    : selectedPredicate !== '';
+
+  const isObjectValid = objectMode === 'create'
+    ? newObject.trim().length > 0
+    : selectedObject !== '';
+
+  const isTrustValid = parseFloat(trustAmount) > 0;
+
+  const isFormValid = isPredicateValid && isObjectValid && isTrustValid;
+
+  // Combine default predicates with existing ones
+  const allPredicates = [
+    ...DEFAULT_PREDICATES.map((label, i) => ({
+      id: `default-${i}` as Hex,
+      label,
+      isDefault: true
+    })),
+    ...existingPredicates.map(p => ({ ...p, isDefault: false })),
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -65,7 +125,7 @@ export function ProposalModal({
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-xl font-bold text-white">
-              Proposer un Totem
+              Créer un Claim
             </h2>
             <p className="text-white/50 text-sm mt-1">
               pour {founder.name}
@@ -82,66 +142,168 @@ export function ProposalModal({
           </button>
         </div>
 
+        {/* Claim Preview */}
+        <div className="glass-card p-4 mb-6 text-center">
+          <p className="text-white/50 text-xs mb-2">Votre claim :</p>
+          <p className="text-white font-medium">
+            <span className="text-purple-400">{founder.name}</span>
+            {' '}
+            <span className="text-white/70">
+              {predicateMode === 'create'
+                ? (newPredicate || '...')
+                : (allPredicates.find(p => p.id === selectedPredicate)?.label || '...')}
+            </span>
+            {' '}
+            <span className="text-purple-400">
+              {objectMode === 'create' ? (newObject || '...') : (existingObjects.find(o => o.id === selectedObject)?.label || '...')}
+            </span>
+          </p>
+        </div>
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Totem Name */}
+          {/* Predicate */}
           <div>
-            <label htmlFor="totemName" className="block text-sm font-medium text-white/70 mb-2">
-              Nom du Totem *
-            </label>
-            <input
-              id="totemName"
-              type="text"
-              value={totemName}
-              onChange={(e) => setTotemName(e.target.value)}
-              placeholder="Ex: Le Phoenix Éthéré"
-              disabled={isLoading}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
-              maxLength={100}
-              required
-            />
-            <p className="text-white/40 text-xs mt-1">
-              {totemName.length}/100 caractères
-            </p>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-white/70">
+                Predicate *
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPredicateMode('select')}
+                  className={`text-xs px-2 py-1 rounded ${
+                    predicateMode === 'select'
+                      ? 'bg-purple-500/30 text-purple-300'
+                      : 'bg-white/5 text-white/50 hover:text-white'
+                  }`}
+                >
+                  Choisir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPredicateMode('create')}
+                  className={`text-xs px-2 py-1 rounded ${
+                    predicateMode === 'create'
+                      ? 'bg-purple-500/30 text-purple-300'
+                      : 'bg-white/5 text-white/50 hover:text-white'
+                  }`}
+                >
+                  Créer
+                </button>
+              </div>
+            </div>
+
+            {predicateMode === 'select' ? (
+              <select
+                value={selectedPredicate}
+                onChange={(e) => setSelectedPredicate(e.target.value as Hex)}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
+              >
+                <option value="">Sélectionner un predicate...</option>
+                {allPredicates.map((p) => (
+                  <option key={p.id} value={p.isDefault ? p.label : p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={newPredicate}
+                onChange={(e) => setNewPredicate(e.target.value)}
+                placeholder="Ex: is represented by"
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
+                maxLength={100}
+              />
+            )}
           </div>
 
-          {/* Description */}
+          {/* Object (Totem) */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-white/70 mb-2">
-              Description *
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Décrivez pourquoi ce totem représente bien ce fondateur..."
-              disabled={isLoading}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50 resize-none"
-              rows={4}
-              maxLength={500}
-              required
-            />
-            <p className="text-white/40 text-xs mt-1">
-              {description.length}/500 caractères
-            </p>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-white/70">
+                Objet (Totem) *
+              </label>
+              <div className="flex gap-2">
+                {existingObjects.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setObjectMode('select')}
+                    className={`text-xs px-2 py-1 rounded ${
+                      objectMode === 'select'
+                        ? 'bg-purple-500/30 text-purple-300'
+                        : 'bg-white/5 text-white/50 hover:text-white'
+                    }`}
+                  >
+                    Choisir
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setObjectMode('create')}
+                  className={`text-xs px-2 py-1 rounded ${
+                    objectMode === 'create'
+                      ? 'bg-purple-500/30 text-purple-300'
+                      : 'bg-white/5 text-white/50 hover:text-white'
+                  }`}
+                >
+                  Créer
+                </button>
+              </div>
+            </div>
+
+            {objectMode === 'select' && existingObjects.length > 0 ? (
+              <select
+                value={selectedObject}
+                onChange={(e) => setSelectedObject(e.target.value as Hex)}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
+              >
+                <option value="">Sélectionner un totem...</option>
+                {existingObjects.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={newObject}
+                onChange={(e) => setNewObject(e.target.value)}
+                placeholder="Ex: guitare, écharpe, phoenix..."
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
+                maxLength={100}
+              />
+            )}
           </div>
 
-          {/* Image URL (optional - will be replaced by ImageUpload in #28) */}
+          {/* Trust Amount */}
           <div>
-            <label htmlFor="imageUrl" className="block text-sm font-medium text-white/70 mb-2">
-              URL de l'image (optionnel)
+            <label htmlFor="trustAmount" className="block text-sm font-medium text-white/70 mb-2">
+              Montant TRUST à déposer *
             </label>
-            <input
-              id="imageUrl"
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://..."
-              disabled={isLoading}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50"
-            />
+            <div className="relative">
+              <input
+                id="trustAmount"
+                type="number"
+                step="0.001"
+                min="0.001"
+                value={trustAmount}
+                onChange={(e) => setTrustAmount(e.target.value)}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors disabled:opacity-50 pr-16"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 text-sm">
+                ETH
+              </span>
+            </div>
             <p className="text-white/40 text-xs mt-1">
-              L'upload IPFS sera disponible prochainement
+              Plus vous déposez, plus votre vote compte
             </p>
           </div>
 
@@ -166,10 +328,10 @@ export function ProposalModal({
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Soumission...
+                  Création...
                 </span>
               ) : (
-                'Soumettre'
+                'Créer le Claim'
               )}
             </button>
           </div>
@@ -177,7 +339,7 @@ export function ProposalModal({
 
         {/* Info */}
         <p className="text-white/40 text-xs text-center mt-4">
-          Votre proposition sera enregistrée on-chain via INTUITION
+          Ce claim sera enregistré on-chain via le protocole INTUITION
         </p>
       </div>
     </div>
