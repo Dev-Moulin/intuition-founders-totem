@@ -13,13 +13,17 @@ Plateforme de vote collaborative pour définir les totems (objets, animaux, trai
 ### 📊 Bilan des issues GitHub
 
 - **Total issues créées** : 70 issues (#1-70)
-- **Issues ouvertes** : 54 issues (prêtes à coder)
-- **Issues fermées** : 16 issues (recherches/documentation terminées)
+- **Issues ouvertes** : 53 issues (prêtes à coder)
+- **Issues fermées** : 17 issues (recherches/documentation + développement terminé)
+
+### ✅ Issues terminées (développement)
+
+- **#18** : ✅ Créer fichier de données avec les 42 fondateurs (Done - 18/11/2025)
 
 ### 🎯 Plan de démarrage recommandé
 
 #### Phase 1 : Setup de base (Issues #18-24)
-1. **#18** - Créer fichier de données avec les 42 fondateurs
+1. ✅ **#18** - Créer fichier de données avec les 42 fondateurs (Done)
 2. **#19** - Setup wagmi + RainbowKit pour connexion wallet
 3. **#20** - Créer composant ConnectButton avec RainbowKit
 4. **#21** - Gérer la vérification du réseau Base Mainnet
@@ -108,7 +112,7 @@ pnpm install
 #### [01_OBJECTIF](./01_OBJECTIF/)
 - **Objectif.md** : But du projet, 42 fondateurs, phases
 - **Issues créées** : #18
-- **Statut** : ✅ Complet (documentation) | ⏳ Issues créées (1 issue à coder)
+- **Statut** : ✅ Complet (documentation) | ✅ Issue #18 terminée
 - **Dernière mise à jour** : 18/11/2025
 
 #### [02_FONCTIONNEMENT](./02_FONCTIONNEMENT/)
