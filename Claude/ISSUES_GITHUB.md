@@ -5,7 +5,7 @@
 
 ---
 
-## Issues CLOSED (19)
+## Issues CLOSED (20)
 
 ### Recherche & Documentation (#1-7)
 - **#1** : [RESEARCH] Backend Architecture Choice
@@ -23,6 +23,7 @@
 - **#21** : Frontend: Gérer la vérification du réseau Base Mainnet
 - **#22** : Backend: Créer endpoint de vérification whitelist
 - **#23** : Frontend: Créer composant NotEligible (message d'erreur)
+- **#24** : Frontend: Afficher les informations du wallet connecté
 
 ### Setup Additionnel (#77-81)
 - **#77** : Frontend: Setup Tailwind CSS v4
@@ -33,13 +34,10 @@
 
 ---
 
-## Issues OPEN (55)
+## Issues OPEN (54)
 
 ### Optionnel (#8)
 - **#8** : [OPTIONAL] Founders Data Enrichment
-
-### Frontend - Connexion & Wallet (#24)
-- **#24** : Frontend: Afficher les informations du wallet connecté
 
 ### Frontend - Propositions (#25-34)
 - **#25** : Frontend: Créer page Proposer avec grille des 42 fondateurs
@@ -196,5 +194,6 @@
 - **PR #85** - Setup React Router pour navigation (issue #80)
 - **PR #86** - Installation et configuration INTUITION SDK (issue #81)
 - **PR #87** - Composant NotEligible (issue #23)
+- **PR #88** - Composant WalletInfo (issue #24)
 
 **Note** : Le Layout créé (#78) est un composant wrapper basique. L'issue #49 (Layout + routing) concerne le layout complet avec navigation et React Router.

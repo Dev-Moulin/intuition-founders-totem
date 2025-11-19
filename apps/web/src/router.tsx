@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { NetworkGuard } from './components/NetworkGuard';
+import { HomePage } from './pages/HomePage';
 
 // Root layout with Layout and NetworkGuard
 function RootLayout() {
@@ -14,18 +15,6 @@ function RootLayout() {
 }
 
 // Placeholder pages - will be replaced with actual components
-function HomePage() {
-  return (
-    <div className="text-center">
-      <h2 className="text-3xl font-bold text-white mb-4">
-        Welcome to Founders Totem
-      </h2>
-      <p className="text-white/70">
-        Connect your wallet to propose and vote for founder totems.
-      </p>
-    </div>
-  );
-}
 
 function ProposePage() {
   return (
