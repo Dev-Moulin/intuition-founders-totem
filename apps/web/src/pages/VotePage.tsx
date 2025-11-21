@@ -75,12 +75,6 @@ export function VotePage() {
     }
   };
 
-  const handleVoteSubmit = async (claimId: string, amount: string) => {
-    // TODO: Implement vote submission
-    console.log('Vote submitted:', { claimId, amount, direction: voteDirection });
-    setVoteModalOpen(false);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -210,7 +204,6 @@ export function VotePage() {
           onClose={() => setVoteModalOpen(false)}
           totem={selectedTotem}
           direction={voteDirection}
-          onSubmit={handleVoteSubmit}
         />
       )}
     </div>

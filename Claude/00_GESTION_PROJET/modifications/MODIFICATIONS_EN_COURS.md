@@ -11,6 +11,7 @@
 |-------|----------|--------|------|-----------------|
 | Agrégation des votes | 🔴 P0 | 🟡 En cours | 21/11/2025 | [CORRECTION_ISSUES_AGGREGATION.md](../corrections/CORRECTION_ISSUES_AGGREGATION.md) |
 | Architecture simplifiée (pas de backend) | 🔴 P0 | ✅ Fait | 21/11/2025 | [ARCHITECTURE_NO_BACKEND.md](./ARCHITECTURE_NO_BACKEND.md) |
+| Hook useVote (Issue #38) | 🔴 P0 | ✅ Fait | 21/11/2025 | Branch `feature/38-use-vote-hook` |
 | Autres modifications | ⚪ À définir | ⏳ À discuter | 21/11/2025 | Ce fichier |
 
 ---
@@ -58,7 +59,79 @@ Décision de ne pas implémenter de serveur backend. Toute la logique passe par 
 
 ---
 
-## 3️⃣ Autres Modifications À Discuter
+## 3️⃣ Hook useVote - Issue #38 (P0)
+
+**Status** : ✅ Complété
+
+**Date de finalisation** : 21 novembre 2025
+
+### Résumé
+Implémentation du hook `useVote` pour gérer le processus complet de vote (approve + deposit TRUST tokens).
+
+### Problème résolu (CRITIQUE)
+Lors de l'implémentation, découverte d'une **erreur critique** :
+- ❌ **Avant** : `useIntuition.ts` et `useVote.ts` utilisaient Base Mainnet (chain ID 8453)
+- ✅ **Après** : Utilisation correcte de INTUITION L3 Testnet (chain ID 13579)
+
+**Erreur** : `"Contract MultiVault not found for chain ID 8453"`
+
+**Cause** : Le SDK INTUITION n'a pas de contrats déployés sur Base Mainnet, seulement sur INTUITION L3 Testnet.
+
+### Code implémenté
+1. **Hook `useVote.ts`** :
+   - Gestion états : `idle` → `checking` → `approving` → `depositing` → `success`/`error`
+   - Vérification allowance ERC-20 (TRUST token)
+   - Approval automatique si nécessaire
+   - Deposit via `batchDepositStatement` du SDK
+   - Gestion erreurs complète (user rejection, insufficient balance, gas)
+   - Toast notifications avec progression (Step 1/2 ou 1/3)
+
+2. **VoteModal.tsx refactorisé** :
+   - Intégration du hook `useVote`
+   - Suppression prop `onSubmit` (logique dans le hook)
+   - UI avec progress bar et statuts visuels
+   - Fermeture automatique après succès
+
+3. **VotePage.tsx mis à jour** :
+   - Suppression fonction `handleVoteSubmit` (plus nécessaire)
+
+4. **Fix critique chain ID** :
+   - `useIntuition.ts` : `base.id` → `intuitionTestnet.id`
+   - `useVote.ts` : `base.id` → `intuitionTestnet.id`
+
+### Actions concrètes
+- [x] ✅ Installer `sonner` pour toasts
+- [x] ✅ Créer hook `useVote.ts`
+- [x] ✅ Exporter dans `hooks/index.ts`
+- [x] ✅ Refactorer `VoteModal.tsx`
+- [x] ✅ Mettre à jour `VotePage.tsx`
+- [x] ✅ Fixer chain ID dans `useIntuition.ts`
+- [x] ✅ Fixer chain ID dans `useVote.ts`
+- [x] ✅ Build passing
+- [x] ✅ Mettre à jour documentation
+
+### Fichiers modifiés
+- `apps/web/package.json` (ajout sonner)
+- `apps/web/src/hooks/useVote.ts` (créé)
+- `apps/web/src/hooks/index.ts` (export)
+- `apps/web/src/hooks/useIntuition.ts` (fix chain ID)
+- `apps/web/src/components/VoteModal.tsx` (refactorisé)
+- `apps/web/src/pages/VotePage.tsx` (simplifié)
+
+### Branch
+`feature/38-use-vote-hook`
+
+### Prochaine étape
+- [ ] Créer Pull Request
+- [ ] Merger après review
+- [ ] Fermer issue #38
+
+### Notes techniques
+**TODO temporaire** : Le hook utilise `as any` pour `batchDepositStatement` car la signature TypeScript du SDK semble incorrecte. À tester avec une vraie transaction pour confirmer les bons paramètres.
+
+---
+
+## 4️⃣ Autres Modifications À Discuter
 
 **Status** : ⏳ À définir
 

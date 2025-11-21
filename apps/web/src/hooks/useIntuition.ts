@@ -6,7 +6,7 @@ import {
   getMultiVaultAddressFromChainId,
 } from '@0xintuition/sdk';
 import { parseEther, type Hex } from 'viem';
-import { base } from 'viem/chains';
+import { intuitionTestnet } from '@0xintuition/protocol';
 
 export interface CreateAtomResult {
   uri: string;
@@ -26,7 +26,7 @@ export function useIntuition() {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
 
-  const multiVaultAddress = getMultiVaultAddressFromChainId(base.id);
+  const multiVaultAddress = getMultiVaultAddressFromChainId(intuitionTestnet.id);
 
   /**
    * Create an Atom from a string (for predicates, totems)

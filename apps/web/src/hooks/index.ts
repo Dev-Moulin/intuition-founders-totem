@@ -34,3 +34,6 @@ export {
 
 // GraphQL hook for all totems (aggregated by object)
 export { useAllTotems, type AggregatedTotem } from './useAllTotems';
+
+// Hook for voting on claims
+export { useVote, type UseVoteResult, type VoteStatus, type VoteError } from './useVote';

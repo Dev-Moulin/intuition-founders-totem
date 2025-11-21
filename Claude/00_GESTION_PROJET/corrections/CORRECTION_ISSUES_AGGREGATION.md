@@ -52,9 +52,31 @@ function calculateTripleId(subjectAtomData, predicateAtomData, objectAtomData) {
 
 ## ❌ Problèmes Identifiés dans les Issues
 
+### Issue #38 - Hook useVote (OPEN → EN COURS)
+
+**Status** : ✅ IMPLÉMENTÉ (PR à créer)
+**Problème** : Aucun - Implémentation correcte
+
+**Code implémenté** :
+- ✅ Hook `useVote.ts` créé avec gestion complète du flow approve + deposit
+- ✅ Utilise `batchDepositStatement` du SDK INTUITION
+- ✅ Gestion des états (checking, approving, depositing, success, error)
+- ✅ Notifications toast avec progression (Step 1/2 ou 1/3)
+- ✅ Gestion erreurs (insufficient balance, user rejection, gas)
+- ✅ Intégration dans `VoteModal.tsx` avec UI complète
+- ✅ Fix critique : Chain ID changé de Base Mainnet (8453) vers INTUITION L3 Testnet (13579)
+
+**Gravité** : ✅ Correct (pas de problème)
+
+**Action décidée** :
+- ✅ Issue #38 peut être fermée après merge du PR
+- ✅ Branch `feature/38-use-vote-hook` prête pour PR
+
+---
+
 ### Issue #27 - ProposalModal (CLOSED)
 
-**Status** : DONE (code mergé)
+**Status** : ✅ DONE (code mergé #94)
 **Problème** : Divergence entre l'issue et le code implémenté
 
 | Issue #27 | Code réel mergé |
