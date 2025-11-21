@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
-import { base } from 'wagmi/chains';
+import { intuitionTestnet } from '@0xintuition/protocol';
 import { useWhitelist } from '../hooks/useWhitelist';
 
 interface NetworkGuardProps {
@@ -13,8 +13,8 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
   const { address, isConnected } = useAccount();
   const { isEligible, isLoading: isCheckingWhitelist } = useWhitelist(address);
 
-  // Si on n'est pas sur Base Mainnet, afficher le message d'erreur
-  if (chainId !== base.id) {
+  // Si on n'est pas sur INTUITION L3 Testnet, afficher le message d'erreur
+  if (chainId !== intuitionTestnet.id) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="glass-card p-8 max-w-md text-center">
@@ -23,14 +23,14 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
             Mauvais réseau détecté
           </h2>
           <p className="text-white/70 mb-6">
-            Veuillez passer sur Base Mainnet pour utiliser cette application.
+            Veuillez passer sur INTUITION L3 Testnet (Chain ID: 13579) pour utiliser cette application.
           </p>
           <button
-            onClick={() => switchChain?.({ chainId: base.id })}
+            onClick={() => switchChain?.({ chainId: intuitionTestnet.id })}
             disabled={isPending}
             className="glass-button w-full"
           >
-            {isPending ? 'Changement en cours...' : 'Switch to Base Mainnet'}
+            {isPending ? 'Changement en cours...' : 'Switch to INTUITION Testnet'}
           </button>
         </div>
       </div>
