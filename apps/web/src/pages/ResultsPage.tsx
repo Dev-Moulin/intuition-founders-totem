@@ -1,56 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FounderResultCard } from '../components/FounderResultCard';
-
-// Mock data - TODO: Replace with GraphQL queries
-const MOCK_FOUNDERS = [
-  {
-    id: '1',
-    name: 'Joseph Lubin',
-    image: undefined,
-    winningTotem: {
-      objectId: 'lion',
-      object: {
-        id: 'lion',
-        label: 'Lion',
-        image: undefined,
-        description: 'King of the jungle',
-      },
-      netScore: 93000000000000000000n,
-      totalFor: 100000000000000000000n,
-      totalAgainst: 7000000000000000000n,
-      claimCount: 3,
-    },
-    totalProposals: 5,
-    totalVoters: 12,
-  },
-  {
-    id: '2',
-    name: 'Andrew Keys',
-    image: undefined,
-    winningTotem: {
-      objectId: 'eagle',
-      object: {
-        id: 'eagle',
-        label: 'Eagle',
-        image: undefined,
-      },
-      netScore: 75000000000000000000n,
-      totalFor: 80000000000000000000n,
-      totalAgainst: 5000000000000000000n,
-      claimCount: 2,
-    },
-    totalProposals: 4,
-    totalVoters: 10,
-  },
-  {
-    id: '3',
-    name: 'Vitalik Buterin',
-    image: undefined,
-    winningTotem: undefined,
-    totalProposals: 0,
-    totalVoters: 0,
-  },
-];
+import { useAllProposals } from '../hooks';
 
 type SortOption = 'name' | 'votes' | 'proposals';
 
@@ -58,8 +9,52 @@ export function ResultsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
 
+  // Fetch all proposals grouped by founder
+  const {
+    founders: allFounders,
+    loading,
+    error,
+    totalFounders,
+    totalProposals,
+    foundersWithWinners,
+    totalClaims,
+  } = useAllProposals();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="glass-card p-8 max-w-md text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <h2 className="text-xl font-bold text-white mb-2">Chargement...</h2>
+          <p className="text-white/70">
+            Récupération des résultats depuis la blockchain
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="glass-card p-12 text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-white mb-2">Erreur</h2>
+          <p className="text-white/60 mb-6">
+            Erreur lors du chargement des résultats: {error.message}
+          </p>
+          <Link to="/" className="glass-button">
+            ← Retour à l'accueil
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Filter founders based on search
-  const filteredFounders = MOCK_FOUNDERS.filter((founder) => {
+  const filteredFounders = allFounders.filter((founder) => {
     const query = searchQuery.toLowerCase();
     return (
       founder.name.toLowerCase().includes(query) ||
@@ -97,26 +92,26 @@ export function ResultsPage() {
       {/* Global Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-purple-400">42</div>
+          <div className="text-3xl font-bold text-purple-400">
+            {totalFounders}
+          </div>
           <div className="text-white/60 text-sm">Fondateurs</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">
-            {MOCK_FOUNDERS.reduce((sum, f) => sum + f.totalProposals, 0)}
+            {totalProposals}
           </div>
           <div className="text-white/60 text-sm">Propositions</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">
-            {MOCK_FOUNDERS.filter((f) => f.winningTotem).length}
+            {foundersWithWinners}
           </div>
           <div className="text-white/60 text-sm">Totems gagnants</div>
         </div>
         <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-purple-400">
-            {MOCK_FOUNDERS.reduce((sum, f) => sum + f.totalVoters, 0)}
-          </div>
-          <div className="text-white/60 text-sm">Votants</div>
+          <div className="text-3xl font-bold text-purple-400">{totalClaims}</div>
+          <div className="text-white/60 text-sm">Claims totaux</div>
         </div>
       </div>
 

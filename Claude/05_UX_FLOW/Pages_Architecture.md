@@ -1,9 +1,59 @@
 # Architecture des Pages - INTUITION Founders Totem
 
-**Date** : 19 novembre 2025
-**Version** : 1.0
+**Date** : 21 novembre 2025
+**Version** : 2.0 - Mise à jour avec l'état d'implémentation
 
 Ce document décrit l'architecture complète de toutes les pages de l'application, avec wireframes ASCII et détails des composants.
+
+---
+
+## 🎯 État d'implémentation (21 nov 2025)
+
+### ✅ Pages complètement implémentées avec GraphQL
+
+| Page | Route | Status | Hook GraphQL | Build | Tests |
+|------|-------|--------|--------------|-------|-------|
+| **HomePage** | `/` | ✅ Implémentée | N/A (statique) | ✅ | ✅ |
+| **ProposePage** | `/propose` | ✅ Implémentée | SDK INTUITION | ✅ | ✅ |
+| **ResultsPage** | `/results` | ✅ GraphQL intégré | `useAllProposals` | ✅ | ✅ |
+| **FounderDetailsPage** | `/results/:founderId` | ✅ GraphQL intégré | `useFounderProposals` | ✅ | ✅ |
+| **TotemDetailsPage** | `/results/:founderId/:totemId` | ✅ GraphQL intégré | `useTotemDetails` | ✅ | ✅ |
+| **MyVotesPage** | `/my-votes` | ✅ GraphQL intégré | `useUserVotesDetailed` | ✅ | N/A |
+| **NotFoundPage** | `*` | ✅ Implémentée | N/A | ✅ | ✅ |
+
+### ⏳ Pages avec placeholder
+
+| Page | Route | Status | Priorité |
+|------|-------|--------|----------|
+| **VotePage** | `/vote` | ⏳ Placeholder | Haute |
+| **FounderVotePage** | `/vote/:founderId` | ⏳ Placeholder | Moyenne |
+
+### 📊 Résumé technique
+
+**Intégration blockchain complète:**
+- ✅ INTUITION L3 Testnet (Chain ID: 13579)
+- ✅ Cross-chain NFT verification (Base Mainnet)
+- ✅ GraphQL Apollo Client configuré
+- ✅ Tous les hooks GraphQL opérationnels
+
+**Hooks GraphQL créés:**
+- `useAllProposals` - Tous les fondateurs avec leurs totems gagnants
+- `useFounderProposals` - Propositions pour un fondateur spécifique
+- `useTotemDetails` - Détails complets d'un totem avec claims
+- `useUserVotesDetailed` - Historique des votes d'un utilisateur
+- `useUserProposals` - Propositions créées par un utilisateur
+- `useProposalLimit` - Vérification limite de propositions
+
+**Tests:**
+- ✅ 120/120 tests passent
+- ✅ Build: 15.62s
+- ✅ Dev server: http://localhost:5174/
+
+**Prochaines étapes:**
+1. Implémenter VotePage (vote FOR/AGAINST)
+2. Implémenter FounderVotePage (interface de vote pour un fondateur)
+3. Tests E2E avec Playwright
+4. Optimisations (polling GraphQL, cache Apollo)
 
 ---
 

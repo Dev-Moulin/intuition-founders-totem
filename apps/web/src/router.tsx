@@ -7,6 +7,7 @@ import { ProposePage } from './pages/ProposePage';
 import { ResultsPage } from './pages/ResultsPage';
 import { FounderDetailsPage } from './pages/FounderDetailsPage';
 import { TotemDetailsPage } from './pages/TotemDetailsPage';
+import { MyVotesPage } from './pages/MyVotesPage';
 
 // Root layout with Layout and NetworkGuard
 function RootLayout() {
@@ -35,16 +36,6 @@ function FounderVotePage() {
     <div className="text-center">
       <h2 className="text-3xl font-bold text-white mb-4">Founder Totems</h2>
       <p className="text-white/70">Vote for totems for this founder.</p>
-    </div>
-  );
-}
-
-
-function MyVotesPage() {
-  return (
-    <div className="text-center">
-      <h2 className="text-3xl font-bold text-white mb-4">My Votes</h2>
-      <p className="text-white/70">View your voting history.</p>
     </div>
   );
 }

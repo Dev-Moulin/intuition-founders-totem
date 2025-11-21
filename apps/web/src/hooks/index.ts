@@ -12,6 +12,12 @@ export {
   formatVoteAmount,
 } from './useFounderProposals';
 
+// GraphQL hook for all proposals (grouped by founder)
+export { useAllProposals, type FounderWithTotem } from './useAllProposals';
+
+// GraphQL hook for totem details
+export { useTotemDetails, type TotemDetails } from './useTotemDetails';
+
 // GraphQL hooks for votes
 export {
   useUserVotes,
