@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount } from 'wagmi';
+import type { Hex } from 'viem';
 import type { AggregatedTotem } from '../hooks/useAllTotems';
 import { formatVoteAmount } from '../hooks/useFounderProposals';
+import { useVote } from '../hooks/useVote';
 
 interface VoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   totem: AggregatedTotem;
   direction: 'for' | 'against';
-  onSubmit: (claimId: string, amount: string) => Promise<void>;
 }
 
 export function VoteModal({
@@ -16,58 +17,64 @@ export function VoteModal({
   onClose,
   totem,
   direction,
-  onSubmit,
 }: VoteModalProps) {
   const { address } = useAccount();
-  const { data: balance } = useBalance({ address });
+  const { vote, status, error: voteError, isLoading, currentStep, totalSteps, reset } = useVote();
 
   const [selectedClaimId, setSelectedClaimId] = useState<string>(
     totem.claims[0]?.tripleId || ''
   );
   const [amount, setAmount] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Reset selected claim when totem changes
+  // Reset when modal closes or totem changes
   useEffect(() => {
-    setSelectedClaimId(totem.claims[0]?.tripleId || '');
-    setAmount('');
-    setError(null);
-  }, [totem]);
+    if (isOpen) {
+      setSelectedClaimId(totem.claims[0]?.tripleId || '');
+      setAmount('');
+      setValidationError(null);
+      reset();
+    }
+  }, [totem, isOpen, reset]);
+
+  // Close modal on success
+  useEffect(() => {
+    if (status === 'success') {
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+    }
+  }, [status, onClose]);
 
   const handleSubmit = async () => {
+    setValidationError(null);
+
     if (!selectedClaimId) {
-      setError('Please select a claim');
+      setValidationError('Please select a claim');
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      setError('Please enter a valid amount');
+      setValidationError('Please enter a valid amount');
       return;
     }
 
-    const amountValue = parseFloat(amount);
-    const balanceValue = balance ? parseFloat(balance.formatted) : 0;
-
-    if (amountValue > balanceValue) {
-      setError('Insufficient balance');
+    if (!address) {
+      setValidationError('Please connect your wallet');
       return;
     }
-
-    setError(null);
-    setIsSubmitting(true);
 
     try {
-      await onSubmit(selectedClaimId, amount);
-      onClose();
+      await vote(selectedClaimId as Hex, amount, direction === 'for');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit vote');
-    } finally {
-      setIsSubmitting(false);
+      // Errors are handled by the useVote hook
+      console.error('Vote submission error:', err);
     }
   };
 
   if (!isOpen) return null;
+
+  const error = validationError || voteError?.message;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -97,7 +104,8 @@ export function VoteModal({
             </div>
             <button
               onClick={onClose}
-              className="text-white/60 hover:text-white transition-colors"
+              disabled={isLoading}
+              className="text-white/60 hover:text-white transition-colors disabled:opacity-50"
             >
               <svg
                 className="w-6 h-6"
@@ -141,6 +149,7 @@ export function VoteModal({
                         value={claim.tripleId}
                         checked={selectedClaimId === claim.tripleId}
                         onChange={(e) => setSelectedClaimId(e.target.value)}
+                        disabled={isLoading}
                         className="mt-1"
                       />
                       <div className="flex-1">
@@ -195,65 +204,91 @@ export function VoteModal({
               placeholder="0.0"
               min="0"
               step="0.01"
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-lg placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-lg placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
-            <div className="mt-2 flex justify-between text-sm">
-              <span className="text-white/60">
-                Your balance: {balance ? balance.formatted : '0'} {balance?.symbol}
-              </span>
-              <button
-                onClick={() => setAmount(balance?.formatted || '0')}
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                Max
-              </button>
-            </div>
+            <p className="mt-2 text-sm text-white/60">
+              Enter the amount of TRUST tokens to vote with
+            </p>
           </div>
 
+          {/* Progress Indicator */}
+          {isLoading && (
+            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-blue-400 font-medium">
+                  {status === 'checking' && 'Checking allowance...'}
+                  {status === 'approving' && 'Approving TRUST...'}
+                  {status === 'depositing' && 'Submitting vote...'}
+                </span>
+                <span className="text-blue-400 text-sm">
+                  Step {currentStep}/{totalSteps}
+                </span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2">
+                <div
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {status === 'success' && (
+            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+              <p className="text-green-400 font-medium text-center">
+                Vote successfully recorded! Closing...
+              </p>
+            </div>
+          )}
+
           {/* Error Message */}
-          {error && (
+          {error && status !== 'success' && (
             <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30">
               <p className="text-red-400 text-sm">{error}</p>
             </div>
           )}
 
           {/* Vote Direction Indicator */}
-          <div
-            className={`p-4 rounded-lg border ${
-              direction === 'for'
-                ? 'bg-green-500/10 border-green-500/30'
-                : 'bg-red-500/10 border-red-500/30'
-            }`}
-          >
-            <p
-              className={`text-center font-medium ${
-                direction === 'for' ? 'text-green-400' : 'text-red-400'
+          {!isLoading && status !== 'success' && (
+            <div
+              className={`p-4 rounded-lg border ${
+                direction === 'for'
+                  ? 'bg-green-500/10 border-green-500/30'
+                  : 'bg-red-500/10 border-red-500/30'
               }`}
             >
-              You are voting {direction === 'for' ? 'FOR' : 'AGAINST'} this totem
-            </p>
-          </div>
+              <p
+                className={`text-center font-medium ${
+                  direction === 'for' ? 'text-green-400' : 'text-red-400'
+                }`}
+              >
+                You are voting {direction === 'for' ? 'FOR' : 'AGAINST'} this totem
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="p-6 border-t border-white/10 flex gap-3">
           <button
             onClick={onClose}
-            disabled={isSubmitting}
+            disabled={isLoading}
             className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isSubmitting || !address}
+            disabled={isLoading || !address || status === 'success'}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               direction === 'for'
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
-            {isSubmitting ? 'Submitting...' : 'Confirm Vote'}
+            {isLoading ? `Step ${currentStep}/${totalSteps}...` : 'Confirm Vote'}
           </button>
         </div>
       </div>
