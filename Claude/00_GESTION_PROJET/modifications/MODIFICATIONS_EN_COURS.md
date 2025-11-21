@@ -9,24 +9,36 @@
 
 | Sujet | Priorité | Status | Date | Fichier Détails |
 |-------|----------|--------|------|-----------------|
-| Agrégation des votes | 🔴 P0 | 🟡 En cours | 21/11/2025 | [CORRECTION_ISSUES_AGGREGATION.md](../corrections/CORRECTION_ISSUES_AGGREGATION.md) |
+| Agrégation des votes | 🔴 P0 | ✅ Fonction existe | 21/11/2025 | [CORRECTION_ISSUES_AGGREGATION.md](../corrections/CORRECTION_ISSUES_AGGREGATION.md) |
 | Architecture simplifiée (pas de backend) | 🔴 P0 | ✅ Fait | 21/11/2025 | [ARCHITECTURE_NO_BACKEND.md](./ARCHITECTURE_NO_BACKEND.md) |
-| Hook useVote (Issue #38) | 🔴 P0 | ✅ Fait | 21/11/2025 | Branch `feature/38-use-vote-hook` |
+| Hook useVote (Issue #38) | 🔴 P0 | ✅ Fait (PR #118) | 21/11/2025 | Mergé dans main |
 | Autres modifications | ⚪ À définir | ⏳ À discuter | 21/11/2025 | Ce fichier |
 
 ---
 
 ## 1️⃣ Agrégation des Votes (P0)
 
-**Status** : 🟡 Documentation complète, actions à exécuter
+**Status** : ✅ Fonction existe déjà - 🟡 Documentation à jour
 
 ### Résumé
 Correction du mécanisme d'agrégation des votes suite à la découverte que le protocole INTUITION v2 ne fait pas d'agrégation automatique par objet.
 
+**Découverte importante** : La fonction d'agrégation `aggregateTriplesByObject()` **existe déjà** dans `apps/web/src/utils/aggregateVotes.ts` avec 17 tests passants!
+
 ### Actions concrètes
-- [ ] Créer issue #97 - Fonction d'agrégation
+- [x] ✅ Fonction d'agrégation créée et testée
+- [x] ✅ `aggregateTriplesByObject()` - Agrège les triples par objet
+- [x] ✅ `getWinningTotem()` - Retourne le totem gagnant
+- [x] ✅ `formatTrustAmount()` - Formate les montants TRUST
+- [x] ✅ 17 tests unitaires passants
+- [x] ✅ Utilisé par `useAllProposals` et `FounderDetailsPage`
 - [ ] Ajouter commentaires sur issues #33, #34, #43-47
-- [ ] PR pour ajouter 3 prédicats dans ProposalModal
+- [ ] ⏳ Optionnel: PR pour ajouter 3 prédicats dans ProposalModal
+- [ ] ⏳ Optionnel: Refactorer `useAllTotems` pour utiliser la fonction utils
+
+### Fichier implémenté
+📄 `apps/web/src/utils/aggregateVotes.ts` (162 lignes)
+📄 `apps/web/src/utils/aggregateVotes.test.ts` (273 lignes, 17 tests)
 
 ### Documentation complète
 👉 Voir [CORRECTION_ISSUES_AGGREGATION.md](../corrections/CORRECTION_ISSUES_AGGREGATION.md)

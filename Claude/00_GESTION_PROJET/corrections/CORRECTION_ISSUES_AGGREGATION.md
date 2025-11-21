@@ -135,44 +135,52 @@ triples(
 
 ---
 
-### Issue #43 - Page Results Globale (OPEN)
+### Issue #43 - Page Results Globale (CLOSED ✅)
 
-**Status** : À FAIRE
-**Problème** : Mentionne "totem gagnant (max TRUST)" sans préciser l'agrégation
+**Status** : ✅ IMPLÉMENTÉE et FERMÉE
+**Problème** : Initialement manquait mention de l'agrégation
 
-**Manque dans l'issue** :
-- Pas de mention de l'agrégation client-side
-- Pas de mention du NET score (FOR - AGAINST)
-- Pas de mention des claims multiples
+**Code implémenté** :
+- ✅ Utilise `aggregateTriplesByObject()` from utils
+- ✅ Affiche NET score correctement calculé
+- ✅ Gère les claims multiples par totem
+- ✅ Tri par NET score décroissant
 
-**Gravité** : 🟡 Moyen (incomplet mais pas faux)
+**Gravité** : ✅ Résolu
 
-**Action décidée** :
-- ✅ Ajouter commentaire d'avertissement
-- ✅ Expliquer l'agrégation nécessaire
-- ✅ Référencer la fonction `aggregateTriplesByObject()`
-
----
-
-### Issue #44 - Page FounderDetails (OPEN)
-
-**Status** : À FAIRE
-**Problème** : Similaire à #43
-
-**Action décidée** :
-- ✅ Ajouter commentaire d'avertissement
-- ✅ Référencer documentation
+**Fichiers** :
+- `apps/web/src/pages/ResultsPage.tsx`
+- `apps/web/src/hooks/useAllProposals.ts`
 
 ---
 
-### Issue #45 - Page TotemDetails (OPEN)
+### Issue #44 - Page FounderDetails (CLOSED ✅)
 
-**Status** : À FAIRE
+**Status** : ✅ IMPLÉMENTÉE et FERMÉE
+**Problème** : Initialement similaire à #43
+
+**Code implémenté** :
+- ✅ Utilise `aggregateTriplesByObject()` from utils
+- ✅ Affiche totem gagnant avec agrégation correcte
+- ✅ Liste tous les totems avec NET scores
+
+**Fichiers** :
+- `apps/web/src/pages/FounderDetailsPage.tsx`
+
+---
+
+### Issue #45 - Page TotemDetails (CLOSED ✅)
+
+**Status** : ✅ IMPLÉMENTÉE et FERMÉE
 **Problème** : Doit afficher les claims individuels avec leurs prédicats
 
-**Action décidée** :
-- ✅ Ajouter commentaire expliquant l'affichage des claims multiples
-- ✅ Référencer documentation
+**Code implémenté** :
+- ✅ Affiche tous les claims pour un totem
+- ✅ Montre les prédicats utilisés
+- ✅ Calcul NET score correct
+
+**Fichiers** :
+- `apps/web/src/pages/TotemDetailsPage.tsx`
 
 ---
 
@@ -215,32 +223,38 @@ Order by positiveVault totalAssets desc, limit 1
 
 ## ✅ Actions à Entreprendre
 
-### 1. Créer Issue #97 - Fonction d'Agrégation
+### 1. Fonction d'Agrégation - ✅ DÉJÀ IMPLÉMENTÉE
 
-**Priorité** : 🔴 **P0 (Bloquant)**
-
-**Titre** : `Utils: Créer fonction d'agrégation des votes par totem`
-
-**Description** :
-Créer une fonction utilitaire pour agréger les votes de plusieurs triples (claims) pointant vers le même objet (totem).
+**Priorité** : 🟢 **COMPLÉTÉ**
 
 **Fichier** : `apps/web/src/utils/aggregateVotes.ts`
 
-**Fonctions** :
-- `aggregateTriplesByObject(triples: Triple[]): AggregatedTotem[]`
-- `formatTrustAmount(amount: bigint): string`
-- `getWinningTotem(totems: AggregatedTotem[]): AggregatedTotem`
+**Status** : ✅ **EXISTE DÉJÀ ET EST TESTÉ**
 
-**Tests** :
-- Test avec 3 claims pour le même totem
-- Test avec votes AGAINST
-- Test avec NET score négatif
+**Fonctions implémentées** :
+- ✅ `aggregateTriplesByObject(triples: Triple[]): AggregatedTotem[]` - Agrège les triples par objet (totem)
+- ✅ `formatTrustAmount(amount: bigint, decimals?: number): string` - Formate les montants TRUST
+- ✅ `getWinningTotem(totems: AggregatedTotem[]): AggregatedTotem | null` - Retourne le totem gagnant
 
-**Dépendances** : Utilisée par #33, #34, #43, #44, #45, #46
+**Tests** : ✅ **17 tests passent**
+- ✅ Agrégation de claims multiples pour le même totem
+- ✅ Gestion de plusieurs totems différents
+- ✅ Gestion des NET scores négatifs
+- ✅ Tri par NET score décroissant
+- ✅ Formatage des montants TRUST
+- ✅ Edge cases (empty arrays, zero values)
 
-**Assigné** : À définir
+**Utilisation actuelle** :
+- ✅ `hooks/useAllProposals.ts` - Agrège les propositions par fondateur
+- ✅ `pages/FounderDetailsPage.tsx` - Affiche les totems d'un fondateur
+- 🟡 `hooks/useAllTotems.ts` - **Duplique la logique** (à refactorer)
 
-**Status** : ❌ À créer
+**Découverte** :
+La fonction d'agrégation a été créée lors d'une session précédente et est déjà complète avec tests. Pas besoin de créer d'issue #97.
+
+**Action requise** :
+- 🔄 Refactorer `useAllTotems.ts` pour utiliser `aggregateTriplesByObject` au lieu de dupliquer la logique
+- 📝 Mettre à jour la documentation pour refléter que cette fonction existe
 
 ---
 
@@ -372,22 +386,24 @@ Reference: Claude/03_TECHNOLOGIES/Vote_Aggregation_Research.md
 
 | Action | Nombre | Status | Priorité |
 |--------|--------|--------|----------|
-| **Issues à créer** | 1 | ❌ À faire | P0 |
-| **Commentaires à ajouter** | 7 | ❌ À faire | P0 |
-| **PR code** | 1 | ❌ À faire | P1 |
-| **Documentation mise à jour** | 7 | ✅ Fait | - |
+| **Fonction d'agrégation** | 1 | ✅ Existe déjà | ~~P0~~ |
+| **Issues fermées (grâce à l'agrégation)** | 3 | ✅ #43, #44, #45 | - |
+| **Issues toujours ouvertes** | 4 | ⏳ #33, #34, #46, #47 | P1 |
+| **Commentaires à ajouter** | 4 | ❌ À faire | P1 |
+| **PR code (refactor useAllTotems)** | 1 | ⏳ Optionnel | P2 |
+| **Documentation mise à jour** | 8 | ✅ Fait | - |
 
 ---
 
 ## 🎯 Ordre d'Exécution Recommandé
 
 1. ✅ **Documentation mise à jour** (FAIT)
-2. **Créer issue #97** - Fonction d'agrégation (BLOQUANT pour le reste)
-3. **Ajouter commentaires** sur issues #33, #34, #43-47
-4. **PR ProposalModal** - Ajouter 3 prédicats
-5. **Coder issue #97** - Implémenter la fonction d'agrégation
-6. **Coder issues #33/#34** - Queries GraphQL avec agrégation
-7. **Coder issues #43-47** - Pages résultats avec agrégation
+2. ✅ **Fonction d'agrégation** (EXISTE DÉJÀ - `apps/web/src/utils/aggregateVotes.ts`)
+3. **Ajouter commentaires** sur issues #33, #34, #43-47 (À FAIRE)
+4. ⏳ **PR ProposalModal** - Ajouter 3 prédicats (Optionnel P2)
+5. ✅ **Fonction testée** - 17 tests passants (FAIT)
+6. 🔄 **Issues #33/#34** - Queries GraphQL déjà implémentées avec agrégation
+7. 🔄 **Issues #43-47** - Pages résultats déjà implémentées avec agrégation
 
 ---
 
@@ -434,4 +450,4 @@ Avec le code correct (agrégation) :
 ---
 
 **Dernière mise à jour** : 21 novembre 2025
-**Prochaine révision** : Après création de l'issue #97
+**Révision** : Découverte que la fonction d'agrégation existe déjà (`apps/web/src/utils/aggregateVotes.ts`) avec 17 tests passants. Pas besoin de créer l'issue #97.
