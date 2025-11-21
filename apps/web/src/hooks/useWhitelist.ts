@@ -1,9 +1,13 @@
 import { useReadContract } from 'wagmi';
+import { base } from 'wagmi/chains';
 import type { Address } from 'viem';
 
 /**
  * NFT Contract address on Base Mainnet
  * Holders of this NFT are eligible to participate in the voting
+ *
+ * NOTE: This NFT is on Base Mainnet, but the app runs on INTUITION L3 Testnet.
+ * We use cross-chain verification to check NFT ownership on Base while voting on INTUITION L3.
  */
 const NFT_CONTRACT = '0x98e240326966e86ad6ec27e13409ffb748788f8c' as const;
 
@@ -51,6 +55,7 @@ export function useWhitelist(address?: Address) {
     abi: ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
+    chainId: base.id, // Force read from Base Mainnet (cross-chain verification)
     query: {
       enabled: !!address,
       staleTime: 60_000, // Cache for 1 minute

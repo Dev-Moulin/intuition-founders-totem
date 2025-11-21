@@ -131,6 +131,7 @@ describe('useWhitelist', () => {
       abi: expect.any(Array),
       functionName: 'balanceOf',
       args: [mockAddress],
+      chainId: 8453, // Base Mainnet
       query: {
         enabled: true,
         staleTime: 60_000,
