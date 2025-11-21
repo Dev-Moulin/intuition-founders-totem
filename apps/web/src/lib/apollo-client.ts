@@ -3,8 +3,8 @@ import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 /**
  * Apollo Client configuration for INTUITION GraphQL API
  *
- * Connects to the INTUITION testnet subgraph to query atoms, triples, deposits, and positions.
- * Base Sepolia testnet endpoint.
+ * Connects to the INTUITION L3 testnet subgraph to query atoms, triples, deposits, and positions.
+ * INTUITION L3 Testnet (Chain ID: 13579) endpoint.
  */
 
 const GRAPHQL_ENDPOINT = 'https://testnet.intuition.sh/v1/graphql';

@@ -29,6 +29,7 @@
     "vitest": "^4.0.12"
   },
   "dependencies": {
+    "@0xintuition/protocol": "2.0.0-alpha.4",
     "@0xintuition/sdk": "2.0.0-alpha.4",
     "@apollo/client": "^3.11.0",
     "@rainbow-me/rainbowkit": "^2.2.9",

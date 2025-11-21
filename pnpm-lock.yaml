@@ -10,6 +10,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@0xintuition/protocol':
+        specifier: 2.0.0-alpha.4
+        version: 2.0.0-alpha.4(viem@2.39.3(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@0xintuition/sdk':
         specifier: 2.0.0-alpha.4
         version: 2.0.0-alpha.4(react@19.2.0)(viem@2.39.3(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))

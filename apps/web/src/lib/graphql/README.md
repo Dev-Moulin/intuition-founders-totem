@@ -300,7 +300,9 @@ Mock data can be found in:
 ## Environment
 
 - **Testnet URL**: `https://testnet.intuition.sh/v1/graphql`
-- **Network**: Base Sepolia (Chain ID: 84532)
+- **Network**: INTUITION L3 Testnet (Chain ID: 13579)
+- **RPC**: `https://testnet.rpc.intuition.systems/http`
+- **Explorer**: `https://testnet.explorer.intuition.systems`
 - **Schema**: [INTUITION GraphQL Schema](https://raw.githubusercontent.com/0xIntuition/intuition-ts/main/packages/graphql/schema.graphql)
 
 ## Next Steps
