@@ -7,10 +7,19 @@
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
     "test": "pnpm --recursive test",
-    "type-check": "pnpm --recursive type-check"
+    "type-check": "pnpm --recursive type-check",
+    "create-founders": "tsx scripts/createFoundersAtoms.ts"
   },
-  "keywords": ["intuition", "nft", "voting", "web3"],
+  "keywords": [
+    "intuition",
+    "nft",
+    "voting",
+    "web3"
+  ],
   "author": "Overmind",
   "license": "MIT",
-  "packageManager": "pnpm@10.5.0"
+  "packageManager": "pnpm@10.5.0",
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
 }

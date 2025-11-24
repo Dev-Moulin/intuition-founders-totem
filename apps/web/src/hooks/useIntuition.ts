@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import {
   createAtomFromString,
+  createAtomFromThing,
   batchCreateTripleStatements,
   getMultiVaultAddressFromChainId,
 } from '@0xintuition/sdk';
@@ -20,6 +21,40 @@ export interface CreateTripleResult {
   subjectId: Hex;
   predicateId: Hex;
   objectId: Hex;
+}
+
+export interface FounderData {
+  name: string;
+  shortBio: string;
+  fullBio?: string;
+  twitter?: string | null;
+  linkedin?: string | null;
+  github?: string | null;
+  image?: string;
+}
+
+/**
+ * Get the best available image URL for a founder
+ * Priority: manual image > Twitter avatar > GitHub avatar > DiceBear fallback
+ */
+export function getFounderImageUrl(founder: FounderData): string {
+  // 1. Manual image if provided
+  if (founder.image) {
+    return founder.image;
+  }
+
+  // 2. Twitter avatar via unavatar.io
+  if (founder.twitter) {
+    return `https://unavatar.io/twitter/${founder.twitter.replace('@', '')}`;
+  }
+
+  // 3. GitHub avatar (direct from GitHub)
+  if (founder.github) {
+    return `https://github.com/${founder.github}.png`;
+  }
+
+  // 4. DiceBear fallback - generates unique avatar based on name
+  return `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(founder.name)}`;
 }
 
 export function useIntuition() {
@@ -46,6 +81,52 @@ export function useIntuition() {
       const deposit = depositAmount ? parseEther(depositAmount) : undefined;
 
       const result = await createAtomFromString(config, value, deposit);
+
+      return {
+        uri: result.uri,
+        transactionHash: result.transactionHash,
+        termId: result.state.termId,
+      };
+    },
+    [walletClient, publicClient, multiVaultAddress]
+  );
+
+  /**
+   * Create an Atom with full metadata (for founders)
+   * Uses createAtomFromThing to include name, description, image, url
+   */
+  const createFounderAtom = useCallback(
+    async (founder: FounderData, depositAmount?: string): Promise<CreateAtomResult> => {
+      if (!walletClient || !publicClient) {
+        throw new Error('Wallet not connected');
+      }
+
+      const config = {
+        walletClient,
+        publicClient,
+        address: multiVaultAddress,
+      };
+
+      const deposit = depositAmount ? parseEther(depositAmount) : undefined;
+
+      // Build URL from twitter or linkedin
+      const url = founder.twitter
+        ? `https://twitter.com/${founder.twitter.replace('@', '')}`
+        : founder.linkedin || undefined;
+
+      // Build image URL using cascade: manual > Twitter > GitHub > DiceBear
+      const image = getFounderImageUrl(founder);
+
+      const result = await createAtomFromThing(
+        config,
+        {
+          url,
+          name: founder.name,
+          description: founder.fullBio || founder.shortBio,
+          image,
+        },
+        deposit
+      );
 
       return {
         uri: result.uri,
@@ -151,6 +232,7 @@ export function useIntuition() {
 
   return {
     createAtom,
+    createFounderAtom,
     createTriple,
     createClaim,
     isReady: !!walletClient && !!publicClient,

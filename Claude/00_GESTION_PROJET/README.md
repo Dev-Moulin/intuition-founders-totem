@@ -113,7 +113,18 @@ Claude/
 │   │   │   ├── Bonding_Curves.md
 │   │   │   └── Schema_GraphQL.md
 │   │   ├── ux_flow/
-│   │   │   └── Pages_Architecture.md
+│   │   │   ├── INDEX_PAGES.md
+│   │   │   └── pages/
+│   │   │       ├── 00_PATTERNS_COMMUNS.md
+│   │   │       ├── 01_HomePage.md
+│   │   │       ├── 02_ProposePage.md
+│   │   │       ├── 03_VotePage.md
+│   │   │       ├── 04_FounderDetailsPage.md
+│   │   │       ├── 05_TotemDetailsPage.md
+│   │   │       ├── 06_MyVotesPage.md
+│   │   │       ├── 07_ResultsPage.md
+│   │   │       ├── 08_NotFoundPage.md
+│   │   │       └── 09_AdminAuditPage.md
 │   │   ├── securite/
 │   │   │   └── Frontend_Security.md
 │   │   ├── ux_ui/
@@ -186,4 +197,3 @@ La documentation à jour se trouve dans :
 ---
 
 **Dernière mise à jour** : 24 novembre 2025
-tru
