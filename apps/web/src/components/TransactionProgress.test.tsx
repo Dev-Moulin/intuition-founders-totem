@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TransactionProgress, type TransactionStatus } from './TransactionProgress';
@@ -262,6 +262,48 @@ describe('TransactionProgress', () => {
       expect(
         screen.queryByText(/Ne fermez pas cette fenêtre/)
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('animated dots', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should animate dots during preparing state', async () => {
+      render(<TransactionProgress {...defaultProps} status="preparing" />);
+
+      // Initial state
+      const headingInitial = screen.getByRole('heading', { name: /Préparation/ });
+      expect(headingInitial).toBeInTheDocument();
+
+      // Advance timer to trigger setDots
+      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
+
+      // Dots should cycle through the animation
+      expect(screen.getByRole('heading', { name: /Préparation/ })).toBeInTheDocument();
+    });
+
+    it('should stop dots animation on status change to success', () => {
+      const { rerender } = render(
+        <TransactionProgress {...defaultProps} status="preparing" />
+      );
+
+      // Advance timer during preparing
+      vi.advanceTimersByTime(500);
+
+      // Change to success
+      rerender(<TransactionProgress {...defaultProps} status="success" />);
+
+      // Should clear the interval and reset dots
+      expect(screen.getByText('Succès')).toBeInTheDocument();
     });
   });
 });

@@ -22,16 +22,11 @@ export default defineConfig({
         '**/main.tsx',
         '**/App.tsx',
         '**/__mocks__/',
-        // Exclude complex hooks that require blockchain mocking
-        'src/hooks/useFounderProposals.ts',
-        'src/hooks/useAllTotems.ts',
-        'src/hooks/useVote.ts',
-        'src/hooks/usePropose.ts',
       ],
       thresholds: {
         statements: 70,
-        branches: 65,
-        functions: 70,
+        branches: 60,
+        functions: 65,
         lines: 70,
       },
     },

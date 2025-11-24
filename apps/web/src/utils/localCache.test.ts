@@ -207,22 +207,56 @@ describe('localCache', () => {
 
   describe('error handling', () => {
     it('should handle localStorage errors gracefully', () => {
-      // Mock localStorage to throw error
-      const mockSetItem = vi.spyOn(Storage.prototype, 'setItem');
-      mockSetItem.mockImplementation(() => {
-        throw new Error('QuotaExceededError');
+      // First, add some valid data so getCache works
+      localStorage.clear();
+
+      // Mock setItem to throw only after being called once (for getCache to save initially)
+      let callCount = 0;
+      const originalSetItem = localStorage.setItem.bind(localStorage);
+      const mockSetItem = vi.spyOn(localStorage, 'setItem').mockImplementation((key, value) => {
+        callCount++;
+        if (callCount > 0 && key === 'intuition-cache-v1') {
+          throw new Error('QuotaExceededError');
+        }
+        return originalSetItem(key, value);
       });
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Should not throw
       expect(() => {
         cacheNewPredicate('0x1234' as Hex, 'embodies');
       }).not.toThrow();
 
+      // Console.error should be called in the catch block (saveCache line 73)
+      expect(mockConsoleError).toHaveBeenCalledWith('Error saving cache:', expect.any(Error));
+
       mockSetItem.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+
+    it('should handle localStorage.removeItem error in clearCache', () => {
+      // Clear localStorage first to avoid corrupted data from other tests
+      localStorage.clear();
+
+      const mockRemoveItem = vi.spyOn(localStorage, 'removeItem').mockImplementation(() => {
+        throw new Error('SecurityError');
+      });
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Should not throw
+      expect(() => {
+        clearCache();
+      }).not.toThrow();
+
+      // Console.error should be called in the catch block (clearCache line 192)
+      expect(mockConsoleError).toHaveBeenCalledWith('Error clearing cache:', expect.any(Error));
+
+      mockRemoveItem.mockRestore();
+      mockConsoleError.mockRestore();
     });
 
     it('should handle corrupted cache data', () => {
-      // Manually set corrupted data
+      // This test must be last since it corrupts localStorage
       localStorage.setItem('intuition-cache-v1', 'invalid json');
 
       // Should return empty cache instead of throwing

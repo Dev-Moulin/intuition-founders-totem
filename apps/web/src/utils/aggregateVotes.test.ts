@@ -138,6 +138,32 @@ describe('aggregateVotes', () => {
       expect(result).toHaveLength(0);
     });
 
+    it('should handle totems with equal NET scores', () => {
+      const triples: Triple[] = [
+        {
+          id: '0x1',
+          predicate: { id: 'pred1', label: 'is represented by' },
+          object: { id: 'lion', label: 'Lion' },
+          positiveVault: { totalAssets: '50000000000000000000' },
+          negativeVault: { totalAssets: '0' },
+        },
+        {
+          id: '0x2',
+          predicate: { id: 'pred1', label: 'is represented by' },
+          object: { id: 'eagle', label: 'Eagle' },
+          positiveVault: { totalAssets: '50000000000000000000' }, // Same score
+          negativeVault: { totalAssets: '0' },
+        },
+      ];
+
+      const result = aggregateTriplesByObject(triples);
+
+      // Both should be present with same NET score
+      expect(result).toHaveLength(2);
+      expect(result[0].netScore).toBe(50000000000000000000n);
+      expect(result[1].netScore).toBe(50000000000000000000n);
+    });
+
     it('should preserve object metadata', () => {
       const triples: Triple[] = [
         {
