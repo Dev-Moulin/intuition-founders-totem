@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useAccount, usePublicClient, useWalletClient, useReadContract } from 'wagmi';
 import { parseEther, type Hex, erc20Abi } from 'viem';
 import { batchDepositStatement, getMultiVaultAddressFromChainId } from '@0xintuition/sdk';
@@ -64,6 +64,9 @@ export function useVote(): UseVoteResult {
   const [currentStep, setCurrentStep] = useState(0);
   const [totalSteps, setTotalSteps] = useState(2);
 
+  // Ref to track current status for error handling in async callbacks
+  const statusRef = useRef<VoteStatus>('idle');
+
   const multiVaultAddress = getMultiVaultAddressFromChainId(intuitionTestnet.id);
 
   // Read current allowance
@@ -77,12 +80,18 @@ export function useVote(): UseVoteResult {
     },
   });
 
+  // Helper to update both state and ref
+  const updateStatus = useCallback((newStatus: VoteStatus) => {
+    statusRef.current = newStatus;
+    setStatus(newStatus);
+  }, []);
+
   const reset = useCallback(() => {
-    setStatus('idle');
+    updateStatus('idle');
     setError(null);
     setCurrentStep(0);
     setTotalSteps(2);
-  }, []);
+  }, [updateStatus]);
 
   const vote = useCallback(
     async (claimId: Hex, amount: string, isFor: boolean) => {
@@ -92,7 +101,7 @@ export function useVote(): UseVoteResult {
           message: 'Please connect your wallet',
           step: 'checking',
         });
-        setStatus('error');
+        updateStatus('error');
         return;
       }
 
@@ -102,7 +111,7 @@ export function useVote(): UseVoteResult {
           message: 'Wallet client not ready',
           step: 'checking',
         });
-        setStatus('error');
+        updateStatus('error');
         return;
       }
 
@@ -111,7 +120,7 @@ export function useVote(): UseVoteResult {
         const amountWei = parseEther(amount);
 
         // Step 1: Check allowance
-        setStatus('checking');
+        updateStatus('checking');
         setCurrentStep(1);
         toast.info('Checking TRUST allowance...');
 
@@ -128,7 +137,7 @@ export function useVote(): UseVoteResult {
 
         // Step 2: Approve if necessary
         if (needsApproval) {
-          setStatus('approving');
+          updateStatus('approving');
           setCurrentStep(2);
           toast.info('Approval required. Please sign the transaction...');
 
@@ -158,7 +167,7 @@ export function useVote(): UseVoteResult {
         }
 
         // Step 3: Deposit
-        setStatus('depositing');
+        updateStatus('depositing');
         setCurrentStep(needsApproval ? 3 : 2);
         toast.info('Please sign the deposit transaction...');
 
@@ -192,7 +201,7 @@ export function useVote(): UseVoteResult {
           { id: 'deposit' }
         );
 
-        setStatus('success');
+        updateStatus('success');
         setError(null);
       } catch (err: any) {
         console.error('Vote error:', err);
@@ -215,10 +224,10 @@ export function useVote(): UseVoteResult {
           errorMessage = err.message;
         }
 
-        // Determine which step failed
-        if (status === 'approving') {
+        // Determine which step failed using ref for current status
+        if (statusRef.current === 'approving') {
           errorStep = 'approving';
-        } else if (status === 'depositing') {
+        } else if (statusRef.current === 'depositing') {
           errorStep = 'depositing';
         }
 
@@ -227,7 +236,7 @@ export function useVote(): UseVoteResult {
           message: errorMessage,
           step: errorStep,
         });
-        setStatus('error');
+        updateStatus('error');
 
         toast.error(errorMessage);
       }
@@ -240,7 +249,7 @@ export function useVote(): UseVoteResult {
       allowance,
       refetchAllowance,
       reset,
-      status,
+      updateStatus,
     ]
   );
 

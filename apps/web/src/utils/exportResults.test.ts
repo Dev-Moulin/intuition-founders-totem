@@ -3,6 +3,8 @@ import {
   exportToJSON,
   exportToCSV,
   downloadFile,
+  exportResults,
+  getExportContent,
 } from './exportResults';
 import type { FounderWithTotem } from '../hooks/useAllProposals';
 
@@ -120,5 +122,71 @@ describe('downloadFile', () => {
   it('should trigger click to download', () => {
     downloadFile('test content', 'test.txt', 'text/plain');
     expect(mockLink.click).toHaveBeenCalled();
+  });
+
+  it('should set blob URL as href', () => {
+    downloadFile('test content', 'test.txt', 'text/plain');
+    expect(mockLink.href).toBe('blob:test');
+  });
+
+  it('should revoke object URL after download', () => {
+    downloadFile('test content', 'test.txt', 'text/plain');
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:test');
+  });
+});
+
+describe('exportResults', () => {
+  let mockLink: {
+    href: string;
+    download: string;
+    click: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(() => {
+    mockLink = {
+      href: '',
+      download: '',
+      click: vi.fn(),
+    };
+
+    vi.spyOn(document, 'createElement').mockReturnValue(mockLink as unknown as HTMLAnchorElement);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as unknown as Node);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as unknown as Node);
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+  });
+
+  it('should export JSON format with correct filename', () => {
+    exportResults(mockFounders, 'json');
+    expect(mockLink.download).toMatch(/intuition-founders-results-.*\.json/);
+    expect(mockLink.click).toHaveBeenCalled();
+  });
+
+  it('should export CSV format with correct filename', () => {
+    exportResults(mockFounders, 'csv');
+    expect(mockLink.download).toMatch(/intuition-founders-results-.*\.csv/);
+    expect(mockLink.click).toHaveBeenCalled();
+  });
+});
+
+describe('getExportContent', () => {
+  it('should return JSON content for json format', () => {
+    const result = getExportContent(mockFounders, 'json');
+    expect(() => JSON.parse(result)).not.toThrow();
+    expect(result).toContain('Vitalik Buterin');
+  });
+
+  it('should return CSV content for csv format', () => {
+    const result = getExportContent(mockFounders, 'csv');
+    expect(result).toContain('Founder Name');
+    expect(result).toContain('Vitalik Buterin');
+  });
+
+  it('should handle empty founders array', () => {
+    const jsonResult = getExportContent([], 'json');
+    const csvResult = getExportContent([], 'csv');
+
+    expect(JSON.parse(jsonResult).totalFounders).toBe(0);
+    expect(csvResult.split('\n')).toHaveLength(1); // Just headers
   });
 });
