@@ -2,9 +2,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { WalletConnectButton } from './ConnectButton';
 
+const ADMIN_WALLET = '0xefc86f5fabe767daac9358d0ba2dfd9ac7d29948';
+
 export function Header() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const location = useLocation();
+
+  const isAdmin = address?.toLowerCase() === ADMIN_WALLET.toLowerCase();
+
+  // Debug - à supprimer après
+  console.log('Header - address:', address, 'isAdmin:', isAdmin, 'isConnected:', isConnected);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -25,7 +32,7 @@ export function Header() {
         </Link>
 
         {isConnected && (
-          <nav className="hidden md:flex items-center gap-4">
+          <nav className="flex items-center gap-4 flex-wrap">
             <Link to="/propose" className={navLinkClass('/propose')}>
               Proposer
             </Link>
@@ -38,6 +45,11 @@ export function Header() {
             <Link to="/my-votes" className={navLinkClass('/my-votes')}>
               Mes Votes
             </Link>
+            {isAdmin && (
+              <Link to="/admin/audit" className={navLinkClass('/admin/audit')}>
+                Admin
+              </Link>
+            )}
           </nav>
         )}
       </div>
