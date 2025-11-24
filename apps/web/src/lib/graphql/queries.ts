@@ -502,3 +502,31 @@ export const GET_FOUNDER_STATS = gql`
     }
   }
 `;
+
+/**
+ * Get atoms by exact label match
+ * Used for auditing founder atoms on INTUITION
+ */
+export const GET_ATOMS_BY_LABELS = gql`
+  query GetAtomsByLabels($labels: [String!]!) {
+    atoms(where: { label: { _in: $labels } }) {
+      term_id
+      label
+      image
+      emoji
+      type
+    }
+  }
+`;
+
+/**
+ * Get all predicates (for listing available predicates)
+ */
+export const GET_ALL_PREDICATES = gql`
+  query GetAllPredicates {
+    atoms(where: { type: { _eq: "predicate" } }, order_by: { label: asc }) {
+      term_id
+      label
+    }
+  }
+`;

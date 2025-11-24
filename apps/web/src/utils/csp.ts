@@ -40,9 +40,11 @@ export const CSP_DIRECTIVES = {
 
   'connect-src': [
     "'self'",
-    // INTUITION API
+    // INTUITION API & RPC
     'https://api-testnet.intuition.systems',
     'https://testnet.intuition.sh',
+    'https://testnet.rpc.intuition.systems',
+    'wss://testnet.rpc.intuition.systems',
     // Base RPC
     'https://mainnet.base.org',
     'https://sepolia.base.org',
@@ -53,6 +55,11 @@ export const CSP_DIRECTIVES = {
     'wss://relay.walletconnect.org',
     'https://verify.walletconnect.com',
     'https://verify.walletconnect.org',
+    'https://pulse.walletconnect.org',
+    'https://api.web3modal.org',
+    'https://api.web3modal.com',
+    'wss://*.walletconnect.org',
+    'wss://*.walletconnect.com',
     // RainbowKit
     'https://api.rainbow.me',
     // IPFS

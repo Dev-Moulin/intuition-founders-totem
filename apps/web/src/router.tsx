@@ -9,6 +9,7 @@ import { ResultsPage } from './pages/ResultsPage';
 import { FounderDetailsPage } from './pages/FounderDetailsPage';
 import { TotemDetailsPage } from './pages/TotemDetailsPage';
 import { MyVotesPage } from './pages/MyVotesPage';
+import { AdminAuditPage } from './pages/AdminAuditPage';
 
 // Root layout with Layout and NetworkGuard
 function RootLayout() {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: 'my-votes',
         element: <MyVotesPage />,
+      },
+      {
+        path: 'admin/audit',
+        element: <AdminAuditPage />,
       },
       {
         path: '*',
