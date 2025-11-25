@@ -114,6 +114,7 @@ Claude/
 │   │   │   └── Schema_GraphQL.md
 │   │   ├── ux_flow/
 │   │   │   ├── INDEX_PAGES.md
+│   │   │   ├── V2_FONDATION.md             # 🆕 Architecture V2 - HomePage interactive
 │   │   │   └── pages/
 │   │   │       ├── 00_PATTERNS_COMMUNS.md
 │   │   │       ├── 01_HomePage.md
@@ -186,7 +187,7 @@ La documentation à jour se trouve dans :
 - `documentation/fonctionnement/` - Processus (propositions, votes, résultats)
 - `documentation/technologies/` - Stack technique (SDK INTUITION, GraphQL)
 - `documentation/structure_donnees/` - Schémas de données
-- `documentation/ux_flow/` - Architecture des pages
+- `documentation/ux_flow/` - Architecture des pages + **V2_FONDATION** (nouvelle architecture)
 - `documentation/securite/` - Sécurité frontend
 - `documentation/ux_ui/` - Design system
 - `documentation/gestion_erreurs/` - Gestion erreurs frontend
@@ -196,4 +197,28 @@ La documentation à jour se trouve dans :
 
 ---
 
-**Dernière mise à jour** : 24 novembre 2025
+## 🆕 V2_FONDATION - Nouvelle Architecture
+
+**Document** : [documentation/ux_flow/V2_FONDATION.md](./documentation/ux_flow/V2_FONDATION.md)
+
+### Résumé
+
+Transformation de la HomePage en interface **single-page interactive** :
+- Click sur une card → animation flip + agrandissement
+- Layout split : card à gauche (1/4) + vote panel à droite (3/4)
+- **Zero backend** : catégories stockées dans la description des atoms (`"Catégorie: Animal"`)
+- **Prédicats fixes** : 6 prédicats prédéfinis, pas de création par user
+- **URL persistance** : `?founder=joseph-lubin` pour partage direct
+
+### Décisions UX validées
+- Fermeture : click ailleurs + bouton × + Escape
+- Mobile : layout vertical
+- URL param pour persistance
+
+### Statut
+- [x] Documentation complète
+- [ ] Implémentation en cours
+
+---
+
+**Dernière mise à jour** : 25 novembre 2025
