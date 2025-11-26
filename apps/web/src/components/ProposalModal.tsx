@@ -33,31 +33,31 @@ const DEFAULT_PREDICATES = [
   'resonates with',
 ];
 
-// Catégories de totems suggérés (mêmes que la page Admin)
+// Suggested totem categories (same as Admin page)
 const TOTEM_CATEGORIES = [
   {
     id: 'animals',
     name: 'Animaux',
     emoji: '🦁',
-    examples: ['Lion', 'Aigle', 'Loup', 'Hibou', 'Renard', 'Dauphin', 'Éléphant', 'Baleine', 'Faucon', 'Cheval', 'Lynx', 'Chouette', 'Tortue']
+    examples: ['Lion', 'Eagle', 'Wolf', 'Owl', 'Fox', 'Dolphin', 'Elephant', 'Whale', 'Falcon', 'Horse', 'Lynx', 'Nightingale', 'Turtle']
   },
   {
     id: 'objects',
     name: 'Objets',
     emoji: '⚔️',
-    examples: ['Clé maître', 'Fondation', 'Pont', 'Boussole', 'Bouclier', 'Lampe torche', 'Épée', 'Télescope']
+    examples: ['Master key', 'Foundation', 'Bridge', 'Compass', 'Shield', 'Flashlight', 'Sword', 'Telescope']
   },
   {
     id: 'traits',
     name: 'Traits',
     emoji: '⭐',
-    examples: ['Visionnaire', 'Leader', 'Innovateur', 'Connecteur', 'Protecteur', 'Stratège', 'Builder', 'Créatif']
+    examples: ['Visionary', 'Leader', 'Innovator', 'Connector', 'Protector', 'Strategist', 'Builder', 'Creative']
   },
   {
     id: 'superpowers',
     name: 'Superpowers',
     emoji: '⚡',
-    examples: ['Transformation', 'Connexion', 'Détection', 'Scaling', 'Innovation', 'Résilience']
+    examples: ['Transformation', 'Connection', 'Detection', 'Scaling', 'Innovation', 'Resilience']
   },
 ];
 
