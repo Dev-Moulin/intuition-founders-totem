@@ -2,42 +2,42 @@
   {
     "id": "is-represented-by",
     "label": "is represented by",
-    "description": "X est représenté par Y",
+    "description": "X is represented by Y",
     "termId": null,
     "isDefault": true
   },
   {
     "id": "has-totem",
     "label": "has totem",
-    "description": "X a pour totem Y",
+    "description": "X has totem Y",
     "termId": null,
     "isDefault": true
   },
   {
     "id": "is-symbolized-by",
     "label": "is symbolized by",
-    "description": "X est symbolisé par Y",
+    "description": "X is symbolized by Y",
     "termId": null,
     "isDefault": true
   },
   {
     "id": "embodies",
     "label": "embodies",
-    "description": "X incarne Y",
+    "description": "X embodies Y",
     "termId": null,
     "isDefault": true
   },
   {
     "id": "channels",
     "label": "channels",
-    "description": "X canalise Y",
+    "description": "X channels Y",
     "termId": null,
     "isDefault": true
   },
   {
     "id": "resonates-with",
     "label": "resonates with",
-    "description": "X résonne avec Y",
+    "description": "X resonates with Y",
     "termId": null,
     "isDefault": true
   }

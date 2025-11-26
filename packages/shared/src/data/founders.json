@@ -2,8 +2,8 @@
   {
     "id": "joseph-lubin",
     "name": "Joseph Lubin",
-    "shortBio": "Co-fondateur d'Ethereum, Fondateur et CEO de ConsenSys",
-    "fullBio": "Co-fondateur d'Ethereum (2014), Fondateur et CEO de ConsenSys. Diplômé de Princeton en Electrical Engineering et Computer Science. Ancien VP Technology chez Goldman Sachs. Créateur de MetaMask et Infura. A découvert Bitcoin en 2011, contacté Vitalik Buterin en janvier 2014.",
+    "shortBio": "Co-founder of Ethereum, Founder and CEO of ConsenSys",
+    "fullBio": "Co-founder of Ethereum (2014), Founder and CEO of ConsenSys. Princeton graduate in Electrical Engineering and Computer Science. Former VP Technology at Goldman Sachs. Creator of MetaMask and Infura. Discovered Bitcoin in 2011, contacted Vitalik Buterin in January 2014.",
     "twitter": "@ethereumJoseph",
     "linkedin": "https://www.linkedin.com/in/joseph-lubin-48406489/",
     "github": null
@@ -11,8 +11,8 @@
   {
     "id": "andrew-keys",
     "name": "Andrew Keys",
-    "shortBio": "Co-fondateur et Managing Partner de DARMA Capital",
-    "fullBio": "Co-fondateur et Managing Partner de DARMA Capital. Ex-Head of Global Business Development chez ConsenSys. Co-créateur de l'Enterprise Ethereum Alliance. A introduit des entreprises comme JPMorgan et Microsoft à Ethereum.",
+    "shortBio": "Co-founder and Managing Partner of DARMA Capital",
+    "fullBio": "Co-founder and Managing Partner of DARMA Capital. Former Head of Global Business Development at ConsenSys. Co-creator of the Enterprise Ethereum Alliance. Introduced companies like JPMorgan and Microsoft to Ethereum.",
     "twitter": "@AK_EtherMachine",
     "linkedin": "https://www.linkedin.com/in/andrewkeys/",
     "github": null
@@ -20,8 +20,8 @@
   {
     "id": "jonathan-christodoro",
     "name": "Jonathan Christodoro",
-    "shortBio": "Investisseur, membre du Board de PayPal",
-    "fullBio": "Investisseur, membre du Board de PayPal depuis 2015. Fondateur de Patriot Global Management. Vice Chairman de The Ether Machine. Ex-Icahn Capital où il a géré des investissements de plusieurs milliards de dollars.",
+    "shortBio": "Investor, PayPal Board Member",
+    "fullBio": "Investor, PayPal Board Member since 2015. Founder of Patriot Global Management. Vice Chairman of The Ether Machine. Former Icahn Capital where he managed multi-billion dollar investments.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/jonathan-christodoro-8a84b35/",
     "github": null
@@ -29,8 +29,8 @@
   {
     "id": "taylor-monahan",
     "name": "Taylor Monahan",
-    "shortBio": "Fondatrice de MyCrypto, Principal Security Researcher chez MetaMask",
-    "fullBio": "Fondatrice de MyCrypto, Principal Security Researcher chez MetaMask. Co-fondatrice de MyEtherWallet. Experte en sécurité blockchain, connue pour ses threads Twitter éducatifs sur la sécurité crypto.",
+    "shortBio": "Founder of MyCrypto, Principal Security Researcher at MetaMask",
+    "fullBio": "Founder of MyCrypto, Principal Security Researcher at MetaMask. Co-founder of MyEtherWallet. Blockchain security expert, known for educational Twitter threads on crypto security.",
     "twitter": "@tayvano_",
     "linkedin": "https://www.linkedin.com/in/tayvano/",
     "github": "tayvano"
@@ -38,8 +38,8 @@
   {
     "id": "edward-moncada",
     "name": "Edward Moncada",
-    "shortBio": "Co-fondateur de Blockfolio et Protofund",
-    "fullBio": "Co-fondateur de Blockfolio (acquis par FTX pour $150M) et Protofund. Ancien joueur de poker professionnel, bracelet WSOP 2005. A créé l'une des apps crypto les plus téléchargées au monde.",
+    "shortBio": "Co-founder of Blockfolio and Protofund",
+    "fullBio": "Co-founder of Blockfolio (acquired by FTX for $150M) and Protofund. Former professional poker player, 2005 WSOP bracelet winner. Created one of the most downloaded crypto apps in the world.",
     "twitter": "@EdwardAMoncada",
     "linkedin": "https://www.linkedin.com/in/edmoncada/",
     "github": null
@@ -47,8 +47,8 @@
   {
     "id": "cecily-mak",
     "name": "Cecily Mak",
-    "shortBio": "COO de Blockdaemon",
-    "fullBio": "COO de Blockdaemon. Ex-responsable de l'incubateur ConsenSys. Ex-Chief Business and Legal Officer chez Flipboard. Professeure de Digital Media Law. Columbia Law School, Georgetown University.",
+    "shortBio": "COO of Blockdaemon",
+    "fullBio": "COO of Blockdaemon. Former ConsenSys incubator lead. Former Chief Business and Legal Officer at Flipboard. Digital Media Law professor. Columbia Law School, Georgetown University.",
     "twitter": "@mak108",
     "linkedin": "https://www.linkedin.com/in/cecilymak/",
     "github": null
@@ -56,8 +56,8 @@
   {
     "id": "ric-burton",
     "name": "Ric Burton",
-    "shortBio": "Co-fondateur de Balance.io, Ethereum Designer (2014)",
-    "fullBio": "Co-fondateur de Balance.io, Ethereum Designer (2014). A collaboré avec Gavin Wood sur les premiers designs de dapp browser. Balance a hébergé Hayden Adams pendant le développement d'Uniswap V1.",
+    "shortBio": "Co-founder of Balance.io, Ethereum Designer (2014)",
+    "fullBio": "Co-founder of Balance.io, Ethereum Designer (2014). Collaborated with Gavin Wood on early dapp browser designs. Balance hosted Hayden Adams during Uniswap V1 development.",
     "twitter": null,
     "linkedin": null,
     "github": "ricburton"
@@ -65,8 +65,8 @@
   {
     "id": "rouven-heck",
     "name": "Rouven Heck",
-    "shortBio": "Co-fondateur d'uPort, Executive Director de la DIF",
-    "fullBio": "Co-fondateur d'uPort, Executive Director de la Decentralized Identity Foundation (DIF). Identity Lead chez ConsenSys Mesh. Champion des standards ouverts pour l'identité décentralisée.",
+    "shortBio": "Co-founder of uPort, Executive Director of DIF",
+    "fullBio": "Co-founder of uPort, Executive Director of the Decentralized Identity Foundation (DIF). Identity Lead at ConsenSys Mesh. Champion of open standards for decentralized identity.",
     "twitter": "@rh7",
     "linkedin": "https://www.linkedin.com/in/rouvenheck/",
     "github": "rh7"
@@ -74,8 +74,8 @@
   {
     "id": "john-paller",
     "name": "John Paller",
-    "shortBio": "Fondateur d'ETHDenver, Executive Steward d'Opolis",
-    "fullBio": "Fondateur d'ETHDenver (plus grand festival Web3/Ethereum au monde) et Executive Steward d'Opolis. Basé à Denver, Colorado. A transformé ETHDenver en événement majeur de l'écosystème.",
+    "shortBio": "Founder of ETHDenver, Executive Steward of Opolis",
+    "fullBio": "Founder of ETHDenver (world's largest Web3/Ethereum festival) and Executive Steward of Opolis. Based in Denver, Colorado. Transformed ETHDenver into a major ecosystem event.",
     "twitter": "@PallerJohn",
     "linkedin": "https://www.linkedin.com/in/johnpaller/",
     "github": null
@@ -83,8 +83,8 @@
   {
     "id": "mark-beylin",
     "name": "Mark Beylin",
-    "shortBio": "Co-fondateur de Bounties Network, Investor chez Haun Ventures",
-    "fullBio": "Co-fondateur de Bounties Network (un des premiers protocoles Ethereum à dépasser $1M TVL). Actuellement Investor chez Haun Ventures. Diplômé de Carnegie Mellon University.",
+    "shortBio": "Co-founder of Bounties Network, Investor at Haun Ventures",
+    "fullBio": "Co-founder of Bounties Network (one of the first Ethereum protocols to exceed $1M TVL). Currently Investor at Haun Ventures. Carnegie Mellon University graduate.",
     "twitter": null,
     "linkedin": null,
     "github": "mbeylin"
@@ -92,8 +92,8 @@
   {
     "id": "ash-egan",
     "name": "Ash Egan",
-    "shortBio": "Fondateur et General Partner d'Archetype",
-    "fullBio": "Fondateur et General Partner d'Archetype. Investissements notables : Chainalysis, Mina, Near, Balancer, Privy (acquis par Stripe). World Economic Forum Global Shaper. Diplômé de Stanford Graduate School of Business.",
+    "shortBio": "Founder and General Partner of Archetype",
+    "fullBio": "Founder and General Partner of Archetype. Notable investments: Chainalysis, Mina, Near, Balancer, Privy (acquired by Stripe). World Economic Forum Global Shaper. Stanford Graduate School of Business.",
     "twitter": "@AshAEgan",
     "linkedin": null,
     "github": null
@@ -101,8 +101,8 @@
   {
     "id": "harrison-hines",
     "name": "Harrison Hines",
-    "shortBio": "Fondateur et CEO de Fleek",
-    "fullBio": "Fondateur et CEO de Fleek. Plateforme cloud agentique pour AI agents et virtual influencers. Focus sur l'open web trustless et permissionless. A pivoté Terminal.co vers Fleek.",
+    "shortBio": "Founder and CEO of Fleek",
+    "fullBio": "Founder and CEO of Fleek. Agentic cloud platform for AI agents and virtual influencers. Focus on trustless and permissionless open web. Pivoted Terminal.co to Fleek.",
     "twitter": "@harris0nhines",
     "linkedin": null,
     "github": null
@@ -110,8 +110,8 @@
   {
     "id": "ron-patiro",
     "name": "Ron Patiro",
-    "shortBio": "Ethereum OG, Investisseur",
-    "fullBio": "Ethereum OG, Investisseur. A investi dans Aligned (Web3 infrastructure). Profil discret dans l'écosystème Ethereum.",
+    "shortBio": "Ethereum OG, Investor",
+    "fullBio": "Ethereum OG, Investor. Invested in Aligned (Web3 infrastructure). Discreet profile in the Ethereum ecosystem.",
     "twitter": null,
     "linkedin": null,
     "github": null
@@ -119,8 +119,8 @@
   {
     "id": "goncalo-sa",
     "name": "Gonçalo Sá",
-    "shortBio": "Co-fondateur de ConsenSys Diligence, Technical Partner chez Ethereal Ventures",
-    "fullBio": "Co-fondateur de ConsenSys Diligence (centaines d'audits, $25B en breaches potentielles sécurisées). Technical Partner chez Ethereal Ventures. Fondateur de Creed. Expert en sécurité smart contracts.",
+    "shortBio": "Co-founder of ConsenSys Diligence, Technical Partner at Ethereal Ventures",
+    "fullBio": "Co-founder of ConsenSys Diligence (hundreds of audits, $25B in potential breaches secured). Technical Partner at Ethereal Ventures. Founder of Creed. Smart contract security expert.",
     "twitter": "@GNSPS",
     "linkedin": null,
     "github": "GNSPS"
@@ -128,8 +128,8 @@
   {
     "id": "tyler-mulvihill",
     "name": "Tyler Mulvihill",
-    "shortBio": "Global Co-Head NFTs chez ConsenSys, Co-fondateur de Treum",
-    "fullBio": "Global Co-Head NFTs chez ConsenSys, Co-fondateur de Treum et EulerBeats ($3M de ventes, qualifié de 'most genius idea ever' par Mark Cuban). Expert en NFTs et traçabilité blockchain.",
+    "shortBio": "Global Co-Head NFTs at ConsenSys, Co-founder of Treum",
+    "fullBio": "Global Co-Head NFTs at ConsenSys, Co-founder of Treum and EulerBeats ($3M sales, called 'most genius idea ever' by Mark Cuban). NFT and blockchain traceability expert.",
     "twitter": "@MulvihillTyler",
     "linkedin": "https://www.linkedin.com/in/tylermulvihill/",
     "github": null
@@ -137,8 +137,8 @@
   {
     "id": "connor-keenan",
     "name": "Connor Keenan",
-    "shortBio": "Développeur smart contracts EulerBeats",
-    "fullBio": "Développeur smart contracts EulerBeats (équipe Treum). Concepteur du mécanisme de bonding curve d'EulerBeats. Expert en tokenomics et mécanismes économiques on-chain.",
+    "shortBio": "EulerBeats smart contract developer",
+    "fullBio": "EulerBeats smart contract developer (Treum team). Designer of the EulerBeats bonding curve mechanism. Expert in tokenomics and on-chain economic mechanisms.",
     "twitter": "@connorkeenan",
     "linkedin": null,
     "github": "ckeenan"
@@ -146,8 +146,8 @@
   {
     "id": "russell-verbeeten",
     "name": "Russell Verbeeten",
-    "shortBio": "Pionnier Ethereum (février 2014), Investisseur",
-    "fullBio": "Pionnier Ethereum (février 2014). ConsenSys (2015-2020) : Global Operations, Product Management, Enterprise Sales. Investisseur actif dans l'écosystème crypto.",
+    "shortBio": "Ethereum Pioneer (February 2014), Investor",
+    "fullBio": "Ethereum Pioneer (February 2014). ConsenSys (2015-2020): Global Operations, Product Management, Enterprise Sales. Active investor in the crypto ecosystem.",
     "twitter": null,
     "linkedin": null,
     "github": "rverbee"
@@ -155,8 +155,8 @@
   {
     "id": "scott-moore",
     "name": "Scott Moore",
-    "shortBio": "Co-fondateur de Gitcoin",
-    "fullBio": "Co-fondateur de Gitcoin. A aidé à distribuer $50M+ aux projets de biens publics via quadratic funding. Core steward : ENS, Gnosis Safe, Optimism. Champion du financement des biens publics.",
+    "shortBio": "Co-founder of Gitcoin",
+    "fullBio": "Co-founder of Gitcoin. Helped distribute $50M+ to public goods projects via quadratic funding. Core steward: ENS, Gnosis Safe, Optimism. Public goods funding champion.",
     "twitter": "@notscottmoore",
     "linkedin": "https://www.linkedin.com/in/notscottmoore/",
     "github": null
@@ -164,8 +164,8 @@
   {
     "id": "jesse-grushack",
     "name": "Jesse Grushack",
-    "shortBio": "Co-fondateur de Ujo Music et Six Agency",
-    "fullBio": "Co-fondateur de Ujo Music et Six Agency. Co-créateur d'Ethereal Summit. Six Agency : a aidé Eminem à acheter un BAYC, broker vente Wu-Tang Clan album à PleasrDAO.",
+    "shortBio": "Co-founder of Ujo Music and Six Agency",
+    "fullBio": "Co-founder of Ujo Music and Six Agency. Co-creator of Ethereal Summit. Six Agency: helped Eminem buy a BAYC, brokered Wu-Tang Clan album sale to PleasrDAO.",
     "twitter": "@JesseGrushack",
     "linkedin": "https://www.linkedin.com/in/jessegrushack/",
     "github": "jgrushack"
@@ -173,8 +173,8 @@
   {
     "id": "georgio-constantinou",
     "name": "Georgio Constantinou",
-    "shortBio": "Co-fondateur de Six Agency, Manager d'artistes",
-    "fullBio": "Co-fondateur de Six Agency. Manager d'artistes, spécialiste NFT. A broker la vente Wu-Tang Clan album ($4M à PleasrDAO). 'Once freed a wu-tang album from the feds'.",
+    "shortBio": "Co-founder of Six Agency, Artist Manager",
+    "fullBio": "Co-founder of Six Agency. Artist manager, NFT specialist. Brokered Wu-Tang Clan album sale ($4M to PleasrDAO). 'Once freed a wu-tang album from the feds'.",
     "twitter": "@thatguygeo",
     "linkedin": null,
     "github": null
@@ -182,8 +182,8 @@
   {
     "id": "vijay-michalik",
     "name": "Vijay Michalik",
-    "shortBio": "Head of Product chez Superfluid Finance",
-    "fullBio": "Head of Product chez Superfluid Finance. 4 ans chez ConsenSys. Actif dans la communauté Ethereum depuis 2015. Passionné par la DeFi temps-réel et les money streams.",
+    "shortBio": "Head of Product at Superfluid Finance",
+    "fullBio": "Head of Product at Superfluid Finance. 4 years at ConsenSys. Active in Ethereum community since 2015. Passionate about real-time DeFi and money streams.",
     "twitter": "@vijaymichalik",
     "linkedin": "https://www.linkedin.com/in/vijaymichalik/",
     "github": "vmichalik"
@@ -191,8 +191,8 @@
   {
     "id": "brianna-montgomery",
     "name": "Brianna Montgomery",
-    "shortBio": "Co-fondatrice de Fei Protocol, ex-VP of Growth EigenLayer",
-    "fullBio": "Co-fondatrice de Fei Protocol ($19M levés en 2021), ex-VP of Growth EigenLayer. Ex-Business Development Lead chez ConsenSys Diligence. Actuellement COO d'une Stealth Startup.",
+    "shortBio": "Co-founder of Fei Protocol, former VP of Growth at EigenLayer",
+    "fullBio": "Co-founder of Fei Protocol ($19M raised in 2021), former VP of Growth at EigenLayer. Former Business Development Lead at ConsenSys Diligence. Currently COO of a Stealth Startup.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/briannamontgomery/",
     "github": null
@@ -200,8 +200,8 @@
   {
     "id": "eric-arsenault",
     "name": "Eric Arsenault",
-    "shortBio": "CEO de Venture Club, Partner chez MetaCartel Ventures",
-    "fullBio": "CEO de Venture Club, Partner chez MetaCartel Ventures. Ex-Product Research & Growth Lead chez DAOstack. Assets DAOs : de ~0 à $80M pendant son mandat. Expert en gouvernance DAO.",
+    "shortBio": "CEO of Venture Club, Partner at MetaCartel Ventures",
+    "fullBio": "CEO of Venture Club, Partner at MetaCartel Ventures. Former Product Research & Growth Lead at DAOstack. Grew DAOs assets from ~0 to $80M during tenure. DAO governance expert.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/ericarsenault/",
     "github": null
@@ -209,8 +209,8 @@
   {
     "id": "bryan-peters",
     "name": "Bryan Peters",
-    "shortBio": "Co-fondateur de Sobol",
-    "fullBio": "Co-fondateur de Sobol (app pour visualiser et gérer les structures d'accountability des DAOs). Bankless DAO Season 0. Inspiré par Holacracy et organisations Teal.",
+    "shortBio": "Co-founder of Sobol",
+    "fullBio": "Co-founder of Sobol (app to visualize and manage DAOs accountability structures). Bankless DAO Season 0. Inspired by Holacracy and Teal organizations.",
     "twitter": "@BPetes",
     "linkedin": "https://www.linkedin.com/in/bryanpeters/",
     "github": null
@@ -218,8 +218,8 @@
   {
     "id": "aaron-mcdonald",
     "name": "Aaron McDonald",
-    "shortBio": "Co-fondateur et CEO de Futureverse, créateur de FLUF World",
-    "fullBio": "Co-fondateur et CEO de Futureverse, créateur de FLUF World. Premier Unicorn fondé par des Māori ($1B+). Ernst & Young Tech Entrepreneur of the Year 2019. Pionnier du metaverse.",
+    "shortBio": "Co-founder and CEO of Futureverse, creator of FLUF World",
+    "fullBio": "Co-founder and CEO of Futureverse, creator of FLUF World. First Māori-founded Unicorn ($1B+). Ernst & Young Tech Entrepreneur of the Year 2019. Metaverse pioneer.",
     "twitter": "@aaronmcdnz",
     "linkedin": null,
     "github": null
@@ -227,8 +227,8 @@
   {
     "id": "tyler-ward",
     "name": "Tyler Ward",
-    "shortBio": "Co-fondateur de BarnBridge et Universe.XYZ",
-    "fullBio": "Co-fondateur de BarnBridge ($180M+ TVL) et Universe.XYZ. Également co-fondateur : Proof Systems, FIAT DAO, EnterDAO, D64. Ex-ConsenSys. Serial entrepreneur DeFi.",
+    "shortBio": "Co-founder of BarnBridge and Universe.XYZ",
+    "fullBio": "Co-founder of BarnBridge ($180M+ TVL) and Universe.XYZ. Also co-founder: Proof Systems, FIAT DAO, EnterDAO, D64. Former ConsenSys. Serial DeFi entrepreneur.",
     "twitter": "@LordTylerWard",
     "linkedin": null,
     "github": null
@@ -236,8 +236,8 @@
   {
     "id": "keegan-selby",
     "name": "Keegan Selby",
-    "shortBio": "Co-fondateur de Fourth Revolution Capital (4RC)",
-    "fullBio": "Co-fondateur de Fourth Revolution Capital (4RC). Ingénieur, diplômé USC. Focus : DeFi, NFTs, Gaming, Media, Metaverse, DAO Tooling. Investisseur crypto actif.",
+    "shortBio": "Co-founder of Fourth Revolution Capital (4RC)",
+    "fullBio": "Co-founder of Fourth Revolution Capital (4RC). Engineer, USC graduate. Focus: DeFi, NFTs, Gaming, Media, Metaverse, DAO Tooling. Active crypto investor.",
     "twitter": "@KeeganSelby",
     "linkedin": "https://www.linkedin.com/in/keeganselby/",
     "github": null,
@@ -246,8 +246,8 @@
   {
     "id": "ej-rogers",
     "name": "EJ Rogers",
-    "shortBio": "Co-fondateur de Fourth Revolution Capital (4RC)",
-    "fullBio": "Co-fondateur de Fourth Revolution Capital (4RC) avec Keegan Selby. Basé à Santa Monica. Focus long-term product-market fit et sustainable utility.",
+    "shortBio": "Co-founder of Fourth Revolution Capital (4RC)",
+    "fullBio": "Co-founder of Fourth Revolution Capital (4RC) with Keegan Selby. Based in Santa Monica. Focus on long-term product-market fit and sustainable utility.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/ej-rogers/",
     "github": null
@@ -255,8 +255,8 @@
   {
     "id": "ben-lakoff",
     "name": "Ben Lakoff",
-    "shortBio": "Co-fondateur de Charged Particles, General Partner chez Bankless Ventures",
-    "fullBio": "Co-fondateur de Charged Particles. General Partner chez Bankless Ventures, lancé avec David Hoffman et Ryan Sean Adams. CFA, diplômé University of Chicago Booth. Host du podcast Alternative Asset Allocation.",
+    "shortBio": "Co-founder of Charged Particles, General Partner at Bankless Ventures",
+    "fullBio": "Co-founder of Charged Particles. General Partner at Bankless Ventures, launched with David Hoffman and Ryan Sean Adams. CFA, University of Chicago Booth graduate. Host of Alternative Asset Allocation podcast.",
     "twitter": "@benlakoff",
     "linkedin": "https://www.linkedin.com/in/benlakoff/",
     "github": "benlakoff"
@@ -264,8 +264,8 @@
   {
     "id": "marc-weinstein",
     "name": "Marc Weinstein",
-    "shortBio": "Partner et Head of Platform chez Mechanism Capital",
-    "fullBio": "Partner et Head of Platform chez Mechanism Capital. Wharton, ex-Morgan Stanley. Fondateur de 90sFest. Apparaît dans le documentaire Netflix Fyre Festival comme 'voice of reason'.",
+    "shortBio": "Partner and Head of Platform at Mechanism Capital",
+    "fullBio": "Partner and Head of Platform at Mechanism Capital. Wharton, former Morgan Stanley. Founder of 90sFest. Appears in Netflix Fyre Festival documentary as 'voice of reason'.",
     "twitter": "@WarcMeinstein",
     "linkedin": "https://www.linkedin.com/in/marcaweinstein/",
     "github": null
@@ -273,8 +273,8 @@
   {
     "id": "nathan-doctor",
     "name": "Nathan Doctor",
-    "shortBio": "Fondateur d'Infinite Capital, Co-fondateur de Codewars",
-    "fullBio": "Fondateur d'Infinite Capital, Co-fondateur de Codewars (2M+ engineers) et Qualified.io (acquis par Andela). USC Marshall. Photographe et designer accompli.",
+    "shortBio": "Founder of Infinite Capital, Co-founder of Codewars",
+    "fullBio": "Founder of Infinite Capital, Co-founder of Codewars (2M+ engineers) and Qualified.io (acquired by Andela). USC Marshall. Accomplished photographer and designer.",
     "twitter": "@nathandoctor",
     "linkedin": "https://www.linkedin.com/in/nathandoctor/",
     "github": "nathandoctor"
@@ -282,8 +282,8 @@
   {
     "id": "matt-kaye",
     "name": "Matt Kaye",
-    "shortBio": "COO et Managing Partner de Blockhead Capital",
-    "fullBio": "COO et Managing Partner de Blockhead Capital (hedge fund crypto fondé en 2017). Spécialisé en staking sur Proof-of-Stake blockchains. Basé à Los Angeles.",
+    "shortBio": "COO and Managing Partner of Blockhead Capital",
+    "fullBio": "COO and Managing Partner of Blockhead Capital (crypto hedge fund founded in 2017). Specialized in staking on Proof-of-Stake blockchains. Based in Los Angeles.",
     "twitter": "@mattkaye",
     "linkedin": null,
     "github": null,
@@ -292,8 +292,8 @@
   {
     "id": "matt-slater",
     "name": "Matt Slater",
-    "shortBio": "Fondateur et GP de Stateless Ventures",
-    "fullBio": "Fondateur et GP de Stateless Ventures. Premier investissement Bitcoin en 2013, Ethereum crowd sale 2014. Investissements : Ethereum, 0x, Synthetix, Cosmos, MakerDAO.",
+    "shortBio": "Founder and GP of Stateless Ventures",
+    "fullBio": "Founder and GP of Stateless Ventures. First Bitcoin investment in 2013, Ethereum crowd sale 2014. Investments: Ethereum, 0x, Synthetix, Cosmos, MakerDAO.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/mattslater/",
     "github": null
@@ -301,8 +301,8 @@
   {
     "id": "sam-feinberg",
     "name": "Sam Feinberg",
-    "shortBio": "Managing Partner de Cypher Capital",
-    "fullBio": "Managing Partner de Cypher Capital. Ex-Morgan Stanley, puis poker professionnel. A travaillé chez Blockfolio. Philanthrope via la Joseph and Bessie Feinberg Foundation.",
+    "shortBio": "Managing Partner of Cypher Capital",
+    "fullBio": "Managing Partner of Cypher Capital. Former Morgan Stanley, then professional poker player. Worked at Blockfolio. Philanthropist via Joseph and Bessie Feinberg Foundation.",
     "twitter": "@SamFeinberg",
     "linkedin": "https://www.linkedin.com/in/sam-feinberg-336290a4/",
     "github": null,
@@ -311,8 +311,8 @@
   {
     "id": "andy-beal",
     "name": "Andy Beal",
-    "shortBio": "Ecosystem Lead chez Forta Network",
-    "fullBio": "Ecosystem Lead chez Forta Network (protège $36B+, $23M levés par a16z). 5 ans chez Ernst & Young Blockchain. Ex-avocat. Clients : Coinbase, Gemini, Kraken.",
+    "shortBio": "Ecosystem Lead at Forta Network",
+    "fullBio": "Ecosystem Lead at Forta Network (protects $36B+, $23M raised by a16z). 5 years at Ernst & Young Blockchain. Former lawyer. Clients: Coinbase, Gemini, Kraken.",
     "twitter": "@ajbeal",
     "linkedin": "https://www.linkedin.com/in/ajbeal/",
     "github": null
@@ -320,8 +320,8 @@
   {
     "id": "joshua-lapidus",
     "name": "Joshua Lapidus",
-    "shortBio": "Executive Community Steward chez Opolis, Co-fondateur de SporkDAO",
-    "fullBio": "Executive Community Steward chez Opolis, Co-fondateur de SporkDAO (ETHDenver's DAO). Surnommé 'HR of the DAOs'. Alumnus ConsenSys et Lyft (jusqu'à l'IPO).",
+    "shortBio": "Executive Community Steward at Opolis, Co-founder of SporkDAO",
+    "fullBio": "Executive Community Steward at Opolis, Co-founder of SporkDAO (ETHDenver's DAO). Nicknamed 'HR of the DAOs'. ConsenSys and Lyft alumnus (until IPO).",
     "twitter": "@0xJoshua",
     "linkedin": null,
     "github": "0xJoshua"
@@ -329,8 +329,8 @@
   {
     "id": "end0xiii",
     "name": "end0xiii",
-    "shortBio": "Community and Product chez Tokemak",
-    "fullBio": "Community and Product chez Tokemak (primitive de liquidité DeFi, $1B TVL en 2021). Key spokesperson. A développé le branding 'Tokemechs'. Profil pseudonyme.",
+    "shortBio": "Community and Product at Tokemak",
+    "fullBio": "Community and Product at Tokemak (DeFi liquidity primitive, $1B TVL in 2021). Key spokesperson. Developed 'Tokemechs' branding. Pseudonymous profile.",
     "twitter": null,
     "linkedin": null,
     "github": "end0xiii"
@@ -338,8 +338,8 @@
   {
     "id": "alec-gutman",
     "name": "Alec Gutman",
-    "shortBio": "Founder de Peeple Work/DAO, Head of Talent chez ConsenSys Mesh",
-    "fullBio": "Founder de Peeple Work/DAO (premier recruiting DAO), Head of Talent chez ConsenSys Mesh. $120K+ en grants Optimism. OP Badgeholder. Se décrit comme 'Steward of Ethereum'.",
+    "shortBio": "Founder of Peeple Work/DAO, Head of Talent at ConsenSys Mesh",
+    "fullBio": "Founder of Peeple Work/DAO (first recruiting DAO), Head of Talent at ConsenSys Mesh. $120K+ in Optimism grants. OP Badgeholder. Self-described 'Steward of Ethereum'.",
     "twitter": "@Chipagosfinest",
     "linkedin": "https://www.linkedin.com/in/alecgutman/",
     "github": "chipagosfinest"
@@ -347,8 +347,8 @@
   {
     "id": "sharad-malhautra",
     "name": "Sharad Malhautra",
-    "shortBio": "Co-fondateur et CEO de dSilo",
-    "fullBio": "Co-fondateur et CEO de dSilo (Generative AI pour procurement). 18+ ans d'expérience, ex-EY. Reconnu par Spend Matters' Future 5 List. Expert en supply chain et AI.",
+    "shortBio": "Co-founder and CEO of dSilo",
+    "fullBio": "Co-founder and CEO of dSilo (Generative AI for procurement). 18+ years experience, former EY. Recognized by Spend Matters' Future 5 List. Supply chain and AI expert.",
     "twitter": null,
     "linkedin": null,
     "github": null
@@ -356,8 +356,8 @@
   {
     "id": "jay-gutta",
     "name": "Jay Gutta",
-    "shortBio": "Co-fondateur et CTO de dSilo",
-    "fullBio": "Co-fondateur et CTO de dSilo. Développeur de deep-learning AI engine. Ex-Ernst & Young (~14 ans). Basé à Atlanta. Expert en intelligence artificielle et machine learning.",
+    "shortBio": "Co-founder and CTO of dSilo",
+    "fullBio": "Co-founder and CTO of dSilo. Deep-learning AI engine developer. Former Ernst & Young (~14 years). Based in Atlanta. Artificial intelligence and machine learning expert.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/jaygutta/",
     "github": null
@@ -365,8 +365,8 @@
   {
     "id": "rohan-handa",
     "name": "Rohan Handa",
-    "shortBio": "Head of Strategic Investments & Partnerships chez Mysten Labs",
-    "fullBio": "Head of Strategic Investments & Partnerships chez Mysten Labs (Sui). A aidé au lancement d'ApeCoin ($8B FDV) et Otherside NFTs ($235M revenue) pour Yuga Labs. Expert en tokenomics.",
+    "shortBio": "Head of Strategic Investments & Partnerships at Mysten Labs",
+    "fullBio": "Head of Strategic Investments & Partnerships at Mysten Labs (Sui). Helped launch ApeCoin ($8B FDV) and Otherside NFTs ($235M revenue) for Yuga Labs. Tokenomics expert.",
     "twitter": null,
     "linkedin": "https://www.linkedin.com/in/rohanhanda/",
     "github": null
@@ -374,8 +374,8 @@
   {
     "id": "odysseas-lamtzidis",
     "name": "Odysseas Lamtzidis",
-    "shortBio": "Fondateur et CEO de Phylax Systems",
-    "fullBio": "Fondateur et CEO de Phylax Systems ($4.5M seed, led by Nascent). Ex-Protocol Engineer chez Nomad (a vécu le hack de $190M en temps réel). Mission : 'solve security so crypto can win'.",
+    "shortBio": "Founder and CEO of Phylax Systems",
+    "fullBio": "Founder and CEO of Phylax Systems ($4.5M seed, led by Nascent). Former Protocol Engineer at Nomad (lived through $190M hack in real-time). Mission: 'solve security so crypto can win'.",
     "twitter": "@odysseas_eth",
     "linkedin": "https://www.linkedin.com/in/odysseaslamtzidis/",
     "github": "odyslam"

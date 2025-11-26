@@ -56,35 +56,35 @@ const TOTEM_CATEGORIES = [
     name: 'Animaux',
     emoji: '🦁',
     ofcCategoryId: 'animal', // Maps to OFC:Animal
-    examples: ['Lion', 'Aigle', 'Loup', 'Hibou', 'Renard', 'Dauphin', 'Éléphant', 'Baleine', 'Faucon', 'Cheval', 'Lynx', 'Chouette', 'Perroquet', 'Paon', 'Cygne', 'Tortue']
+    examples: ['Lion', 'Eagle', 'Wolf', 'Owl', 'Fox', 'Dolphin', 'Elephant', 'Whale', 'Falcon', 'Horse', 'Lynx', 'Nightingale', 'Parrot', 'Peacock', 'Swan', 'Turtle']
   },
   {
     id: 'objects',
     name: 'Objets',
     emoji: '⚔️',
     ofcCategoryId: 'objet', // Maps to OFC:Objet
-    examples: ['Clé maître', 'Fondation', 'Nœud réseau', 'Pont', 'Mégaphone', 'Boussole', 'Bouclier', 'Cadenas', 'Lampe torche', 'Épée', 'Télescope', 'Radar']
+    examples: ['Master key', 'Foundation', 'Network node', 'Bridge', 'Megaphone', 'Compass', 'Shield', 'Padlock', 'Flashlight', 'Sword', 'Telescope', 'Radar']
   },
   {
     id: 'traits',
     name: 'Traits de personnalité',
     emoji: '⭐',
     ofcCategoryId: 'trait', // Maps to OFC:Trait
-    examples: ['Visionnaire', 'Leader', 'Innovateur', 'Connecteur', 'Protecteur', 'Stratège', 'Builder', 'Pragmatique', 'Créatif', 'Méthodique', 'Analytique']
+    examples: ['Visionary', 'Leader', 'Innovator', 'Connector', 'Protector', 'Strategist', 'Builder', 'Pragmatic', 'Creative', 'Methodical', 'Analytical']
   },
   {
     id: 'universe',
     name: 'Univers/Énergie',
     emoji: '🌌',
     ofcCategoryId: 'concept', // Maps to OFC:Concept
-    examples: ['Ethereum genesis', 'ConsenSys', 'Web3 infrastructure', 'Enterprise blockchain', 'Sécurité crypto', 'DeFi', 'NFTs', 'DAO', 'Gaming', 'Metaverse']
+    examples: ['Ethereum genesis', 'ConsenSys', 'Web3 infrastructure', 'Enterprise blockchain', 'Crypto security', 'DeFi', 'NFTs', 'DAO', 'Gaming', 'Metaverse']
   },
   {
     id: 'superpowers',
     name: 'Superpowers',
     emoji: '⚡',
     ofcCategoryId: 'concept', // Maps to OFC:Concept
-    examples: ['Transformation d\'idées en écosystèmes', 'Connexion entre finance traditionnelle et crypto', 'Détection de hacks', 'Scaling opérationnel']
+    examples: ['Idea to ecosystem transformation', 'Traditional finance to crypto bridge', 'Hack detection', 'Operational scaling']
   },
   {
     id: 'sports',

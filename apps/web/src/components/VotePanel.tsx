@@ -937,7 +937,7 @@ export function VotePanel({ founder }: VotePanelProps) {
                     <label className="block text-xs text-white/50 mb-1">Nom du totem *</label>
                     <input
                       type="text"
-                      placeholder="Ex: Lion, Boussole, Visionnaire..."
+                      placeholder="Ex: Lion, Compass, Visionary..."
                       value={newTotemName}
                       onChange={(e) => setNewTotemName(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50"

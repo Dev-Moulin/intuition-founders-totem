@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TransactionStatus =
   | 'idle'
@@ -25,6 +26,8 @@ export interface TransactionProgressProps {
   onRetry?: () => void;
 }
 
+// Note: STATUS_CONFIG uses hardcoded French strings for now
+// These could be moved to translation keys in the future if needed
 const STATUS_CONFIG: Record<
   TransactionStatus,
   {
@@ -88,6 +91,7 @@ export function TransactionProgress({
   currentStep: _currentStep,
   onRetry,
 }: TransactionProgressProps) {
+  const { t } = useTranslation();
   const [dots, setDots] = useState('');
 
   // Animated dots for loading states
@@ -131,7 +135,7 @@ export function TransactionProgress({
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
           >
             ✕
           </button>
@@ -258,7 +262,7 @@ export function TransactionProgress({
                   : ''
               }`}
             >
-              {status === 'success' ? '✓ Fermer' : 'Fermer'}
+              {status === 'success' ? `✓ ${t('common.close')}` : t('common.close')}
             </button>
           )}
         </div>

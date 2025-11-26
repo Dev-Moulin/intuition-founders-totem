@@ -1,11 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAccount } from 'wagmi';
+import { useTranslation } from 'react-i18next';
 import { WalletConnectButton } from './ConnectButton';
 import { NetworkSwitch } from './NetworkSwitch';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 const ADMIN_WALLET = '0xefc86f5fabe767daac9358d0ba2dfd9ac7d29948';
 
 export function Header() {
+  const { t } = useTranslation();
   const { isConnected, address } = useAccount();
   const location = useLocation();
 
@@ -26,26 +29,26 @@ export function Header() {
     <header className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-black/20 backdrop-blur-sm">
       <div className="flex items-center gap-6">
         <Link to="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors">
-          INTUITION Founders Totem
+          {t('header.title')}
         </Link>
 
         {isConnected && (
           <nav className="flex items-center gap-4 flex-wrap">
             <Link to="/propose" className={navLinkClass('/propose')}>
-              Proposer
+              {t('header.nav.propose')}
             </Link>
             <Link to="/vote" className={navLinkClass('/vote')}>
-              Voter
+              {t('header.nav.vote')}
             </Link>
             <Link to="/results" className={navLinkClass('/results')}>
-              Résultats
+              {t('header.nav.results')}
             </Link>
             <Link to="/my-votes" className={navLinkClass('/my-votes')}>
-              Mes Votes
+              {t('header.nav.myVotes')}
             </Link>
             {isAdmin && (
               <Link to="/admin/audit" className={navLinkClass('/admin/audit')}>
-                Admin
+                {t('header.nav.admin')}
               </Link>
             )}
           </nav>
@@ -53,6 +56,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-3">
+        <LanguageSwitcher />
         <NetworkSwitch />
         <WalletConnectButton />
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { formatEther, type Hex } from 'viem';
+import { useTranslation } from 'react-i18next';
 import { useVote } from '../hooks/useVote';
 import { formatVoteAmount } from '../hooks/useFounderProposals';
 import { GET_USER_POSITION } from '../lib/graphql/queries';
@@ -40,6 +41,7 @@ export function ClaimExistsModal({
   initialAmount = '',
   onVoteSuccess,
 }: ClaimExistsModalProps) {
+  const { t } = useTranslation();
   const { address } = useAccount();
   const { vote, status, error: voteError, isLoading, currentStep, totalSteps, reset } = useVote();
 
@@ -106,17 +108,17 @@ export function ClaimExistsModal({
     setValidationError(null);
 
     if (!claim?.termId) {
-      setValidationError('Claim ID manquant');
+      setValidationError(t('errors.claimIdMissing'));
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      setValidationError('Veuillez entrer un montant valide');
+      setValidationError(t('errors.invalidAmount'));
       return;
     }
 
     if (!address) {
-      setValidationError('Veuillez connecter votre wallet');
+      setValidationError(t('errors.connectWallet'));
       return;
     }
 
@@ -141,11 +143,11 @@ export function ClaimExistsModal({
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">!</span>
                 <h2 className="text-xl font-bold text-amber-400">
-                  Ce claim existe déjà
+                  {t('claimExists.title')}
                 </h2>
               </div>
               <p className="text-white/60 text-sm">
-                Voulez-vous voter sur ce claim existant ?
+                {t('claimExists.subtitle')}
               </p>
             </div>
             <button
@@ -198,9 +200,9 @@ export function ClaimExistsModal({
             <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/60">Votre position actuelle</p>
+                  <p className="text-sm text-white/60">{t('claimExists.currentPosition')}</p>
                   <p className="text-green-400 font-bold">
-                    {formatEther(userShares)} shares
+                    {formatEther(userShares)} {t('common.shares')}
                   </p>
                 </div>
                 <button
@@ -208,7 +210,7 @@ export function ClaimExistsModal({
                   disabled={isLoading}
                   className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
-                  Retirer
+                  {t('claimExists.withdrawButton')}
                 </button>
               </div>
             </div>
@@ -217,7 +219,7 @@ export function ClaimExistsModal({
           {/* Vote Direction Selection */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-3">
-              Direction du vote :
+              {t('vote.direction')}
             </label>
             <div className="flex gap-3">
               <button
@@ -230,7 +232,7 @@ export function ClaimExistsModal({
                     : 'bg-white/10 text-white/60 border-2 border-transparent hover:bg-white/20'
                 }`}
               >
-                FOR
+                {t('vote.for')}
               </button>
               <button
                 type="button"
@@ -242,7 +244,7 @@ export function ClaimExistsModal({
                     : 'bg-white/10 text-white/60 border-2 border-transparent hover:bg-white/20'
                 }`}
               >
-                AGAINST
+                {t('vote.against')}
               </button>
             </div>
           </div>
@@ -250,7 +252,7 @@ export function ClaimExistsModal({
           {/* Amount Input */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
-              Montant (TRUST)
+              {t('vote.amount')}
             </label>
             <input
               type="number"
@@ -263,7 +265,7 @@ export function ClaimExistsModal({
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-lg placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
             />
             <p className="mt-2 text-sm text-white/60">
-              Montant de TRUST à déposer pour ce vote
+              {t('vote.amountHelper')}
             </p>
           </div>
 
@@ -272,11 +274,11 @@ export function ClaimExistsModal({
             <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-blue-400 font-medium">
-                  {status === 'checking' && 'Vérification balance...'}
-                  {status === 'depositing' && 'Envoi du vote...'}
+                  {status === 'checking' && t('vote.checking')}
+                  {status === 'depositing' && t('vote.depositing')}
                 </span>
                 <span className="text-blue-400 text-sm">
-                  Étape {currentStep}/{totalSteps}
+                  {t('vote.step')} {currentStep}/{totalSteps}
                 </span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2">
@@ -292,7 +294,7 @@ export function ClaimExistsModal({
           {status === 'success' && (
             <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
               <p className="text-green-400 font-medium text-center">
-                Vote enregistré avec succès ! Fermeture...
+                {t('vote.success')}
               </p>
             </div>
           )}
@@ -312,7 +314,7 @@ export function ClaimExistsModal({
             disabled={isLoading}
             className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Annuler
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
@@ -323,7 +325,7 @@ export function ClaimExistsModal({
                 : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
-            {isLoading ? `Étape ${currentStep}/${totalSteps}...` : `Voter ${direction === 'for' ? 'FOR' : 'AGAINST'}`}
+            {isLoading ? `${t('vote.step')} ${currentStep}/${totalSteps}...` : `${t('vote.voteButton')} ${direction === 'for' ? t('vote.for') : t('vote.against')}`}
           </button>
         </div>
       </div>

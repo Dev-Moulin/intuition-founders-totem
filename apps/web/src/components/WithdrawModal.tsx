@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { useAccount } from 'wagmi';
 import { formatEther, type Hex } from 'viem';
+import { useTranslation } from 'react-i18next';
 import { useWithdraw, estimateWithdrawAmount } from '../hooks/useWithdraw';
 import { GET_USER_POSITION } from '../lib/graphql/queries';
 
@@ -48,6 +49,7 @@ export function WithdrawModal({
   onClose,
   onSuccess,
 }: WithdrawModalProps) {
+  const { t } = useTranslation();
   const { address } = useAccount();
   const { withdraw, status, error, isLoading, reset } = useWithdraw();
 
@@ -133,7 +135,7 @@ export function WithdrawModal({
         {/* Header */}
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Retirer TRUST</h2>
+            <h2 className="text-xl font-bold text-white">{t('claimExists.withdrawButton')} TRUST</h2>
             {!isLoading && (
               <button
                 onClick={onClose}
@@ -152,7 +154,7 @@ export function WithdrawModal({
             <p className="text-sm text-white/60 mb-1">Claim</p>
             <p className="text-white font-medium">{claimLabel}</p>
             <p className="text-xs text-white/40 mt-1">
-              Position : {isPositive ? 'FOR' : 'AGAINST'}
+              Position : {isPositive ? t('vote.for') : t('vote.against')}
             </p>
           </div>
 
@@ -172,7 +174,7 @@ export function WithdrawModal({
                 onClick={onClose}
                 className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
               >
-                Fermer
+                {t('common.close')}
               </button>
             </div>
           )}
@@ -182,16 +184,16 @@ export function WithdrawModal({
             <>
               {/* User's position */}
               <div className="bg-green-500/10 rounded-lg p-3 border border-green-500/20">
-                <p className="text-sm text-white/60 mb-1">Vos shares</p>
+                <p className="text-sm text-white/60 mb-1">Vos {t('common.shares')}</p>
                 <p className="text-green-400 font-bold text-lg">
-                  {formatEther(userShares)} shares
+                  {formatEther(userShares)} {t('common.shares')}
                 </p>
               </div>
 
               {/* Amount input */}
               <div>
                 <label className="block text-sm text-white/60 mb-2">
-                  Montant à retirer (shares)
+                  {t('vote.amount')} ({t('common.shares')})
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -234,7 +236,7 @@ export function WithdrawModal({
               {/* Success display */}
               {status === 'success' && (
                 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                  <p className="text-green-400 text-sm">Retrait effectué avec succès !</p>
+                  <p className="text-green-400 text-sm">{t('withdraw.success')}</p>
                 </div>
               )}
             </>
@@ -249,7 +251,7 @@ export function WithdrawModal({
               disabled={isLoading}
               className="flex-1 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors disabled:opacity-50"
             >
-              Annuler
+              {t('common.cancel')}
             </button>
             <button
               onClick={handleWithdraw}
@@ -259,10 +261,10 @@ export function WithdrawModal({
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                  Retrait...
+                  {t('withdraw.processing')}
                 </span>
               ) : (
-                'Retirer'
+                t('claimExists.withdrawButton')
               )}
             </button>
           </div>

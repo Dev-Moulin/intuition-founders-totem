@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   useUserVotesDetailed,
   getTotalVotedAmount,
@@ -12,6 +13,7 @@ import { formatTrustAmount } from '../utils';
 type FilterOption = 'all' | 'for' | 'against';
 
 export function MyVotesPage() {
+  const { t } = useTranslation();
   const { address, isConnected } = useAccount();
   const [filter, setFilter] = useState<FilterOption>('all');
 
@@ -26,10 +28,10 @@ export function MyVotesPage() {
         <div className="glass-card p-8 max-w-md text-center">
           <div className="text-4xl mb-4">🔌</div>
           <h2 className="text-xl font-bold text-white mb-2">
-            Wallet non connecté
+            {t('myVotesPage.notConnected.title')}
           </h2>
           <p className="text-white/70">
-            Connectez votre wallet pour voir votre historique de votes
+            {t('myVotesPage.notConnected.description')}
           </p>
         </div>
       </div>
@@ -42,9 +44,9 @@ export function MyVotesPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="glass-card p-8 max-w-md text-center">
           <div className="text-4xl mb-4">⏳</div>
-          <h2 className="text-xl font-bold text-white mb-2">Chargement...</h2>
+          <h2 className="text-xl font-bold text-white mb-2">{t('myVotesPage.loading.title')}</h2>
           <p className="text-white/70">
-            Récupération de votre historique de votes
+            {t('myVotesPage.loading.description')}
           </p>
         </div>
       </div>
@@ -57,12 +59,12 @@ export function MyVotesPage() {
       <div className="space-y-8">
         <div className="glass-card p-12 text-center">
           <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-white mb-2">Erreur</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('myVotesPage.error.title')}</h2>
           <p className="text-white/60 mb-6">
-            Erreur lors du chargement de vos votes: {error.message}
+            {t('myVotesPage.error.description', { message: error.message })}
           </p>
           <Link to="/" className="glass-button">
-            ← Retour à l'accueil
+            {t('myVotesPage.error.backButton')}
           </Link>
         </div>
       </div>
@@ -86,12 +88,11 @@ export function MyVotesPage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Mes Votes
-          <span className="block text-purple-400">Historique INTUITION</span>
+          {t('myVotesPage.title')}
+          <span className="block text-purple-400">{t('myVotesPage.subtitle')}</span>
         </h1>
         <p className="text-white/70 max-w-2xl mx-auto">
-          Retrouvez l'historique complet de vos votes sur les propositions de
-          totems
+          {t('myVotesPage.description')}
         </p>
       </div>
 
@@ -101,25 +102,25 @@ export function MyVotesPage() {
           <div className="text-3xl font-bold text-purple-400">
             {votes.length}
           </div>
-          <div className="text-white/60 text-sm">Votes totaux</div>
+          <div className="text-white/60 text-sm">{t('myVotesPage.stats.totalVotes')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-green-400">
             {forVotes.length}
           </div>
-          <div className="text-white/60 text-sm">Votes FOR</div>
+          <div className="text-white/60 text-sm">{t('myVotesPage.stats.forVotes')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-red-400">
             {againstVotes.length}
           </div>
-          <div className="text-white/60 text-sm">Votes AGAINST</div>
+          <div className="text-white/60 text-sm">{t('myVotesPage.stats.againstVotes')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">
             {formatTrustAmount(BigInt(totalVoted), 2)}
           </div>
-          <div className="text-white/60 text-sm">TRUST total</div>
+          <div className="text-white/60 text-sm">{t('myVotesPage.stats.totalTrust')}</div>
         </div>
       </div>
 
@@ -136,7 +137,7 @@ export function MyVotesPage() {
                   : 'bg-white/5 text-white/60 hover:bg-white/10'
               }`}
             >
-              Tous ({votes.length})
+              {t('myVotesPage.filters.all', { count: votes.length })}
             </button>
             <button
               onClick={() => setFilter('for')}
@@ -146,7 +147,7 @@ export function MyVotesPage() {
                   : 'bg-white/5 text-white/60 hover:bg-white/10'
               }`}
             >
-              FOR ({forVotes.length})
+              {t('myVotesPage.filters.for', { count: forVotes.length })}
             </button>
             <button
               onClick={() => setFilter('against')}
@@ -156,7 +157,7 @@ export function MyVotesPage() {
                   : 'bg-white/5 text-white/60 hover:bg-white/10'
               }`}
             >
-              AGAINST ({againstVotes.length})
+              {t('myVotesPage.filters.against', { count: againstVotes.length })}
             </button>
           </div>
 
@@ -164,7 +165,7 @@ export function MyVotesPage() {
           <div className="text-sm text-white/60">
             {filter === 'all' && (
               <span>
-                Total:{' '}
+                {t('myVotesPage.filters.totalLabel')}:{' '}
                 <span className="font-semibold text-purple-400">
                   {formatTotalVotes(totalVoted)}
                 </span>
@@ -172,7 +173,7 @@ export function MyVotesPage() {
             )}
             {filter === 'for' && (
               <span>
-                Total FOR:{' '}
+                {t('myVotesPage.filters.totalForLabel')}:{' '}
                 <span className="font-semibold text-green-400">
                   {formatTotalVotes(totalForVoted)}
                 </span>
@@ -180,7 +181,7 @@ export function MyVotesPage() {
             )}
             {filter === 'against' && (
               <span>
-                Total AGAINST:{' '}
+                {t('myVotesPage.filters.totalAgainstLabel')}:{' '}
                 <span className="font-semibold text-red-400">
                   {formatTotalVotes(totalAgainstVoted)}
                 </span>
@@ -194,7 +195,7 @@ export function MyVotesPage() {
       {filteredVotes.length > 0 ? (
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-white">
-            Historique des votes ({filteredVotes.length})
+            {t('myVotesPage.votesList.title', { count: filteredVotes.length })}
           </h2>
 
           <div className="grid grid-cols-1 gap-4">
@@ -215,7 +216,7 @@ export function MyVotesPage() {
                             : 'bg-red-500/20 text-red-400'
                         }`}
                       >
-                        {vote.isPositive ? '👍 FOR' : '👎 AGAINST'}
+                        {vote.isPositive ? t('myVotesPage.votesList.forBadge') : t('myVotesPage.votesList.againstBadge')}
                       </div>
 
                       {/* Amount */}
@@ -226,7 +227,7 @@ export function MyVotesPage() {
 
                     {/* Term ID */}
                     <div className="text-sm text-white/60 mb-1">
-                      Term ID:{' '}
+                      {t('myVotesPage.votesList.termId')}:{' '}
                       <code className="text-xs text-purple-300 bg-purple-900/20 px-2 py-1 rounded font-mono">
                         {vote.term_id}
                       </code>
@@ -253,7 +254,7 @@ export function MyVotesPage() {
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white rounded-lg text-sm font-medium transition-colors"
                     >
-                      Explorer ↗
+                      {t('myVotesPage.votesList.explorerButton')}
                     </a>
 
                     {/* View on Portal */}
@@ -263,7 +264,7 @@ export function MyVotesPage() {
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 hover:text-purple-300 rounded-lg text-sm font-medium transition-colors"
                     >
-                      Portal ↗
+                      {t('myVotesPage.votesList.portalButton')}
                     </a>
                   </div>
                 </div>
@@ -275,17 +276,17 @@ export function MyVotesPage() {
         <div className="glass-card p-12 text-center">
           <div className="text-4xl mb-4">📭</div>
           <h3 className="text-xl font-bold text-white mb-2">
-            Aucun vote trouvé
+            {t('myVotesPage.emptyState.title')}
           </h3>
           <p className="text-white/60 mb-6">
             {filter === 'all'
-              ? "Vous n'avez pas encore voté sur de propositions"
+              ? t('myVotesPage.emptyState.noVotesAll')
               : filter === 'for'
-                ? "Vous n'avez pas encore voté FOR sur de propositions"
-                : "Vous n'avez pas encore voté AGAINST sur de propositions"}
+                ? t('myVotesPage.emptyState.noVotesFor')
+                : t('myVotesPage.emptyState.noVotesAgainst')}
           </p>
           <Link to="/results" className="glass-button">
-            Voir les propositions →
+            {t('myVotesPage.emptyState.viewProposalsButton')}
           </Link>
         </div>
       )}
@@ -294,7 +295,7 @@ export function MyVotesPage() {
       {votes.length > 0 && (
         <div className="glass-card p-6">
           <h3 className="text-lg font-bold text-white mb-4">
-            Propositions votées ({votesByTerm.size})
+            {t('myVotesPage.aggregation.title', { count: votesByTerm.size })}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from(votesByTerm.entries()).map(([termId, termVotes]) => {
@@ -310,18 +311,18 @@ export function MyVotesPage() {
                   key={termId}
                   className="glass-card p-4 hover:border-purple-500/50 transition-colors"
                 >
-                  <div className="text-sm text-white/60 mb-2">Term</div>
+                  <div className="text-sm text-white/60 mb-2">{t('myVotesPage.aggregation.termLabel')}</div>
                   <code className="text-xs text-purple-300 bg-purple-900/20 px-2 py-1 rounded font-mono block mb-3 truncate">
                     {termId}
                   </code>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-white/60 text-sm">Votes:</span>
+                    <span className="text-white/60 text-sm">{t('myVotesPage.aggregation.votesLabel')}:</span>
                     <span className="font-bold text-white">
                       {termVotes.length}
                     </span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-white/60 text-sm">FOR / AGAINST:</span>
+                    <span className="text-white/60 text-sm">{t('myVotesPage.aggregation.forAgainstLabel')}:</span>
                     <span className="text-sm">
                       <span className="text-green-400 font-semibold">
                         {forCount}
@@ -333,7 +334,7 @@ export function MyVotesPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Total:</span>
+                    <span className="text-white/60 text-sm">{t('myVotesPage.aggregation.totalLabel')}:</span>
                     <span className="font-bold text-purple-400">
                       {formatTrustAmount(totalForThisTerm, 2)}
                     </span>
@@ -349,7 +350,7 @@ export function MyVotesPage() {
       <div className="glass-card p-4 text-center">
         <div className="inline-flex items-center gap-2 text-sm text-white/60">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span>Données en temps réel depuis INTUITION L3 Testnet</span>
+          <span>{t('myVotesPage.statusNotice')}</span>
         </div>
       </div>
     </div>

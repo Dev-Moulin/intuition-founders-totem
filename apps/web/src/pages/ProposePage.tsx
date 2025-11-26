@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import { FounderCard, type FounderData } from '../components/FounderCard';
 import { ProposalModal, type ProposalFormData } from '../components/ProposalModal';
 import { useIntuition, ClaimExistsError } from '../hooks/useIntuition';
@@ -21,6 +22,7 @@ const DEFAULT_PREDICATES = [
 ];
 
 export function ProposePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFounder, setSelectedFounder] = useState<FounderData | null>(null);
@@ -110,13 +112,12 @@ export function ProposePage() {
 
     try {
       if (!isReady) {
-        throw new Error('Wallet non connecté');
+        throw new Error(t('proposePage.errors.walletNotConnected'));
       }
 
       if (!data.founderAtomId) {
         throw new Error(
-          `Le fondateur "${selectedFounder?.name}" n'a pas d'Atom ID sur INTUITION. ` +
-          `Vérifiez que son atom a bien été créé sur la blockchain.`
+          t('proposePage.errors.founderNoAtomId', { founder: selectedFounder?.name })
         );
       }
 
@@ -132,7 +133,10 @@ export function ProposePage() {
       handleCloseModal();
 
       // Show success message
-      setSuccess(`Claim créé avec succès pour ${selectedFounder?.name}! Transaction: ${result.triple.transactionHash.slice(0, 10)}...`);
+      setSuccess(t('proposePage.success.claimCreated', {
+        founder: selectedFounder?.name,
+        txHash: result.triple.transactionHash.slice(0, 10)
+      }));
 
       // Clear success after 5 seconds
       setTimeout(() => setSuccess(null), 5000);
@@ -142,7 +146,7 @@ export function ProposePage() {
         handleCloseModal();
 
         // Show info message and redirect to vote page with search pre-filled
-        setSuccess(`Ce claim existe déjà! Redirection vers la page de vote pour "${err.objectLabel}"...`);
+        setSuccess(t('proposePage.success.claimExists', { totem: err.objectLabel }));
 
         // Redirect to vote page with search query for the totem
         setTimeout(() => {
@@ -162,15 +166,15 @@ export function ProposePage() {
       });
       console.error('Erreur complète:', err);
 
-      let errorMessage = err instanceof Error ? err.message : 'Erreur lors de la création du claim';
+      let errorMessage = err instanceof Error ? err.message : t('proposePage.errors.createClaimFailed');
 
       // Améliorer les messages d'erreur courants
       if (errorMessage.includes('InsufficientBalance')) {
-        errorMessage = `Balance tTRUST insuffisante pour créer ce claim. Assurez-vous d'avoir assez de tTRUST sur le réseau INTUITION Testnet.`;
+        errorMessage = t('proposePage.errors.insufficientBalance');
       } else if (errorMessage.includes('TripleExists')) {
-        errorMessage = `Ce claim existe déjà sur INTUITION. Vous pouvez voter dessus au lieu de le recréer.`;
+        errorMessage = t('proposePage.errors.tripleExists');
       } else if (errorMessage.includes('AtomExists')) {
-        errorMessage = `Un des atomes existe déjà. Cela ne devrait pas arriver - contactez le support.`;
+        errorMessage = t('proposePage.errors.atomExists');
       }
 
       setError(errorMessage);
@@ -186,7 +190,7 @@ export function ProposePage() {
   if (foundersLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/70">Chargement des fondateurs...</div>
+        <div className="text-white/70">{t('proposePage.loading')}</div>
       </div>
     );
   }
@@ -195,7 +199,7 @@ export function ProposePage() {
   if (foundersError) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-400">Erreur lors du chargement : {foundersError.message}</div>
+        <div className="text-red-400">{t('proposePage.errors.loadingError', { message: foundersError.message })}</div>
       </div>
     );
   }
@@ -210,7 +214,7 @@ export function ProposePage() {
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
             <div>
-              <p className="font-medium">Succès!</p>
+              <p className="font-medium">{t('proposePage.success.title')}</p>
               <p className="text-green-300/80">{success}</p>
             </div>
           </div>
@@ -247,7 +251,7 @@ export function ProposePage() {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <p style={{ fontWeight: 600, color: '#f87171', margin: 0 }}>Erreur</p>
+                <p style={{ fontWeight: 600, color: '#f87171', margin: 0 }}>{t('errors.error')}</p>
                 <button
                   onClick={() => setError(null)}
                   style={{
@@ -264,7 +268,7 @@ export function ProposePage() {
                 </button>
               </div>
               <p style={{ color: 'rgba(254, 202, 202, 0.9)', fontSize: '14px', lineHeight: '1.5', margin: 0, wordBreak: 'break-word' }}>{error}</p>
-              <p style={{ color: 'rgba(248, 113, 113, 0.5)', fontSize: '12px', marginTop: '12px', marginBottom: 0 }}>Voir la console (F12) pour plus de détails</p>
+              <p style={{ color: 'rgba(248, 113, 113, 0.5)', fontSize: '12px', marginTop: '12px', marginBottom: 0 }}>{t('proposePage.errors.seeConsole')}</p>
             </div>
           </div>
         </div>,
@@ -274,15 +278,14 @@ export function ProposePage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Proposer un Totem
+          {t('proposePage.title')}
         </h1>
         <p className="text-white/70 max-w-2xl mx-auto">
-          Choisissez un fondateur et proposez un totem qui le représente.
-          Votre proposition sera soumise on-chain via le protocole INTUITION.
+          {t('proposePage.description')}
         </p>
         {/* Stats */}
         <p className="text-white/50 text-sm mt-2">
-          {foundersWithAtoms}/{totalFounders} fondateurs enregistrés sur INTUITION
+          {t('proposePage.statsText', { withAtoms: foundersWithAtoms, total: totalFounders })}
         </p>
       </div>
 
@@ -290,7 +293,7 @@ export function ProposePage() {
       <div className="max-w-md mx-auto">
         <input
           type="text"
-          placeholder="Rechercher un fondateur..."
+          placeholder={t('proposePage.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 focus:ring-1 focus:ring-purple-400/50 transition-colors"
@@ -299,8 +302,8 @@ export function ProposePage() {
 
       {/* Stats */}
       <div className="text-center text-white/50 text-sm">
-        {filteredFounders.length} fondateur{filteredFounders.length !== 1 ? 's' : ''}
-        {searchTerm && ` trouvé${filteredFounders.length !== 1 ? 's' : ''}`}
+        {filteredFounders.length} {t(filteredFounders.length === 1 ? 'proposePage.foundersCount' : 'proposePage.foundersCountPlural', { count: filteredFounders.length })}
+        {searchTerm && ` ${t(filteredFounders.length === 1 ? 'proposePage.foundersFound' : 'proposePage.foundersFoundPlural', { count: filteredFounders.length })}`}
       </div>
 
       {/* Founders grid */}
@@ -318,7 +321,7 @@ export function ProposePage() {
       ) : (
         <div className="text-center py-12">
           <p className="text-white/50">
-            Aucun fondateur ne correspond à votre recherche.
+            {t('proposePage.noResults')}
           </p>
         </div>
       )}
