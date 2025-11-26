@@ -1,7 +1,7 @@
 # État de l'Implémentation - VotePanel V2
 
 > **Date** : 26 novembre 2025 (mise à jour)
-> **Statut** : Phase 2 terminée
+> **Statut** : Phase 3 terminée - PROJET COMPLET
 
 ---
 
@@ -11,14 +11,15 @@
 
 | Catégorie | Terminé | En cours | À faire |
 |-----------|---------|----------|---------|
-| Composants | 5 | 0 | 1 |
+| Composants | 7 | 0 | 0 |
 | Hooks | 8 | 0 | 0 |
 | Pages | 1 | 0 | 0 |
-| GraphQL | 1 | 0 | 1 (subscription) |
+| GraphQL | 2 | 0 | 0 |
 | Styling | 1 | 0 | 0 |
 
 > **Phase 1** : WebSocket Subscriptions ✅ TERMINÉE
 > **Phase 2** : UX Claim vs Vote ✅ TERMINÉE
+> **Phase 3** : Améliorations ✅ TERMINÉE
 
 ---
 
@@ -29,16 +30,16 @@
 | Composant | Fichier | Fonctionnalités |
 |-----------|---------|-----------------|
 | `VotePanel` | [VotePanel.tsx](../../../apps/web/src/components/VotePanel.tsx) | Sélection prédicat (accordion), sélection/création totem, montant TRUST, preview, création claim, **intégration ClaimExistsModal** |
-| `FounderExpandedView` | [FounderExpandedView.tsx](../../../apps/web/src/components/FounderExpandedView.tsx) | Vue détaillée fondateur (photo, bio, stats), layout split, fermeture (backdrop/bouton/Escape) |
-| `FounderHomeCard` | [FounderHomeCard.tsx](../../../apps/web/src/components/FounderHomeCard.tsx) | Card dans la grille, sélection par click |
+| `FounderExpandedView` | [FounderExpandedView.tsx](../../../apps/web/src/components/FounderExpandedView.tsx) | Vue détaillée fondateur (photo, bio, stats), layout split, fermeture (backdrop/bouton/Escape), **animation nouvelles données** |
+| `FounderHomeCard` | [FounderHomeCard.tsx](../../../apps/web/src/components/FounderHomeCard.tsx) | Card dans la grille, sélection par click, **badge NEW**, **tendances ↑↓** |
 | `VoteModal` | [VoteModal.tsx](../../../apps/web/src/components/VoteModal.tsx) | **EXISTANT** - Modal pour voter sur claim existant (FOR/AGAINST) |
-| `ClaimExistsModal` | [ClaimExistsModal.tsx](../../../apps/web/src/components/ClaimExistsModal.tsx) | **NOUVEAU** - Modal quand claim existe, permet de voter FOR/AGAINST avec `useVote` |
+| `ClaimExistsModal` | [ClaimExistsModal.tsx](../../../apps/web/src/components/ClaimExistsModal.tsx) | Modal quand claim existe, vote FOR/AGAINST, **affichage position user**, **bouton Retirer** |
+| `RefreshIndicator` | [RefreshIndicator.tsx](../../../apps/web/src/components/RefreshIndicator.tsx) | Indicateur temps réel (connexion, pause, loading, déconnecté) |
+| `WithdrawModal` | [WithdrawModal.tsx](../../../apps/web/src/components/WithdrawModal.tsx) | **NOUVEAU** - Modal retrait TRUST avec `useWithdraw` |
 
 ### À créer
 
-| Composant | Description | Priorité | Notes |
-|-----------|-------------|----------|-------|
-| `RefreshIndicator` | Indicateur "Actualisé il y a X secondes" | Moyenne | Pour Phase 3 |
+*Tous les composants prévus ont été implémentés.*
 
 ### Composants découverts (déjà existants)
 
@@ -267,12 +268,12 @@ estimateWithdrawAmount(shares, totalShares, totalAssets, exitFeePercent = 7)
 3. ✅ Intégrer `useVote` dans ClaimExistsModal (vote FOR/AGAINST)
 4. ✅ Intégrer ClaimExistsModal dans VotePanel (ouverture automatique sur `ClaimExistsError`)
 
-### Phase 3 : Améliorations (Priorité MOYENNE)
+### Phase 3 : Améliorations ✅ TERMINÉE
 
-1. Badge "Nouveaux totems"
-2. Tendances hausse/baisse des scores
-3. Animation quand nouvelles données
-4. Retrait TRUST (intégrer `useWithdraw`)
+1. ✅ Badge "Nouveaux totems" (`recentActivityCount` + badge vert pulsant)
+2. ✅ Tendances hausse/baisse des scores (`TrendDirection` + flèches ↑↓)
+3. ✅ Animation quand nouvelles données (flash violet sur stats)
+4. ✅ Retrait TRUST (intégrer `useWithdraw` + `WithdrawModal`)
 
 ---
 
