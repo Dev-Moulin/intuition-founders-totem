@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FounderResultCard } from '../components/FounderResultCard';
 import { useAllProposals } from '../hooks';
 
 type SortOption = 'name' | 'votes' | 'proposals';
 
 export function ResultsPage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
 
@@ -26,9 +28,9 @@ export function ResultsPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="glass-card p-8 max-w-md text-center">
           <div className="text-4xl mb-4">⏳</div>
-          <h2 className="text-xl font-bold text-white mb-2">Chargement...</h2>
+          <h2 className="text-xl font-bold text-white mb-2">{t('resultsPage.loading')}</h2>
           <p className="text-white/70">
-            Récupération des résultats depuis la blockchain
+            {t('resultsPage.loadingDescription')}
           </p>
         </div>
       </div>
@@ -41,12 +43,12 @@ export function ResultsPage() {
       <div className="space-y-8">
         <div className="glass-card p-12 text-center">
           <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-white mb-2">Erreur</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('resultsPage.error')}</h2>
           <p className="text-white/60 mb-6">
-            Erreur lors du chargement des résultats: {error.message}
+            {t('resultsPage.errorDescription', { message: error.message })}
           </p>
           <Link to="/" className="glass-button">
-            ← Retour à l'accueil
+            {t('resultsPage.backToHome')}
           </Link>
         </div>
       </div>
@@ -81,11 +83,11 @@ export function ResultsPage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Résultats INTUITION
-          <span className="block text-purple-400">Founders Totem</span>
+          {t('resultsPage.title')}
+          <span className="block text-purple-400">{t('resultsPage.subtitle')}</span>
         </h1>
         <p className="text-white/70 max-w-2xl mx-auto">
-          Découvrez les totems gagnants pour chaque fondateur de la collection
+          {t('resultsPage.description')}
         </p>
       </div>
 
@@ -95,23 +97,23 @@ export function ResultsPage() {
           <div className="text-3xl font-bold text-purple-400">
             {totalFounders}
           </div>
-          <div className="text-white/60 text-sm">Fondateurs</div>
+          <div className="text-white/60 text-sm">{t('resultsPage.stats.founders')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">
             {totalProposals}
           </div>
-          <div className="text-white/60 text-sm">Propositions</div>
+          <div className="text-white/60 text-sm">{t('resultsPage.stats.proposals')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">
             {foundersWithWinners}
           </div>
-          <div className="text-white/60 text-sm">Totems gagnants</div>
+          <div className="text-white/60 text-sm">{t('resultsPage.stats.winningTotems')}</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">{totalClaims}</div>
-          <div className="text-white/60 text-sm">Claims totaux</div>
+          <div className="text-white/60 text-sm">{t('resultsPage.stats.totalClaims')}</div>
         </div>
       </div>
 
@@ -122,7 +124,7 @@ export function ResultsPage() {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Rechercher un fondateur ou un totem..."
+              placeholder={t('resultsPage.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-purple-500"
@@ -132,29 +134,29 @@ export function ResultsPage() {
           {/* Sort */}
           <div className="flex items-center gap-2">
             <span className="text-white/60 text-sm whitespace-nowrap">
-              Trier par:
+              {t('resultsPage.sortBy')}
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-purple-500"
             >
-              <option value="name">Nom</option>
-              <option value="votes">Votes</option>
-              <option value="proposals">Propositions</option>
+              <option value="name">{t('resultsPage.sortOptions.name')}</option>
+              <option value="votes">{t('resultsPage.sortOptions.votes')}</option>
+              <option value="proposals">{t('resultsPage.sortOptions.proposals')}</option>
             </select>
           </div>
         </div>
 
         {/* Results count */}
         <div className="mt-4 text-sm text-white/60">
-          {sortedFounders.length} résultat{sortedFounders.length > 1 ? 's' : ''}
+          {t('resultsPage.resultsCount', { count: sortedFounders.length })}
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
               className="ml-2 text-purple-400 hover:text-purple-300"
             >
-              Réinitialiser
+              {t('resultsPage.reset')}
             </button>
           )}
         </div>
@@ -177,16 +179,16 @@ export function ResultsPage() {
         <div className="glass-card p-12 text-center">
           <div className="text-4xl mb-4">🔍</div>
           <h3 className="text-xl font-bold text-white mb-2">
-            Aucun résultat trouvé
+            {t('resultsPage.noResults')}
           </h3>
           <p className="text-white/60 mb-4">
-            Aucun fondateur ne correspond à votre recherche
+            {t('resultsPage.noResultsDescription')}
           </p>
           <button
             onClick={() => setSearchQuery('')}
             className="glass-button"
           >
-            Réinitialiser les filtres
+            {t('resultsPage.resetFilters')}
           </button>
         </div>
       )}
@@ -195,7 +197,7 @@ export function ResultsPage() {
       <div className="glass-card p-4 text-center">
         <div className="inline-flex items-center gap-2 text-sm text-white/60">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span>Résultats en temps réel - Vote en cours</span>
+          <span>{t('resultsPage.statusNotice')}</span>
         </div>
       </div>
     </div>
