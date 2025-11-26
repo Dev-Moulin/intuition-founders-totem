@@ -32,6 +32,7 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
     secondsSinceUpdate,
     isConnected,
     isPaused,
+    isLoading,
     pause,
     resume,
   } = useFounderSubscription(founder.name);
@@ -115,6 +116,7 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
                 secondsSinceUpdate={secondsSinceUpdate}
                 isConnected={isConnected}
                 isPaused={isPaused}
+                isLoading={isLoading}
               />
             </div>
 
