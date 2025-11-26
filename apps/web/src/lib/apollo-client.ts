@@ -2,20 +2,24 @@ import { ApolloClient, InMemoryCache, HttpLink, split, type ApolloLink } from '@
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
+import { getNetworkConfig } from './networkConfig';
 
 /**
  * Apollo Client configuration for INTUITION GraphQL API
  *
- * Connects to the INTUITION L3 testnet subgraph to query atoms, triples, deposits, and positions.
- * INTUITION L3 Testnet (Chain ID: 13579) endpoint.
+ * Connects to the INTUITION L3 subgraph to query atoms, triples, deposits, and positions.
+ * Supports dynamic network switching between Testnet and Mainnet.
  *
  * Supports:
  * - HTTP for queries and mutations
  * - WebSocket for subscriptions (real-time updates)
+ * - Dynamic network configuration (Testnet/Mainnet)
  */
 
-const GRAPHQL_HTTP_ENDPOINT = 'https://testnet.intuition.sh/v1/graphql';
-const GRAPHQL_WS_ENDPOINT = 'wss://testnet.intuition.sh/v1/graphql';
+// Get current network configuration
+const networkConfig = getNetworkConfig();
+const GRAPHQL_HTTP_ENDPOINT = networkConfig.graphqlHttp;
+const GRAPHQL_WS_ENDPOINT = networkConfig.graphqlWs;
 
 // HTTP Link for queries and mutations
 const httpLink = new HttpLink({
