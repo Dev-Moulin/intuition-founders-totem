@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { formatEther } from 'viem';
+import { useTranslation } from 'react-i18next';
 import type { FounderForHomePage } from '../hooks/useFoundersForHomePage';
 import {
   useFounderSubscription,
@@ -22,6 +23,7 @@ interface FounderExpandedViewProps {
  * Automatically pauses subscription when tab is hidden.
  */
 export function FounderExpandedView({ founder, onClose }: FounderExpandedViewProps) {
+  const { t } = useTranslation();
   const imageUrl = getFounderImageUrl(founder);
 
   // Real-time subscription for founder proposals
@@ -191,7 +193,7 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
               onClick={onClose}
               className="lg:hidden mt-6 w-full py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors"
             >
-              Fermer
+              {t('common.close')}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
+import { useTranslation } from 'react-i18next';
 import { intuitionTestnet } from '@0xintuition/protocol';
 import { useWhitelist } from '../hooks/useWhitelist';
 
@@ -8,6 +9,7 @@ interface NetworkGuardProps {
 }
 
 export function NetworkGuard({ children }: NetworkGuardProps) {
+  const { t } = useTranslation();
   const chainId = useChainId();
   const { switchChain, isPending } = useSwitchChain();
   const { address, isConnected } = useAccount();
@@ -23,7 +25,7 @@ export function NetworkGuard({ children }: NetworkGuardProps) {
             Mauvais réseau détecté
           </h2>
           <p className="text-white/70 mb-6">
-            Veuillez passer sur INTUITION L3 Testnet (Chain ID: 13579) pour utiliser cette application.
+            {t('errors.switchNetwork')}
           </p>
           <button
             onClick={() => switchChain?.({ chainId: intuitionTestnet.id })}
