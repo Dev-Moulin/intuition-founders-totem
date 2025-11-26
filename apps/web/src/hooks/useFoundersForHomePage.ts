@@ -7,6 +7,11 @@ import type { Triple } from '../lib/graphql/types';
 import { aggregateTriplesByObject } from '../utils/aggregateVotes';
 
 /**
+ * Trend direction for score changes
+ */
+export type TrendDirection = 'up' | 'down' | 'neutral';
+
+/**
  * Winning totem data for a founder
  */
 export interface WinningTotem {
@@ -17,6 +22,8 @@ export interface WinningTotem {
   totalFor: bigint;
   totalAgainst: bigint;
   claimCount: number;
+  /** Trend based on FOR/AGAINST ratio: up if > 60% FOR, down if < 40% FOR, neutral otherwise */
+  trend: TrendDirection;
 }
 
 /**
@@ -25,6 +32,8 @@ export interface WinningTotem {
 export interface FounderForHomePage extends FounderData {
   winningTotem: WinningTotem | null;
   proposalCount: number;
+  /** Number of new totems proposed in the last 24 hours */
+  recentActivityCount: number;
 }
 
 interface AtomResult {
@@ -99,6 +108,10 @@ export function useFoundersForHomePage() {
     // Create winning totem map by founder name
     const winningTotemMap = new Map<string, WinningTotem>();
     const proposalCountMap = new Map<string, number>();
+    const recentActivityMap = new Map<string, number>();
+
+    // Calculate 24 hours ago timestamp
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     if (proposalsData?.triples) {
       // Group triples by founder (subject.label)
@@ -111,8 +124,16 @@ export function useFoundersForHomePage() {
         founderTriples.get(founderName)!.push(triple);
       });
 
-      // For each founder, calculate winning totem
+      // For each founder, calculate winning totem and recent activity
       founderTriples.forEach((triples, founderName) => {
+        // Count recent triples (created in last 24h)
+        const recentCount = triples.filter((t) => {
+          if (!t.created_at) return false;
+          const createdAt = new Date(t.created_at);
+          return createdAt > twentyFourHoursAgo;
+        }).length;
+        recentActivityMap.set(founderName, recentCount);
+
         // Convert to format expected by aggregateTriplesByObject
         const formattedTriples = triples.map((t) => ({
           term_id: t.term_id,
@@ -131,6 +152,19 @@ export function useFoundersForHomePage() {
         // Winning totem is the one with highest NET score (already sorted)
         if (aggregatedTotems.length > 0) {
           const winner = aggregatedTotems[0];
+
+          // Calculate trend based on FOR/AGAINST ratio
+          const total = winner.totalFor + winner.totalAgainst;
+          let trend: TrendDirection = 'neutral';
+          if (total > 0n) {
+            const forPercentage = Number((winner.totalFor * 100n) / total);
+            if (forPercentage > 60) {
+              trend = 'up';
+            } else if (forPercentage < 40) {
+              trend = 'down';
+            }
+          }
+
           winningTotemMap.set(founderName, {
             objectId: winner.objectId,
             label: winner.object.label,
@@ -139,6 +173,7 @@ export function useFoundersForHomePage() {
             totalFor: winner.totalFor,
             totalAgainst: winner.totalAgainst,
             claimCount: winner.claimCount,
+            trend,
           });
         }
       });
@@ -150,6 +185,7 @@ export function useFoundersForHomePage() {
       atomId: atomIdMap.get(founder.name),
       winningTotem: winningTotemMap.get(founder.name) || null,
       proposalCount: proposalCountMap.get(founder.name) || 0,
+      recentActivityCount: recentActivityMap.get(founder.name) || 0,
     }));
 
     // Calculate stats

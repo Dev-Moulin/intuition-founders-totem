@@ -74,6 +74,8 @@ interface UseFounderSubscriptionResult {
   secondsSinceUpdate: number;
   /** True if subscription is active and connected */
   isConnected: boolean;
+  /** True if still loading initial data */
+  isLoading: boolean;
   /** Manually pause the subscription */
   pause: () => void;
   /** Resume a paused subscription */
@@ -180,8 +182,12 @@ export function useFounderSubscription(
     setIsPaused(false);
   }, []);
 
-  // Determine if connected (not loading, no error, not paused)
-  const isConnected = !loading && !error && !isPaused && !!founderName;
+  // Determine if connected (has received data at least once, no error, not paused)
+  // Note: loading is true until first data arrives, so we check lastUpdated instead
+  const isConnected = !error && !isPaused && !!founderName && lastUpdated !== null;
+
+  // isLoading: true while waiting for first data
+  const isLoading = loading && lastUpdated === null && !isPaused && !!founderName;
 
   return {
     proposals,
@@ -190,6 +196,7 @@ export function useFounderSubscription(
     lastUpdated,
     secondsSinceUpdate,
     isConnected,
+    isLoading,
     pause,
     resume,
     isPaused,

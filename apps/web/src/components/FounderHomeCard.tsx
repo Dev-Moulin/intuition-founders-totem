@@ -36,9 +36,18 @@ export function FounderHomeCard({ founder, onSelect, isSelected }: FounderHomeCa
   return (
     <div
       onClick={handleCardClick}
-      className={`glass-card p-2 flex flex-col h-full w-full min-w-0 transition-all duration-200 cursor-pointer
+      className={`glass-card p-2 flex flex-col h-full w-full min-w-0 transition-all duration-200 cursor-pointer relative
         ${isSelected ? 'border-purple-500 ring-2 ring-purple-500/50' : 'hover:border-purple-500/50'}`}
     >
+      {/* Badge for recent activity */}
+      {founder.recentActivityCount > 0 && (
+        <div className="absolute -top-2 -right-2 z-10">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-green-500 rounded-full shadow-lg animate-pulse">
+            {founder.recentActivityCount === 1 ? 'NEW' : `+${founder.recentActivityCount}`}
+          </span>
+        </div>
+      )}
+
       {/* Header: Photo + Name */}
       <div className="flex items-center gap-4 mb-10">
         <img
@@ -63,9 +72,22 @@ export function FounderHomeCard({ founder, onSelect, isSelected }: FounderHomeCa
       <div className="flex-1 mb-4">
         {founder.winningTotem ? (
           <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-500/20">
-            <p className="text-sm font-medium text-white truncate">
-              {founder.winningTotem.label}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-white truncate flex-1">
+                {founder.winningTotem.label}
+              </p>
+              {/* Trend indicator */}
+              {founder.winningTotem.trend === 'up' && (
+                <span className="text-green-400 text-sm ml-2" title="Tendance haussière (>60% FOR)">
+                  ↑
+                </span>
+              )}
+              {founder.winningTotem.trend === 'down' && (
+                <span className="text-red-400 text-sm ml-2" title="Tendance baissière (<40% FOR)">
+                  ↓
+                </span>
+              )}
+            </div>
             <div className="flex items-center justify-between mt-2 text-sm">
               <span className="text-purple-400">{formatScore(founder.winningTotem.netScore)} TRUST</span>
               <span className="text-white/40">{founder.proposalCount} prop.</span>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { formatEther } from 'viem';
 import type { FounderForHomePage } from '../hooks/useFoundersForHomePage';
 import {
@@ -32,6 +32,7 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
     secondsSinceUpdate,
     isConnected,
     isPaused,
+    isLoading,
     pause,
     resume,
   } = useFounderSubscription(founder.name);
@@ -41,6 +42,21 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
     pauseOnHidden: true,
     resumeDelay: 100,
   });
+
+  // Track when new data arrives for animation
+  const [hasNewData, setHasNewData] = useState(false);
+  const prevSecondsRef = useRef(secondsSinceUpdate);
+
+  useEffect(() => {
+    // Detect when secondsSinceUpdate resets to 0 (new data received)
+    if (prevSecondsRef.current > 0 && secondsSinceUpdate === 0) {
+      setHasNewData(true);
+      // Remove animation class after 1 second
+      const timer = setTimeout(() => setHasNewData(false), 1000);
+      return () => clearTimeout(timer);
+    }
+    prevSecondsRef.current = secondsSinceUpdate;
+  }, [secondsSinceUpdate]);
 
   // Close on Escape key
   useEffect(() => {
@@ -115,6 +131,7 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
                 secondsSinceUpdate={secondsSinceUpdate}
                 isConnected={isConnected}
                 isPaused={isPaused}
+                isLoading={isLoading}
               />
             </div>
 
@@ -128,8 +145,12 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
             {/* Divider */}
             <div className="border-t border-white/10 my-4" />
 
-            {/* Stats */}
-            <div className="space-y-3">
+            {/* Stats - with flash animation on new data */}
+            <div
+              className={`space-y-3 rounded-lg p-2 -mx-2 transition-all duration-300 ${
+                hasNewData ? 'bg-purple-500/20 ring-1 ring-purple-500/50' : ''
+              }`}
+            >
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Propositions</span>
                 <span className="text-white font-medium">{founder.proposalCount}</span>
@@ -143,7 +164,9 @@ export function FounderExpandedView({ founder, onClose }: FounderExpandedViewPro
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-white/50">Score</span>
-                    <span className="text-purple-400 font-medium">
+                    <span className={`text-purple-400 font-medium transition-all duration-300 ${
+                      hasNewData ? 'scale-110' : ''
+                    }`}>
                       {formatScore(founder.winningTotem.netScore)} TRUST
                     </span>
                   </div>
