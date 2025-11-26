@@ -1,7 +1,7 @@
 # État de l'Implémentation - VotePanel V2
 
 > **Date** : 26 novembre 2025 (mise à jour)
-> **Statut** : Phase 3 terminée - PROJET COMPLET + OFC: Catégories
+> **Statut** : Phase 3 terminée - PROJET COMPLET + OFC: Catégories + Network Switch
 
 ---
 
@@ -11,17 +11,19 @@
 
 | Catégorie | Terminé | En cours | À faire |
 |-----------|---------|----------|---------|
-| Composants | 7 | 0 | 0 |
-| Hooks | 8 | 0 | 0 |
+| Composants | 8 | 0 | 0 |
+| Hooks | 9 | 0 | 0 |
 | Pages | 1 | 0 | 0 |
 | GraphQL | 5 (HTTP) + 3 (WS) | 0 | 0 |
 | Styling | 1 | 0 | 0 |
 | **OFC: Categories** | 5 | 0 | 1 (test on-chain) |
+| **Network Config** | 3 | 0 | 1 (confirm mainnet) |
 
 > **Phase 1** : WebSocket Subscriptions ✅ TERMINÉE
 > **Phase 2** : UX Claim vs Vote ✅ TERMINÉE
 > **Phase 3** : Améliorations ✅ TERMINÉE
 > **Phase OFC:** : Catégories via Triples ✅ CODE TERMINÉ (test on-chain pending)
+> **Phase Network:** : Switch Testnet/Mainnet ✅ IMPLÉMENTÉ
 
 ---
 
@@ -38,6 +40,7 @@
 | `ClaimExistsModal` | [ClaimExistsModal.tsx](../../../apps/web/src/components/ClaimExistsModal.tsx) | Modal quand claim existe, vote FOR/AGAINST, **affichage position user**, **bouton Retirer** |
 | `RefreshIndicator` | [RefreshIndicator.tsx](../../../apps/web/src/components/RefreshIndicator.tsx) | Indicateur temps réel (connexion, pause, loading, déconnecté) |
 | `WithdrawModal` | [WithdrawModal.tsx](../../../apps/web/src/components/WithdrawModal.tsx) | **NOUVEAU** - Modal retrait TRUST avec `useWithdraw` |
+| `NetworkSwitch` | [NetworkSwitch.tsx](../../../apps/web/src/components/NetworkSwitch.tsx) | **NOUVEAU** - Badge pill switch Testnet/Mainnet (admin only) |
 
 ### À créer
 
@@ -66,6 +69,7 @@
 | `useWithdraw` | [useWithdraw.ts](../../../apps/web/src/hooks/useWithdraw.ts) | **EXISTANT** - Retrait TRUST d'un vault (redeem) |
 | `useFounderSubscription` | [useFounderSubscription.ts](../../../apps/web/src/hooks/useFounderSubscription.ts) | **NOUVEAU** - Subscription WebSocket temps réel, pause auto |
 | `useWindowFocus` | [useWindowFocus.ts](../../../apps/web/src/hooks/useWindowFocus.ts) | **NOUVEAU** - Détection visibilité onglet, auto-pause subscriptions |
+| `useNetwork` | [useNetwork.ts](../../../apps/web/src/hooks/useNetwork.ts) | **NOUVEAU** - Switch réseau Testnet/Mainnet, localStorage persistence |
 
 ### À créer (Phase 2)
 
@@ -179,7 +183,54 @@ estimateWithdrawAmount(shares, totalShares, totalAssets, exitFeePercent = 7)
 
 ---
 
-## 6. Détails des Composants Existants
+## 6. Configuration Réseau (Network Switch)
+
+### Fichiers créés
+
+| Fichier | Description | Statut |
+|---------|-------------|--------|
+| [networkConfig.ts](../../../apps/web/src/lib/networkConfig.ts) | Configuration centralisée Testnet/Mainnet | ✅ |
+| [useNetwork.ts](../../../apps/web/src/hooks/useNetwork.ts) | Hook pour switch réseau avec localStorage | ✅ |
+| [NetworkSwitch.tsx](../../../apps/web/src/components/NetworkSwitch.tsx) | Badge/pill UI pour switch réseau | ✅ |
+
+### Fichiers modifiés
+
+| Fichier | Modification | Statut |
+|---------|--------------|--------|
+| [apollo-client.ts](../../../apps/web/src/lib/apollo-client.ts) | Utilise `getNetworkConfig()` pour endpoints dynamiques | ✅ |
+| [Header.tsx](../../../apps/web/src/components/Header.tsx) | Intègre `NetworkSwitch` à côté du wallet connect | ✅ |
+
+### Fonctionnalités
+
+- **Default** : Toujours démarrer sur Testnet
+- **Persistence** : localStorage (`intuition-network`)
+- **Access control** : Visible uniquement pour wallet `0xefc86f5fabe767daac9358d0ba2dfd9ac7d29948`
+- **Visual** : Badge/pill rouge (testnet) / vert (mainnet)
+- **Behavior** : Click → reload page avec nouvelle config Apollo
+
+### Configuration endpoints
+
+**Testnet** (confirmé) :
+- GraphQL HTTP: `https://testnet.intuition.sh/v1/graphql`
+- GraphQL WS: `wss://testnet.intuition.sh/v1/graphql`
+- RPC HTTP: `https://testnet.rpc.intuition.systems/http`
+- RPC WS: `wss://testnet.rpc.intuition.systems/ws`
+- Chain ID: 13579
+
+**Mainnet** (à confirmer) :
+- GraphQL HTTP: À déterminer
+- GraphQL WS: À déterminer
+- RPC HTTP: À déterminer
+- RPC WS: À déterminer
+- Chain ID: À déterminer
+
+### Documentation
+
+Voir [06_NETWORK_SWITCH.md](./06_NETWORK_SWITCH.md) pour détails complets.
+
+---
+
+## 7. Détails des Composants Existants
 
 ### VotePanel.tsx (~1000 lignes)
 
