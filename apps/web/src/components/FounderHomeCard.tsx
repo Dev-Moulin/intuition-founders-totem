@@ -36,9 +36,18 @@ export function FounderHomeCard({ founder, onSelect, isSelected }: FounderHomeCa
   return (
     <div
       onClick={handleCardClick}
-      className={`glass-card p-2 flex flex-col h-full w-full min-w-0 transition-all duration-200 cursor-pointer
+      className={`glass-card p-2 flex flex-col h-full w-full min-w-0 transition-all duration-200 cursor-pointer relative
         ${isSelected ? 'border-purple-500 ring-2 ring-purple-500/50' : 'hover:border-purple-500/50'}`}
     >
+      {/* Badge for recent activity */}
+      {founder.recentActivityCount > 0 && (
+        <div className="absolute -top-2 -right-2 z-10">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-green-500 rounded-full shadow-lg animate-pulse">
+            {founder.recentActivityCount === 1 ? 'NEW' : `+${founder.recentActivityCount}`}
+          </span>
+        </div>
+      )}
+
       {/* Header: Photo + Name */}
       <div className="flex items-center gap-4 mb-10">
         <img
