@@ -54,6 +54,7 @@ jobs:
         working-directory: apps/web
         env:
           VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID }}
+          GITHUB_ACTIONS: true
         run: pnpm build
 
       - name: Setup Pages
