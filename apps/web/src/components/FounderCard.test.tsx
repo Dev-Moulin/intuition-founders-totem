@@ -24,7 +24,8 @@ describe('FounderCard', () => {
 
   it('should render social links when provided', () => {
     render(<FounderCard founder={mockFounder} />);
-    const twitterLink = screen.getByTitle('Twitter');
+    // Title format is "X (Twitter): @handle"
+    const twitterLink = screen.getByTitle('X (Twitter): @VitalikButerin');
     expect(twitterLink).toHaveAttribute('href', 'https://twitter.com/VitalikButerin');
   });
 

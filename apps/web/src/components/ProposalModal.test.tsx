@@ -135,18 +135,19 @@ describe('ProposalModal', () => {
       expect(screen.getByText('Votre claim :')).toBeInTheDocument();
     });
 
-    it('should show existing predicates in select', () => {
+    it('should show default predicates in select', () => {
       render(
         <ProposalModal
           founder={mockFounder}
           isOpen={true}
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
-          existingPredicates={existingPredicates}
         />
       );
 
-      expect(screen.getByText('is a genius')).toBeInTheDocument();
+      // Default predicates are shown in the select dropdown
+      expect(screen.getByText('is represented by (nouveau)')).toBeInTheDocument();
+      expect(screen.getByText('has totem (nouveau)')).toBeInTheDocument();
     });
   });
 
@@ -317,7 +318,7 @@ describe('ProposalModal', () => {
   });
 
   describe('object modes', () => {
-    it('should show object select when existingObjects provided', () => {
+    it('should show existing objects as clickable buttons when provided', () => {
       render(
         <ProposalModal
           founder={mockFounder}
@@ -328,12 +329,12 @@ describe('ProposalModal', () => {
         />
       );
 
-      // Find "Choisir" buttons - one for predicate, one for object (only if existingObjects provided)
-      const chooseButtons = screen.getAllByRole('button', { name: /choisir/i });
-      expect(chooseButtons.length).toBeGreaterThanOrEqual(1);
+      // Existing objects should appear as clickable buttons
+      expect(screen.getByRole('button', { name: 'Unicorn' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Dragon' })).toBeInTheDocument();
     });
 
-    it('should switch object to select mode', async () => {
+    it('should select existing object when clicked', async () => {
       const user = userEvent.setup();
 
       render(
@@ -346,15 +347,12 @@ describe('ProposalModal', () => {
         />
       );
 
-      // Click the second "Choisir" button (for objects)
-      const chooseButtons = screen.getAllByRole('button', { name: /choisir/i });
-      if (chooseButtons.length > 1) {
-        await user.click(chooseButtons[1]);
+      // Click an existing object button
+      await user.click(screen.getByRole('button', { name: 'Unicorn' }));
 
-        // Should show select for objects
-        const selects = screen.getAllByRole('combobox');
-        expect(selects.length).toBe(2); // predicate + object selects
-      }
+      // The button should now have selected styling (purple background)
+      const unicornButton = screen.getByRole('button', { name: 'Unicorn' });
+      expect(unicornButton.className).toContain('purple');
     });
 
     it('should update object in create mode', async () => {
@@ -369,8 +367,8 @@ describe('ProposalModal', () => {
         />
       );
 
-      // Object is in create mode by default
-      const objectInput = screen.getByPlaceholderText(/guitare, écharpe, phoenix/i);
+      // Object is in create mode by default - find by placeholder
+      const objectInput = screen.getByPlaceholderText(/tapez un totem/i);
       await user.type(objectInput, 'Phoenix');
 
       expect(objectInput).toHaveValue('Phoenix');
@@ -410,7 +408,7 @@ describe('ProposalModal', () => {
       await user.type(screen.getByPlaceholderText(/is represented by/i), 'is symbolized by');
 
       // Fill object
-      await user.type(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i), 'Phoenix');
+      await user.type(screen.getByPlaceholderText(/tapez un totem/i), 'Phoenix');
 
       const submitButton = screen.getByRole('button', { name: /créer le claim/i });
       expect(submitButton).not.toBeDisabled();
@@ -429,7 +427,7 @@ describe('ProposalModal', () => {
       );
 
       // Only fill object (predicate is empty in select mode by default)
-      await user.type(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i), 'Phoenix');
+      await user.type(screen.getByPlaceholderText(/tapez un totem/i), 'Phoenix');
 
       const submitButton = screen.getByRole('button', { name: /créer le claim/i });
       expect(submitButton).toBeDisabled();
@@ -477,7 +475,7 @@ describe('ProposalModal', () => {
       await user.type(screen.getByPlaceholderText(/is represented by/i), 'is symbolized by');
 
       // Fill object
-      await user.type(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i), 'Phoenix');
+      await user.type(screen.getByPlaceholderText(/tapez un totem/i), 'Phoenix');
 
       // Submit
       await user.click(screen.getByRole('button', { name: /créer le claim/i }));
@@ -507,7 +505,7 @@ describe('ProposalModal', () => {
       await user.selectOptions(screen.getByRole('combobox'), 'is represented by');
 
       // Fill object
-      await user.type(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i), 'Phoenix');
+      await user.type(screen.getByPlaceholderText(/tapez un totem/i), 'Phoenix');
 
       // Submit
       await user.click(screen.getByRole('button', { name: /créer le claim/i }));
@@ -608,15 +606,15 @@ describe('ProposalModal', () => {
       );
 
       // Fill object
-      await user.type(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i), 'Unicorn');
+      await user.type(screen.getByPlaceholderText(/tapez un totem/i), 'Unicorn');
 
       // Preview should contain the object
       expect(screen.getByText('Unicorn')).toBeInTheDocument();
     });
   });
 
-  describe('object mode button', () => {
-    it('should switch to create mode when clicking Créer button for object', async () => {
+  describe('object selection with existing objects', () => {
+    it('should allow typing a new object while existing objects are shown', async () => {
       const user = userEvent.setup();
 
       render(
@@ -629,22 +627,14 @@ describe('ProposalModal', () => {
         />
       );
 
-      // First switch to select mode for object
-      const chooseButtons = screen.getAllByRole('button', { name: /choisir/i });
-      await user.click(chooseButtons[1]); // Second Choisir is for objects
+      // Type in the object input
+      const objectInput = screen.getByPlaceholderText(/tapez un totem/i);
+      await user.type(objectInput, 'Phoenix');
 
-      // Now we should have 2 selects (predicate + object)
-      expect(screen.getAllByRole('combobox')).toHaveLength(2);
-
-      // Click Créer button for object (there should be 2 Créer buttons now, second one is for objects)
-      const createButtons = screen.getAllByRole('button', { name: /créer/i });
-      await user.click(createButtons[1]); // Second Créer is for objects
-
-      // Now we should be back to input mode for object
-      expect(screen.getByPlaceholderText(/guitare, écharpe, phoenix/i)).toBeInTheDocument();
+      expect(objectInput).toHaveValue('Phoenix');
     });
 
-    it('should select object from dropdown in select mode', async () => {
+    it('should clear input when clicking existing object button', async () => {
       const user = userEvent.setup();
 
       render(
@@ -657,19 +647,18 @@ describe('ProposalModal', () => {
         />
       );
 
-      // Switch to select mode for object
-      const chooseButtons = screen.getAllByRole('button', { name: /choisir/i });
-      await user.click(chooseButtons[1]);
+      // Type something first
+      const objectInput = screen.getByPlaceholderText(/tapez un totem/i);
+      await user.type(objectInput, 'Phoenix');
 
-      // Select an object from the dropdown
-      const selects = screen.getAllByRole('combobox');
-      const objectSelect = selects[1]; // Second select is for objects
-      await user.selectOptions(objectSelect, '0xobj1');
+      // Click an existing object button
+      await user.click(screen.getByRole('button', { name: 'Unicorn' }));
 
-      expect(objectSelect).toHaveValue('0xobj1');
+      // Input should show the selected object's label
+      expect(objectInput).toHaveValue('Unicorn');
     });
 
-    it('should submit with selected object', async () => {
+    it('should submit with selected existing object', async () => {
       const user = userEvent.setup();
 
       render(
@@ -685,20 +674,15 @@ describe('ProposalModal', () => {
       // Select predicate
       await user.selectOptions(screen.getByRole('combobox'), 'is represented by');
 
-      // Switch to select mode for object
-      const chooseButtons = screen.getAllByRole('button', { name: /choisir/i });
-      await user.click(chooseButtons[1]);
-
-      // Select an object
-      const selects = screen.getAllByRole('combobox');
-      await user.selectOptions(selects[1], '0xobj1');
+      // Click an existing object button
+      await user.click(screen.getByRole('button', { name: 'Unicorn' }));
 
       // Submit
       await user.click(screen.getByRole('button', { name: /créer le claim/i }));
 
       expect(mockOnSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
-          object: '0xobj1',
+          object: '0xobj1', // The ID of Unicorn
         })
       );
     });
