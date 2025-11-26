@@ -11,25 +11,25 @@ describe('aggregateVotes', () => {
     it('should aggregate multiple claims for the same totem', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '50000000000000000000' }, // 50 TRUST
-          negativeVault: { totalAssets: '5000000000000000000' }, // 5 TRUST
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '50000000000000000000' }, // 50 TRUST
+          counter_term: { id: 'c1', total_assets: '5000000000000000000' }, // 5 TRUST
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred2', label: 'embodies' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '30000000000000000000' }, // 30 TRUST
-          negativeVault: { totalAssets: '2000000000000000000' }, // 2 TRUST
+          term_id: '0x2',
+          predicate: { term_id: 'pred2', label: 'embodies' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '30000000000000000000' }, // 30 TRUST
+          counter_term: { id: 'c2', total_assets: '2000000000000000000' }, // 2 TRUST
         },
         {
-          id: '0x3',
-          predicate: { id: 'pred3', label: 'channels' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '20000000000000000000' }, // 20 TRUST
-          negativeVault: { totalAssets: '0' }, // 0 TRUST
+          term_id: '0x3',
+          predicate: { term_id: 'pred3', label: 'channels' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '20000000000000000000' }, // 20 TRUST
+          counter_term: { id: 'c3', total_assets: '0' }, // 0 TRUST
         },
       ];
 
@@ -47,25 +47,25 @@ describe('aggregateVotes', () => {
     it('should handle multiple different totems', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '50000000000000000000' },
-          negativeVault: { totalAssets: '5000000000000000000' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '50000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '5000000000000000000' },
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'eagle', label: 'Eagle' },
-          positiveVault: { totalAssets: '60000000000000000000' },
-          negativeVault: { totalAssets: '10000000000000000000' },
+          term_id: '0x2',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'eagle', label: 'Eagle' },
+          triple_vault: { total_assets: '60000000000000000000' },
+          counter_term: { id: 'c2', total_assets: '10000000000000000000' },
         },
         {
-          id: '0x3',
-          predicate: { id: 'pred2', label: 'embodies' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '30000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x3',
+          predicate: { term_id: 'pred2', label: 'embodies' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '30000000000000000000' },
+          counter_term: { id: 'c3', total_assets: '0' },
         },
       ];
 
@@ -86,11 +86,11 @@ describe('aggregateVotes', () => {
     it('should handle negative NET scores', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is NOT represented by' },
-          object: { id: 'snake', label: 'Snake' },
-          positiveVault: { totalAssets: '5000000000000000000' }, // 5 FOR
-          negativeVault: { totalAssets: '50000000000000000000' }, // 50 AGAINST
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is NOT represented by' },
+          object: { term_id: 'snake', label: 'Snake' },
+          triple_vault: { total_assets: '5000000000000000000' }, // 5 FOR
+          counter_term: { id: 'c1', total_assets: '50000000000000000000' }, // 50 AGAINST
         },
       ];
 
@@ -103,25 +103,25 @@ describe('aggregateVotes', () => {
     it('should sort totems by NET score descending', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '30000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '30000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '0' },
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'eagle', label: 'Eagle' },
-          positiveVault: { totalAssets: '100000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x2',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'eagle', label: 'Eagle' },
+          triple_vault: { total_assets: '100000000000000000000' },
+          counter_term: { id: 'c2', total_assets: '0' },
         },
         {
-          id: '0x3',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'wolf', label: 'Wolf' },
-          positiveVault: { totalAssets: '50000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x3',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'wolf', label: 'Wolf' },
+          triple_vault: { total_assets: '50000000000000000000' },
+          counter_term: { id: 'c3', total_assets: '0' },
         },
       ];
 
@@ -141,18 +141,18 @@ describe('aggregateVotes', () => {
     it('should handle totems with equal NET scores', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '50000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '50000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '0' },
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'eagle', label: 'Eagle' },
-          positiveVault: { totalAssets: '50000000000000000000' }, // Same score
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x2',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'eagle', label: 'Eagle' },
+          triple_vault: { total_assets: '50000000000000000000' }, // Same score
+          counter_term: { id: 'c2', total_assets: '0' },
         },
       ];
 
@@ -167,16 +167,16 @@ describe('aggregateVotes', () => {
     it('should preserve object metadata', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
           object: {
-            id: 'lion',
+            term_id: 'lion',
             label: 'Lion',
             image: 'ipfs://lion.png',
             description: 'King of the jungle',
           },
-          positiveVault: { totalAssets: '50000000000000000000' },
-          negativeVault: { totalAssets: '5000000000000000000' },
+          triple_vault: { total_assets: '50000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '5000000000000000000' },
         },
       ];
 
@@ -192,18 +192,18 @@ describe('aggregateVotes', () => {
     it('should return the totem with highest NET score', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '30000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '30000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '0' },
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'eagle', label: 'Eagle' },
-          positiveVault: { totalAssets: '100000000000000000000' },
-          negativeVault: { totalAssets: '0' },
+          term_id: '0x2',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'eagle', label: 'Eagle' },
+          triple_vault: { total_assets: '100000000000000000000' },
+          counter_term: { id: 'c2', total_assets: '0' },
         },
       ];
 
@@ -223,11 +223,11 @@ describe('aggregateVotes', () => {
     it('should handle single totem', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is represented by' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '50000000000000000000' },
-          negativeVault: { totalAssets: '5000000000000000000' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is represented by' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '50000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '5000000000000000000' },
         },
       ];
 
@@ -241,18 +241,18 @@ describe('aggregateVotes', () => {
     it('should handle negative NET score winner', () => {
       const triples: Triple[] = [
         {
-          id: '0x1',
-          predicate: { id: 'pred1', label: 'is NOT' },
-          object: { id: 'lion', label: 'Lion' },
-          positiveVault: { totalAssets: '5000000000000000000' },
-          negativeVault: { totalAssets: '50000000000000000000' },
+          term_id: '0x1',
+          predicate: { term_id: 'pred1', label: 'is NOT' },
+          object: { term_id: 'lion', label: 'Lion' },
+          triple_vault: { total_assets: '5000000000000000000' },
+          counter_term: { id: 'c1', total_assets: '50000000000000000000' },
         },
         {
-          id: '0x2',
-          predicate: { id: 'pred1', label: 'is NOT' },
-          object: { id: 'eagle', label: 'Eagle' },
-          positiveVault: { totalAssets: '1000000000000000000' },
-          negativeVault: { totalAssets: '100000000000000000000' },
+          term_id: '0x2',
+          predicate: { term_id: 'pred1', label: 'is NOT' },
+          object: { term_id: 'eagle', label: 'Eagle' },
+          triple_vault: { total_assets: '1000000000000000000' },
+          counter_term: { id: 'c2', total_assets: '100000000000000000000' },
         },
       ];
 

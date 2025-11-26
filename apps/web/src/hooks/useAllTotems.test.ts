@@ -11,10 +11,10 @@ vi.mock('../utils/aggregateVotes', () => ({
   aggregateTriplesByObject: vi.fn((triples) => {
     if (!triples || triples.length === 0) return [];
 
-    // Group by object
+    // Group by object (V2 schema uses term_id)
     const grouped = new Map();
     triples.forEach((triple: any) => {
-      const objectId = triple.object.id;
+      const objectId = triple.object.term_id;
       if (!grouped.has(objectId)) {
         grouped.set(objectId, {
           objectId,
@@ -28,14 +28,14 @@ vi.mock('../utils/aggregateVotes', () => ({
       }
       const group = grouped.get(objectId);
       group.claims.push({
-        tripleId: triple.id,
+        tripleId: triple.term_id,
         predicate: triple.predicate.label,
-        trustFor: BigInt(triple.vault?.totalShares || '0'),
-        trustAgainst: BigInt(triple.counterVault?.totalShares || '0'),
-        netScore: BigInt(triple.vault?.totalShares || '0') - BigInt(triple.counterVault?.totalShares || '0'),
+        trustFor: BigInt(triple.triple_vault?.total_assets || '0'),
+        trustAgainst: BigInt(triple.counter_term?.total_assets || '0'),
+        netScore: BigInt(triple.triple_vault?.total_assets || '0') - BigInt(triple.counter_term?.total_assets || '0'),
       });
-      group.totalFor += BigInt(triple.vault?.totalShares || '0');
-      group.totalAgainst += BigInt(triple.counterVault?.totalShares || '0');
+      group.totalFor += BigInt(triple.triple_vault?.total_assets || '0');
+      group.totalAgainst += BigInt(triple.counter_term?.total_assets || '0');
       group.netScore = group.totalFor - group.totalAgainst;
       group.claimCount++;
     });
@@ -47,23 +47,23 @@ vi.mock('../utils/aggregateVotes', () => ({
 import { useQuery } from '@apollo/client';
 import { useAllTotems } from './useAllTotems';
 
-// Mock triple data
+// Mock triple data (V2 schema)
 const mockTriples = [
   {
-    id: '0xtriple1',
-    subject: { id: '0xsubject1', label: 'Vitalik Buterin', image: 'https://example.com/vitalik.jpg' },
-    predicate: { id: '0xpred1', label: 'is represented by' },
-    object: { id: '0xobject1', label: 'Unicorn', image: 'https://example.com/unicorn.jpg' },
-    vault: { positionCount: 5, totalShares: '1000000000000000000' },
-    counterVault: { positionCount: 2, totalShares: '200000000000000000' },
+    term_id: '0xtriple1',
+    subject: { term_id: '0xsubject1', label: 'Vitalik Buterin', image: 'https://example.com/vitalik.jpg' },
+    predicate: { term_id: '0xpred1', label: 'is represented by' },
+    object: { term_id: '0xobject1', label: 'Unicorn', image: 'https://example.com/unicorn.jpg' },
+    triple_vault: { total_assets: '1000000000000000000', total_shares: '1000000000000000000' },
+    counter_term: { id: '0xcounter1', total_assets: '200000000000000000' },
   },
   {
-    id: '0xtriple2',
-    subject: { id: '0xsubject1', label: 'Vitalik Buterin', image: 'https://example.com/vitalik.jpg' },
-    predicate: { id: '0xpred2', label: 'embodies' },
-    object: { id: '0xobject1', label: 'Unicorn', image: 'https://example.com/unicorn.jpg' },
-    vault: { positionCount: 3, totalShares: '500000000000000000' },
-    counterVault: { positionCount: 1, totalShares: '100000000000000000' },
+    term_id: '0xtriple2',
+    subject: { term_id: '0xsubject1', label: 'Vitalik Buterin', image: 'https://example.com/vitalik.jpg' },
+    predicate: { term_id: '0xpred2', label: 'embodies' },
+    object: { term_id: '0xobject1', label: 'Unicorn', image: 'https://example.com/unicorn.jpg' },
+    triple_vault: { total_assets: '500000000000000000', total_shares: '500000000000000000' },
+    counter_term: { id: '0xcounter2', total_assets: '100000000000000000' },
   },
 ];
 
