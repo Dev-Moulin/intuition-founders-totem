@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import foundersData from '../../../../packages/shared/src/data/founders.json';
-import type { FounderData } from '../components/FounderCard';
+import type { FounderData } from '../types/founder';
 import { GET_ATOMS_BY_LABELS, GET_ALL_PROPOSALS } from '../lib/graphql/queries';
 import type { Triple } from '../lib/graphql/types';
 import { aggregateTriplesByObject } from '../utils/aggregateVotes';

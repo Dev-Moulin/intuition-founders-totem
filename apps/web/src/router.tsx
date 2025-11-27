@@ -3,13 +3,15 @@ import { Layout } from './components/Layout';
 import { NetworkGuard } from './components/NetworkGuard';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { ProposePage } from './pages/ProposePage';
-import { VotePage } from './pages/VotePage';
-import { ResultsPage } from './pages/ResultsPage';
-import { FounderDetailsPage } from './pages/FounderDetailsPage';
-import { TotemDetailsPage } from './pages/TotemDetailsPage';
-import { MyVotesPage } from './pages/MyVotesPage';
 import { AdminAuditPage } from './pages/AdminAuditPage';
+
+// DEPRECATED - Pages à supprimer - Commenté le 27/11/2025
+// import { ProposePage } from './pages/ProposePage';
+// import { VotePage } from './pages/VotePage';
+// import { ResultsPage } from './pages/ResultsPage';
+// import { FounderDetailsPage } from './pages/FounderDetailsPage';
+// import { TotemDetailsPage } from './pages/TotemDetailsPage';
+// import { MyVotesPage } from './pages/MyVotesPage';
 
 // Root layout with Layout and NetworkGuard
 function RootLayout() {
@@ -22,8 +24,8 @@ function RootLayout() {
   );
 }
 
-// Placeholder pages - will be replaced with actual components
-
+// DEPRECATED - Placeholder à supprimer - Commenté le 27/11/2025
+/*
 function FounderVotePage() {
   return (
     <div className="text-center">
@@ -32,6 +34,7 @@ function FounderVotePage() {
     </div>
   );
 }
+*/
 
 export const router = createBrowserRouter([
   {
@@ -42,34 +45,35 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      {
-        path: 'propose',
-        element: <ProposePage />,
-      },
-      {
-        path: 'vote',
-        element: <VotePage />,
-      },
-      {
-        path: 'vote/:founderId',
-        element: <FounderVotePage />,
-      },
-      {
-        path: 'results',
-        element: <ResultsPage />,
-      },
-      {
-        path: 'results/:founderId',
-        element: <FounderDetailsPage />,
-      },
-      {
-        path: 'results/:founderId/:totemId',
-        element: <TotemDetailsPage />,
-      },
-      {
-        path: 'my-votes',
-        element: <MyVotesPage />,
-      },
+      // DEPRECATED - Routes à supprimer - Commenté le 27/11/2025
+      // {
+      //   path: 'propose',
+      //   element: <ProposePage />,
+      // },
+      // {
+      //   path: 'vote',
+      //   element: <VotePage />,
+      // },
+      // {
+      //   path: 'vote/:founderId',
+      //   element: <FounderVotePage />,
+      // },
+      // {
+      //   path: 'results',
+      //   element: <ResultsPage />,
+      // },
+      // {
+      //   path: 'results/:founderId',
+      //   element: <FounderDetailsPage />,
+      // },
+      // {
+      //   path: 'results/:founderId/:totemId',
+      //   element: <TotemDetailsPage />,
+      // },
+      // {
+      //   path: 'my-votes',
+      //   element: <MyVotesPage />,
+      // },
       {
         path: 'admin/audit',
         element: <AdminAuditPage />,
