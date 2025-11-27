@@ -1,4 +1,4 @@
-# 🔥 INTUITION Founders Totem Collection 👁️
+# 🔥 INTUITION Founders Collection 👁️
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with INTUITION](https://img.shields.io/badge/Built%20with-INTUITION-purple)](https://www.intuition.systems/)
