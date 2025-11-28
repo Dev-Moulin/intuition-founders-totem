@@ -15,6 +15,8 @@ export {
   enrichTripleWithVotes,
 } from './voteCalculations';
 
+export { formatTimeSinceUpdate, getTimeAgo } from './formatters';
+
 // GraphQL types
 export type {
   Atom,

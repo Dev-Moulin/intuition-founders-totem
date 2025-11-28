@@ -82,10 +82,8 @@ export { useProtocolConfig } from './useProtocolConfig';
 export type { ProtocolConfig } from '../types/protocol';
 
 // Hook for real-time founder proposals via WebSocket subscription
-export {
-  useFounderSubscription,
-  formatTimeSinceUpdate,
-} from './useFounderSubscription';
+export { useFounderSubscription } from './useFounderSubscription';
+export { formatTimeSinceUpdate } from '../utils/formatters';
 
 // Hook for detecting window/tab focus state
 export {

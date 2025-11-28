@@ -156,17 +156,5 @@ export function useFounderSubscription(
   };
 }
 
-/**
- * Format seconds since update for display
- *
- * @param seconds - Number of seconds
- * @returns Formatted string (e.g., "il y a 5s", "il y a 2min")
- */
-export function formatTimeSinceUpdate(seconds: number): string {
-  if (seconds < 5) return 'à l\'instant';
-  if (seconds < 60) return `il y a ${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `il y a ${minutes}min`;
-  const hours = Math.floor(minutes / 60);
-  return `il y a ${hours}h`;
-}
+// Re-export for backward compatibility
+export { formatTimeSinceUpdate } from '../utils/formatters';
