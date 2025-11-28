@@ -758,3 +758,28 @@ export const GET_TOTEMS_BY_CATEGORY = gql`
     }
   }
 `;
+
+/**
+ * Get voters for a specific totem (triple)
+ * Returns the last N voters ordered by creation date (most recent first)
+ */
+export const GET_TOTEM_VOTERS = gql`
+  query GetTotemVoters($termId: String!, $limit: Int = 50) {
+    deposits(
+      where: {
+        term_id: { _eq: $termId }
+        vault_type: { _in: ["triple_positive", "triple_negative"] }
+      }
+      order_by: { created_at: desc }
+      limit: $limit
+    ) {
+      id
+      sender_id
+      vault_type
+      assets_after_fees
+      shares
+      created_at
+      transaction_hash
+    }
+  }
+`;

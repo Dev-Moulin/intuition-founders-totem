@@ -53,7 +53,8 @@ export {
 // export { usePlatformStats, type PlatformStats, type TopTotem } from './usePlatformStats';
 
 // Hook for fetching voters of a specific totem
-export { useTotemVoters, type TotemVoter } from './useTotemVoters';
+export { useTotemVoters } from './useTotemVoters';
+export type { TotemVoter } from '../types/voter';
 
 // Hook for withdrawing TRUST from vaults
 export {
