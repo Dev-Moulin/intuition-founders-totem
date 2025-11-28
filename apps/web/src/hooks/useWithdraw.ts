@@ -4,34 +4,7 @@ import { formatEther, type Hex } from 'viem';
 import { redeem, getMultiVaultAddressFromChainId } from '@0xintuition/protocol';
 import { currentIntuitionChain } from '../config/wagmi';
 import { toast } from 'sonner';
-
-/**
- * Withdraw status states
- */
-export type WithdrawStatus =
-  | 'idle'
-  | 'calculating'
-  | 'withdrawing'
-  | 'success'
-  | 'error';
-
-/**
- * Withdraw error with details
- */
-export interface WithdrawError {
-  code: string;
-  message: string;
-}
-
-/**
- * Preview of withdrawal amounts
- */
-export interface WithdrawPreview {
-  shares: bigint;
-  estimatedAssets: bigint;
-  formattedAssets: string;
-  exitFeePercent: number;
-}
+import type { WithdrawStatus, WithdrawError, WithdrawPreview } from '../types/withdraw';
 
 /**
  * Result of useWithdraw hook

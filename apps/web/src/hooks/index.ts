@@ -60,10 +60,8 @@ export {
   useWithdraw,
   estimateWithdrawAmount,
   type UseWithdrawResult,
-  type WithdrawStatus,
-  type WithdrawError,
-  type WithdrawPreview,
 } from './useWithdraw';
+export type { WithdrawStatus, WithdrawError, WithdrawPreview } from '../types/withdraw';
 
 // useWalletAuth - SUPPRIMÉ (auth handled by wagmi/Privy)
 
