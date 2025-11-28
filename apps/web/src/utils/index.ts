@@ -17,16 +17,4 @@ export {
 
 export { formatTimeSinceUpdate, getTimeAgo } from './formatters';
 
-// GraphQL types
-export type {
-  Atom,
-  Triple as GraphQLTriple,
-  Deposit,
-  Position,
-  Vault,
-  Account,
-  VaultType,
-  AtomType,
-  ProposalWithVotes,
-  TripleVoteCounts,
-} from '../lib/graphql/types';
+export { getCategoryName } from './category';

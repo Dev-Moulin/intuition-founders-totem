@@ -10,42 +10,15 @@ import { WalletConnectButton } from './ConnectButton';
 import { ClaimExistsModal, type ExistingClaimInfo } from './ClaimExistsModal';
 import { GET_TRIPLES_BY_PREDICATES, GET_ATOMS_BY_LABELS, GET_TRIPLE_BY_ATOMS, GET_FOUNDER_RECENT_VOTES } from '../lib/graphql/queries';
 import { SUBSCRIBE_TOTEM_CATEGORIES } from '../lib/graphql/subscriptions';
-import { getTimeAgo } from '../utils/formatters';
+import { getTimeAgo, getCategoryName } from '../utils';
+import { OFC_PREFIX } from '../config/constants';
+import type { CategoryConfigType } from '../types/category';
+import type { Predicate } from '../types/predicate';
 import predicatesData from '../../../../packages/shared/src/data/predicates.json';
 import categoriesConfig from '../../../../packages/shared/src/data/categories.json';
 
-// Préfixe utilisé pour les catégories OFC (Overmind Founders Collection)
-const OFC_PREFIX = 'OFC:';
-
-// Type for categories.json config
-interface CategoryConfigType {
-  predicate: {
-    id: string;
-    label: string;
-    description: string;
-    termId: string | null;
-  };
-  categories: Array<{
-    id: string;
-    label: string;
-    name: string;
-    termId: string | null;
-  }>;
-}
-
 // Cast imported JSON to typed config
 const typedCategoriesConfig = categoriesConfig as CategoryConfigType;
-
-// Helper to extract category name from OFC label (e.g., "OFC:Animal" -> "Animal")
-const getCategoryName = (label: string) => label.replace(OFC_PREFIX, '');
-
-interface Predicate {
-  id: string;
-  label: string;
-  description: string;
-  termId: string | null;
-  isDefault: boolean;
-}
 
 interface VotePanelProps {
   founder: FounderForHomePage;
