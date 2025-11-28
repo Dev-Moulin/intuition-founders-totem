@@ -91,3 +91,7 @@ export {
   useWindowFocus,
   useAutoSubscriptionPause,
 } from './useWindowFocus';
+
+// Hook for founders on HomePage with winning totems
+export { useFoundersForHomePage } from './useFoundersForHomePage';
+export type { TrendDirection, WinningTotem, FounderForHomePage } from '../types/founder';

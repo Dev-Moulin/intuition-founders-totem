@@ -1,40 +1,13 @@
 import { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import foundersData from '../../../../packages/shared/src/data/founders.json';
-import type { FounderData } from '../types/founder';
+import type { FounderData, TrendDirection, WinningTotem, FounderForHomePage } from '../types/founder';
 import { GET_ATOMS_BY_LABELS, GET_ALL_PROPOSALS } from '../lib/graphql/queries';
 import type { Triple } from '../lib/graphql/types';
 import { aggregateTriplesByObject } from '../utils/aggregateVotes';
 
-/**
- * Trend direction for score changes
- */
-export type TrendDirection = 'up' | 'down' | 'neutral';
-
-/**
- * Winning totem data for a founder
- */
-export interface WinningTotem {
-  objectId: string;
-  label: string;
-  image?: string;
-  netScore: bigint;
-  totalFor: bigint;
-  totalAgainst: bigint;
-  claimCount: number;
-  /** Trend based on FOR/AGAINST ratio: up if > 60% FOR, down if < 40% FOR, neutral otherwise */
-  trend: TrendDirection;
-}
-
-/**
- * Founder data enriched with atomId and winning totem for HomePage
- */
-export interface FounderForHomePage extends FounderData {
-  winningTotem: WinningTotem | null;
-  proposalCount: number;
-  /** Number of new totems proposed in the last 24 hours */
-  recentActivityCount: number;
-}
+// Re-export for backward compatibility
+export type { TrendDirection, WinningTotem, FounderForHomePage };
 
 interface AtomResult {
   term_id: string;
