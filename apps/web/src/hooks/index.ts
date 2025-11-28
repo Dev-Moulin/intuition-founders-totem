@@ -77,7 +77,8 @@ export {
 export type { CategoryConfig } from '../types/intuition';
 
 // Hook for INTUITION protocol configuration (costs, fees)
-export { useProtocolConfig, type ProtocolConfig } from './useProtocolConfig';
+export { useProtocolConfig } from './useProtocolConfig';
+export type { ProtocolConfig } from '../types/protocol';
 
 // Hook for real-time founder proposals via WebSocket subscription
 export {
