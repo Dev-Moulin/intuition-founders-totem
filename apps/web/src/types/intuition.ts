@@ -1,0 +1,84 @@
+/**
+ * Intuition protocol operation types
+ */
+
+import type { Hex } from 'viem';
+
+/**
+ * Type for categories.json config structure
+ */
+export interface CategoryConfig {
+  predicate: {
+    id: string;
+    label: string;
+    description: string;
+    termId: string | null;
+  };
+  categories: Array<{
+    id: string;
+    label: string;
+    name: string;
+    termId: string | null;
+  }>;
+}
+
+/**
+ * Result of creating an atom
+ */
+export interface CreateAtomResult {
+  uri: string;
+  transactionHash: string;
+  termId: Hex;
+}
+
+/**
+ * Result of creating a triple (claim)
+ */
+export interface CreateTripleResult {
+  transactionHash: string;
+  tripleId: Hex;
+  subjectId: Hex;
+  predicateId: Hex;
+  objectId: Hex;
+}
+
+/**
+ * Data for founder atom creation
+ */
+export interface FounderData {
+  name: string;
+  shortBio: string;
+  fullBio?: string;
+  twitter?: string | null;
+  linkedin?: string | null;
+  github?: string | null;
+  image?: string;
+}
+
+/**
+ * Custom error for when a claim already exists
+ * Contains the existing triple info so UI can redirect to vote page
+ */
+export class ClaimExistsError extends Error {
+  public readonly termId: Hex;
+  public readonly subjectLabel: string;
+  public readonly predicateLabel: string;
+  public readonly objectLabel: string;
+
+  constructor(data: {
+    termId: Hex;
+    subjectLabel: string;
+    predicateLabel: string;
+    objectLabel: string;
+  }) {
+    super(
+      `Ce claim existe déjà : "${data.subjectLabel} ${data.predicateLabel} ${data.objectLabel}". ` +
+      `Vous pouvez voter dessus au lieu de le recréer.`
+    );
+    this.name = 'ClaimExistsError';
+    this.termId = data.termId;
+    this.subjectLabel = data.subjectLabel;
+    this.predicateLabel = data.predicateLabel;
+    this.objectLabel = data.objectLabel;
+  }
+}

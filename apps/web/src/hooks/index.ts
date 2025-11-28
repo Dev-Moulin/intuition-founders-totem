@@ -65,6 +65,17 @@ export type { WithdrawStatus, WithdrawError, WithdrawPreview } from '../types/wi
 
 // useWalletAuth - SUPPRIMÉ (auth handled by wagmi/Privy)
 
+// Hook for INTUITION protocol operations (atoms, triples, claims)
+export {
+  useIntuition,
+  getFounderImageUrl,
+  type CreateAtomResult,
+  type CreateTripleResult,
+  type FounderData,
+  ClaimExistsError,
+} from './useIntuition';
+export type { CategoryConfig } from '../types/intuition';
+
 // Hook for INTUITION protocol configuration (costs, fees)
 export { useProtocolConfig, type ProtocolConfig } from './useProtocolConfig';
 

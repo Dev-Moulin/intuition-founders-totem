@@ -11,77 +11,15 @@ import { multiCallIntuitionConfigs, MultiVaultAbi } from '@0xintuition/protocol'
 import { currentIntuitionChain } from '../config/wagmi';
 import { GET_ATOMS_BY_LABELS, GET_TRIPLE_BY_ATOMS } from '../lib/graphql/queries';
 import categoriesConfig from '../../../../packages/shared/src/data/categories.json';
+import type { CategoryConfig, CreateAtomResult, CreateTripleResult, FounderData } from '../types/intuition';
+import { ClaimExistsError } from '../types/intuition';
 
-// Type for categories.json config
-interface CategoryConfig {
-  predicate: {
-    id: string;
-    label: string;
-    description: string;
-    termId: string | null;
-  };
-  categories: Array<{
-    id: string;
-    label: string;
-    name: string;
-    termId: string | null;
-  }>;
-}
+// Re-export types for backward compatibility
+export type { CreateAtomResult, CreateTripleResult, FounderData };
+export { ClaimExistsError };
 
 // Cast imported JSON to typed config
 const typedCategoriesConfig = categoriesConfig as CategoryConfig;
-
-export interface CreateAtomResult {
-  uri: string;
-  transactionHash: string;
-  termId: Hex;
-}
-
-export interface CreateTripleResult {
-  transactionHash: string;
-  tripleId: Hex;
-  subjectId: Hex;
-  predicateId: Hex;
-  objectId: Hex;
-}
-
-/**
- * Custom error for when a claim already exists
- * Contains the existing triple info so UI can redirect to vote page
- */
-export class ClaimExistsError extends Error {
-  public readonly termId: Hex;
-  public readonly subjectLabel: string;
-  public readonly predicateLabel: string;
-  public readonly objectLabel: string;
-
-  constructor(data: {
-    termId: Hex;
-    subjectLabel: string;
-    predicateLabel: string;
-    objectLabel: string;
-  }) {
-    super(
-      `Ce claim existe déjà : "${data.subjectLabel} ${data.predicateLabel} ${data.objectLabel}". ` +
-      `Vous pouvez voter dessus au lieu de le recréer.`
-    );
-    this.name = 'ClaimExistsError';
-    this.termId = data.termId;
-    this.subjectLabel = data.subjectLabel;
-    this.predicateLabel = data.predicateLabel;
-    this.objectLabel = data.objectLabel;
-  }
-}
-
-export interface FounderData {
-  name: string;
-  shortBio: string;
-  fullBio?: string;
-  twitter?: string | null;
-  linkedin?: string | null;
-  github?: string | null;
-  image?: string;
-}
 
 // DEPRECATED: Fonction déplacée vers utils/founderImage.ts
 // Gardée en commentaire pour rollback si nécessaire
