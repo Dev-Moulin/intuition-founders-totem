@@ -28,14 +28,15 @@ export {
   // formatTotalVotes,
   hasVotedOnTerm,
   getUserVoteDirection,
-  type VoteWithDetails,
+  // type VoteWithDetails, // Migré vers types/vote.ts
 } from './useUserVotes';
 
 // DEPRECATED - À supprimer - Commenté le 27/11/2025
 // export { useAllTotems, type AggregatedTotem } from './useAllTotems';
 
 // Hook for voting on claims
-export { useVote, type UseVoteResult, type VoteStatus, type VoteError } from './useVote';
+export { useVote, type UseVoteResult } from './useVote';
+export type { VoteStatus, VoteError, VoteWithDetails } from '../types/vote';
 
 // Hooks for vote statistics and leaderboard
 export {
@@ -52,31 +53,44 @@ export {
 // export { usePlatformStats, type PlatformStats, type TopTotem } from './usePlatformStats';
 
 // Hook for fetching voters of a specific totem
-export { useTotemVoters, type TotemVoter } from './useTotemVoters';
+export { useTotemVoters } from './useTotemVoters';
+export type { TotemVoter } from '../types/voter';
 
 // Hook for withdrawing TRUST from vaults
 export {
   useWithdraw,
   estimateWithdrawAmount,
   type UseWithdrawResult,
-  type WithdrawStatus,
-  type WithdrawError,
-  type WithdrawPreview,
 } from './useWithdraw';
+export type { WithdrawStatus, WithdrawError, WithdrawPreview } from '../types/withdraw';
 
 // useWalletAuth - SUPPRIMÉ (auth handled by wagmi/Privy)
 
+// Hook for INTUITION protocol operations (atoms, triples, claims)
+export {
+  useIntuition,
+  getFounderImageUrl,
+  type CreateAtomResult,
+  type CreateTripleResult,
+  type FounderData,
+  ClaimExistsError,
+} from './useIntuition';
+export type { CategoryConfig } from '../types/intuition';
+
 // Hook for INTUITION protocol configuration (costs, fees)
-export { useProtocolConfig, type ProtocolConfig } from './useProtocolConfig';
+export { useProtocolConfig } from './useProtocolConfig';
+export type { ProtocolConfig } from '../types/protocol';
 
 // Hook for real-time founder proposals via WebSocket subscription
-export {
-  useFounderSubscription,
-  formatTimeSinceUpdate,
-} from './useFounderSubscription';
+export { useFounderSubscription } from './useFounderSubscription';
+export { formatTimeSinceUpdate } from '../utils/formatters';
 
 // Hook for detecting window/tab focus state
 export {
   useWindowFocus,
   useAutoSubscriptionPause,
 } from './useWindowFocus';
+
+// Hook for founders on HomePage with winning totems
+export { useFoundersForHomePage } from './useFoundersForHomePage';
+export type { TrendDirection, WinningTotem, FounderForHomePage } from '../types/founder';

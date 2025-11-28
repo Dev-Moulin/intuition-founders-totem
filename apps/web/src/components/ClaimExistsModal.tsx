@@ -7,19 +7,14 @@ import { useVote } from '../hooks/useVote';
 import { formatVoteAmount } from '../hooks/useFounderProposals';
 import { GET_USER_POSITION } from '../lib/graphql/queries';
 import { WithdrawModal } from './WithdrawModal';
+import type { ExistingClaimInfo } from '../types/claim';
+
+// Re-export for backward compatibility
+export type { ExistingClaimInfo } from '../types/claim';
 
 interface UserPosition {
   id: string;
   shares: string;
-}
-
-export interface ExistingClaimInfo {
-  termId: string;
-  subjectLabel: string;
-  predicateLabel: string;
-  objectLabel: string;
-  forVotes?: string;
-  againstVotes?: string;
 }
 
 interface ClaimExistsModalProps {

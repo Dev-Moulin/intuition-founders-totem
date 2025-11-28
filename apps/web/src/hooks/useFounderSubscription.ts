@@ -1,61 +1,14 @@
 import { useSubscription } from '@apollo/client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SUBSCRIBE_FOUNDER_PROPOSALS } from '../lib/graphql/subscriptions';
-import type { Triple, ProposalWithVotes, TripleVoteCounts } from '../lib/graphql/types';
+import type { Triple, ProposalWithVotes } from '../lib/graphql/types';
+import { enrichTripleWithVotes } from '../utils/voteCalculations';
 
 /**
  * Subscription result type from GraphQL
  */
 interface SubscriptionData {
   triples: Triple[];
-}
-
-/**
- * Calculate vote counts for a triple
- */
-function calculateVoteCounts(triple: Triple): TripleVoteCounts {
-  const forVotes = triple.triple_vault?.total_assets || '0';
-  const againstVotes = triple.counter_term?.total_assets || '0';
-  const forShares = triple.triple_vault?.total_shares || '0';
-  const againstShares = '0';
-
-  const forBigInt = BigInt(forVotes);
-  const againstBigInt = BigInt(againstVotes);
-  const netVotes = (forBigInt - againstBigInt).toString();
-
-  return {
-    forVotes,
-    againstVotes,
-    netVotes,
-    forShares,
-    againstShares,
-  };
-}
-
-/**
- * Calculate percentage of FOR votes
- */
-function calculatePercentage(votes: TripleVoteCounts): number {
-  const forBigInt = BigInt(votes.forVotes);
-  const againstBigInt = BigInt(votes.againstVotes);
-  const total = forBigInt + againstBigInt;
-
-  if (total === 0n) return 0;
-  return Number((forBigInt * 100n) / total);
-}
-
-/**
- * Enrich triple with vote data
- */
-function enrichTripleWithVotes(triple: Triple): ProposalWithVotes {
-  const votes = calculateVoteCounts(triple);
-  const percentage = calculatePercentage(votes);
-
-  return {
-    ...triple,
-    votes,
-    percentage,
-  };
 }
 
 /**
@@ -203,17 +156,5 @@ export function useFounderSubscription(
   };
 }
 
-/**
- * Format seconds since update for display
- *
- * @param seconds - Number of seconds
- * @returns Formatted string (e.g., "il y a 5s", "il y a 2min")
- */
-export function formatTimeSinceUpdate(seconds: number): string {
-  if (seconds < 5) return 'à l\'instant';
-  if (seconds < 60) return `il y a ${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `il y a ${minutes}min`;
-  const hours = Math.floor(minutes / 60);
-  return `il y a ${hours}h`;
-}
+// Re-export for backward compatibility
+export { formatTimeSinceUpdate } from '../utils/formatters';

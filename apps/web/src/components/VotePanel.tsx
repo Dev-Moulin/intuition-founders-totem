@@ -10,60 +10,15 @@ import { WalletConnectButton } from './ConnectButton';
 import { ClaimExistsModal, type ExistingClaimInfo } from './ClaimExistsModal';
 import { GET_TRIPLES_BY_PREDICATES, GET_ATOMS_BY_LABELS, GET_TRIPLE_BY_ATOMS, GET_FOUNDER_RECENT_VOTES } from '../lib/graphql/queries';
 import { SUBSCRIBE_TOTEM_CATEGORIES } from '../lib/graphql/subscriptions';
+import { getTimeAgo, getCategoryName } from '../utils';
+import { OFC_PREFIX } from '../config/constants';
+import type { CategoryConfigType } from '../types/category';
+import type { Predicate } from '../types/predicate';
 import predicatesData from '../../../../packages/shared/src/data/predicates.json';
 import categoriesConfig from '../../../../packages/shared/src/data/categories.json';
 
-// Préfixe utilisé pour les catégories OFC (Overmind Founders Collection)
-const OFC_PREFIX = 'OFC:';
-
-/**
- * Format timestamp to relative time string (e.g., "2m ago", "1h ago")
- */
-function getTimeAgo(timestamp: string): string {
-  const now = Date.now();
-  const then = new Date(timestamp).getTime();
-  const diffMs = now - then;
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
-
-  if (diffSec < 60) return 'à l\'instant';
-  if (diffMin < 60) return `${diffMin}m`;
-  if (diffHour < 24) return `${diffHour}h`;
-  if (diffDay < 7) return `${diffDay}j`;
-  return new Date(timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-}
-
-// Type for categories.json config
-interface CategoryConfigType {
-  predicate: {
-    id: string;
-    label: string;
-    description: string;
-    termId: string | null;
-  };
-  categories: Array<{
-    id: string;
-    label: string;
-    name: string;
-    termId: string | null;
-  }>;
-}
-
 // Cast imported JSON to typed config
 const typedCategoriesConfig = categoriesConfig as CategoryConfigType;
-
-// Helper to extract category name from OFC label (e.g., "OFC:Animal" -> "Animal")
-const getCategoryName = (label: string) => label.replace(OFC_PREFIX, '');
-
-interface Predicate {
-  id: string;
-  label: string;
-  description: string;
-  termId: string | null;
-  isDefault: boolean;
-}
 
 interface VotePanelProps {
   founder: FounderForHomePage;

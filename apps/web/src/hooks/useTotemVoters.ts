@@ -1,42 +1,10 @@
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { formatEther } from 'viem';
+import { GET_TOTEM_VOTERS } from '../lib/graphql/queries';
+import type { TotemVoter } from '../types/voter';
 
-/**
- * GraphQL query to fetch voters for a specific triple (totem)
- * Returns the last N voters ordered by creation date (most recent first)
- */
-const GET_TOTEM_VOTERS = gql`
-  query GetTotemVoters($termId: String!, $limit: Int = 50) {
-    deposits(
-      where: {
-        term_id: { _eq: $termId }
-        vault_type: { _in: ["triple_positive", "triple_negative"] }
-      }
-      order_by: { created_at: desc }
-      limit: $limit
-    ) {
-      id
-      sender_id
-      vault_type
-      assets_after_fees
-      shares
-      created_at
-      transaction_hash
-    }
-  }
-`;
-
-/**
- * Voter information
- */
-export interface TotemVoter {
-  address: string;
-  amount: string;
-  formattedAmount: string;
-  isFor: boolean;
-  createdAt: string;
-  transactionHash: string;
-}
+// Re-export for backward compatibility
+export type { TotemVoter };
 
 /**
  * Result type for GET_TOTEM_VOTERS query
