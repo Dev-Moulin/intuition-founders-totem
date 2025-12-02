@@ -50,7 +50,7 @@ export function VoteTotemPanel({
 
   // Form state
   const [selectedPredicateId, setSelectedPredicateId] = useState<string>(predicates[0]?.id || '');
-  const [voteDirection, setVoteDirection] = useState<'for' | 'against'>('for');
+  const [voteDirection, setVoteDirection] = useState<'for' | 'against' | 'withdraw'>('for');
   const [trustAmount, setTrustAmount] = useState<string>('');
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -167,7 +167,7 @@ export function VoteTotemPanel({
 
         {/* Vote Direction */}
         <div>
-          <label className="block text-xs text-white/60 mb-1">Direction du vote</label>
+          <label className="block text-xs text-white/60 mb-1">Action</label>
           <div className="flex gap-2">
             <button
               onClick={() => setVoteDirection('for')}
@@ -188,6 +188,16 @@ export function VoteTotemPanel({
               }`}
             >
               AGAINST
+            </button>
+            <button
+              onClick={() => setVoteDirection('withdraw')}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                voteDirection === 'withdraw'
+                  ? 'bg-orange-500/30 text-orange-300 ring-1 ring-orange-500/50'
+                  : 'bg-white/5 text-white/60 hover:bg-white/10'
+              }`}
+            >
+              Retirer
             </button>
           </div>
         </div>
@@ -217,14 +227,16 @@ export function VoteTotemPanel({
         {/* Preview */}
         {selectedTotemLabel && (
           <div className="bg-white/5 rounded-lg p-3">
-            <div className="text-xs text-white/60 mb-1">Aperçu du vote</div>
+            <div className="text-xs text-white/60 mb-1">
+              {voteDirection === 'withdraw' ? 'Aperçu du retrait' : 'Aperçu du vote'}
+            </div>
             <p className="text-sm text-white">
               <span className="text-purple-400">{founder.name}</span>
               {' '}{selectedPredicate?.label || '...'}{' '}
               <span className="text-purple-400">{selectedTotemLabel}</span>
             </p>
             <p className="text-xs text-white/50 mt-1">
-              {voteDirection === 'for' ? '👍 FOR' : '👎 AGAINST'} - {trustAmount || '0'} TRUST
+              {voteDirection === 'for' ? '👍 FOR' : voteDirection === 'against' ? '👎 AGAINST' : '🔄 RETIRER'} - {trustAmount || '0'} TRUST
             </p>
           </div>
         )}
@@ -237,11 +249,13 @@ export function VoteTotemPanel({
           disabled={!isFormValid}
           className={`w-full py-3 rounded-lg font-medium transition-colors ${
             isFormValid
-              ? 'bg-purple-600 hover:bg-purple-700 text-white'
+              ? voteDirection === 'withdraw'
+                ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                : 'bg-purple-600 hover:bg-purple-700 text-white'
               : 'bg-white/10 text-white/40 cursor-not-allowed'
           }`}
         >
-          Ajouter au panier
+          {voteDirection === 'withdraw' ? 'Retirer ma position' : 'Ajouter au panier'}
         </button>
         {itemCount > 0 && (
           <p className="text-center text-xs text-white/50 mt-2">

@@ -330,22 +330,18 @@ export function VoteGraphWithStats({
       />
 
       {stats && (
-        <div className="grid grid-cols-4 gap-2 text-center">
+        <div className="grid grid-cols-3 gap-2 text-center">
           <div className="bg-white/5 rounded p-2">
-            <div className="text-lg font-bold text-white">{stats.uniqueTotems}</div>
+            <div className="text-lg font-bold text-green-400">{stats.uniqueTotems}</div>
             <div className="text-xs text-white/50">Totems</div>
           </div>
           <div className="bg-white/5 rounded p-2">
             <div className="text-lg font-bold text-white">{stats.totalEdges}</div>
-            <div className="text-xs text-white/50">Relations</div>
-          </div>
-          <div className="bg-white/5 rounded p-2">
-            <div className="text-lg font-bold text-white">{stats.uniquePredicates}</div>
-            <div className="text-xs text-white/50">Prédicats</div>
+            <div className="text-xs text-white/50">Connexions</div>
           </div>
           <div className="bg-white/5 rounded p-2">
             <div className="text-lg font-bold text-purple-400">{stats.totalVotes}</div>
-            <div className="text-xs text-white/50">TRUST</div>
+            <div className="text-xs text-white/50">Total TRUST</div>
           </div>
         </div>
       )}

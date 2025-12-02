@@ -1,12 +1,13 @@
 /**
- * FounderCenterPanel - Center panel showing totems grid and user positions
+ * FounderCenterPanel - Center panel showing graph, totems grid and user positions
  *
  * Displays:
+ * - Knowledge graph at the top (always visible)
  * - Grid of existing totems with scores
  * - User's positions on this founder (if connected)
  * - Click on totem to select for voting
  *
- * @see Phase 9 in TODO_Implementation.md
+ * @see Phase 9 & 10 in TODO_Implementation.md
  */
 
 import { useState, useMemo, lazy, Suspense } from 'react';
@@ -15,11 +16,12 @@ import { useAccount } from 'wagmi';
 import type { FounderForHomePage } from '../../hooks/useFoundersForHomePage';
 import { useFounderProposals } from '../../hooks/useFounderProposals';
 import { useVoteGraph } from '../../hooks/useVoteGraph';
+import type { GraphNode } from '../../hooks/useVoteGraph';
 import type { ProposalWithVotes } from '../../lib/graphql/types';
 
 // Lazy load the graph component (heavy WebGL)
-const VoteGraphWithStats = lazy(() =>
-  import('../graph/VoteGraph').then((mod) => ({ default: mod.VoteGraphWithStats }))
+const VoteGraphCompact = lazy(() =>
+  import('../graph/VoteGraph').then((mod) => ({ default: mod.VoteGraphCompact }))
 );
 
 interface FounderCenterPanelProps {
@@ -64,7 +66,7 @@ export function FounderCenterPanel({
   const { isConnected, address } = useAccount();
   const { proposals, loading } = useFounderProposals(founder.name);
   const { graphData, stats: graphStats, loading: graphLoading } = useVoteGraph(founder.name);
-  const [viewMode, setViewMode] = useState<'totems' | 'positions' | 'graph'>('totems');
+  const [viewMode, setViewMode] = useState<'totems' | 'positions'>('totems');
 
   // Sort proposals by net score
   const sortedProposals = useMemo(() => {
@@ -83,12 +85,54 @@ export function FounderCenterPanel({
     return sortedProposals.slice(0, 5); // Placeholder: show top 5
   }, [sortedProposals]);
 
+  // Handle node click from graph
+  const handleGraphNodeClick = (node: GraphNode) => {
+    if (node.type === 'totem' && node.termId) {
+      onSelectTotem?.(node.termId, node.label);
+    }
+  };
+
   return (
     <div className="glass-card p-4 h-full flex flex-col">
-      {/* Header with tabs */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Graph Section - Always visible at top */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-medium text-white/70">Graphe de relations</h3>
+          {graphStats.totalNodes > 0 && (
+            <div className="flex gap-3 text-xs text-white/50">
+              <span>{graphStats.uniqueTotems} totems</span>
+              <span>{graphStats.totalVotes} TRUST</span>
+            </div>
+          )}
+        </div>
+        <div className="rounded-lg overflow-hidden bg-gray-900/30">
+          {graphLoading ? (
+            <div className="flex items-center justify-center h-[180px]">
+              <div className="animate-spin w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full" />
+            </div>
+          ) : (
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center h-[180px]">
+                  <div className="animate-spin w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full" />
+                </div>
+              }
+            >
+              <VoteGraphCompact
+                nodes={graphData.nodes}
+                edges={graphData.edges}
+                onNodeClick={handleGraphNodeClick}
+                height={180}
+              />
+            </Suspense>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs Header */}
+      <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold text-white">
-          {viewMode === 'totems' ? 'Totems associés' : viewMode === 'graph' ? 'Graphe de relations' : 'Mes positions'}
+          {viewMode === 'totems' ? 'Totems associés' : 'Mes positions'}
         </h3>
         <div className="flex bg-white/5 rounded-lg p-0.5">
           <button
@@ -100,16 +144,6 @@ export function FounderCenterPanel({
             }`}
           >
             Totems
-          </button>
-          <button
-            onClick={() => setViewMode('graph')}
-            className={`px-3 py-1 text-xs rounded-md transition-colors ${
-              viewMode === 'graph'
-                ? 'bg-purple-500/30 text-purple-300'
-                : 'text-white/60 hover:text-white'
-            }`}
-          >
-            Graphe
           </button>
           {isConnected && (
             <button
@@ -128,7 +162,7 @@ export function FounderCenterPanel({
 
       {/* Content area */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        {loading || graphLoading ? (
+        {loading ? (
           // Loading skeleton
           <div className="grid grid-cols-2 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -138,28 +172,6 @@ export function FounderCenterPanel({
               </div>
             ))}
           </div>
-        ) : viewMode === 'graph' ? (
-          // Graph visualization
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full" />
-              </div>
-            }
-          >
-            <VoteGraphWithStats
-              nodes={graphData.nodes}
-              edges={graphData.edges}
-              stats={graphStats}
-              height="100%"
-              onNodeClick={(node) => {
-                if (node.type === 'totem' && node.termId) {
-                  onSelectTotem?.(node.termId, node.label);
-                }
-              }}
-              darkMode
-            />
-          </Suspense>
         ) : viewMode === 'totems' ? (
           // Totems grid
           sortedProposals.length > 0 ? (
@@ -242,7 +254,7 @@ export function FounderCenterPanel({
                           AGAINST: {formatScore(proposal.votes.againstVotes)}
                         </span>
                       </div>
-                      {/* Position actions would go here */}
+                      {/* Position actions */}
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => onSelectTotem?.(proposal.object_id, proposal.object.label)}
