@@ -3,6 +3,10 @@ import type { Predicate } from '../../types/predicate';
 /**
  * PredicateSelector - Accordion pour sélectionner le prédicat (Step 1)
  * Extrait de VotePanel.tsx lignes 628-691
+ *
+ * Phase 3: Simplifié à 2 prédicats:
+ * - "has totem" : Associatif/neutre (défaut)
+ * - "embodies" : Opinion forte, "incarne"
  */
 
 interface PredicateSelectorProps {
@@ -49,7 +53,7 @@ export function PredicateSelector({
           {predicates.map((predicate) => (
             <label
               key={predicate.id}
-              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors
+              className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors
                 ${
                   selectedPredicateId === predicate.id
                     ? 'bg-purple-500/20 border border-purple-500/50'
@@ -65,7 +69,7 @@ export function PredicateSelector({
                 className="sr-only"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
+                className={`w-4 h-4 mt-0.5 rounded-full border-2 shrink-0 flex items-center justify-center
                 ${
                   selectedPredicateId === predicate.id
                     ? 'border-purple-500 bg-purple-500'
@@ -76,7 +80,17 @@ export function PredicateSelector({
                   <div className="w-2 h-2 rounded-full bg-white" />
                 )}
               </div>
-              <span className="text-white">{predicate.label}</span>
+              <div className="flex flex-col">
+                <span className="text-white font-medium">{predicate.label}</span>
+                {predicate.description && (
+                  <span className="text-xs text-white/50 mt-0.5">{predicate.description}</span>
+                )}
+              </div>
+              {predicate.isDefault && (
+                <span className="ml-auto text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded">
+                  défaut
+                </span>
+              )}
             </label>
           ))}
         </div>

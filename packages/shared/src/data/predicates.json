@@ -3,14 +3,14 @@
     "id": "has-totem",
     "label": "has totem",
     "description": "Associative/neutral: X has totem Y",
-    "termId": null,
+    "termId": "0x73a33c74be73ff3ee2b5433394d40ab339dd35867232b78e739b5ccccd3b95a5",
     "isDefault": true
   },
   {
     "id": "embodies",
     "label": "embodies",
     "description": "Strong opinion: X embodies/incarnates Y",
-    "termId": null,
+    "termId": "0x34aa4950e7c81cad3d43becce4f8aa75767d3005a45898fc7430e3b6674ccfbd",
     "isDefault": false
   }
 ]

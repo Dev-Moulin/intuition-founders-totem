@@ -217,7 +217,7 @@ Triple 3: [Animal] → [tag category] → [Overmind Founders Collection]
   - `CategoryConfig` dans `intuition.ts` avec `tagPredicate` et `systemObject`
   - `TotemType` dans `totem.ts` avec IDs anglais
 
-### Phase 3: Simplification Prédicats
+### Phase 3: Simplification Prédicats ✅ COMPLÉTÉ
 
 **Référence doc:** [18_Design_Decisions_V2.md](18_Design_Decisions_V2.md) - Section 2
 
@@ -228,18 +228,20 @@ Triple 3: [Animal] → [tag category] → [Overmind Founders Collection]
 | `has totem` | Associatif neutre | Elon → Lion |
 | `embodies` | Opinion forte, "incarne" | Elon → Innovation |
 
-- [ ] **3.1** Supprimer les prédicats inutilisés
-  - `is represented by`
-  - `is symbolized by`
-  - `channels`
+- [x] **3.1** Supprimer les prédicats inutilisés ✅
+  - `AdminAuditPage.tsx` : PREDICATES réduit de 6 à 2
+  - Anciens prédicats supprimés: `is represented by`, `is symbolized by`, `channels`, `resonates with`
 
-- [ ] **3.2** Mettre à jour `PredicateSelector.tsx`
-  - Afficher seulement 2 options
-  - Descriptions claires pour chaque
+- [x] **3.2** Mettre à jour `PredicateSelector.tsx` ✅
+  - Affiche descriptions pour chaque prédicat
+  - Badge "défaut" pour `has totem`
+  - Layout amélioré avec flex-col
 
-- [ ] **3.3** Adapter la config/data
-  - Fichier predicates si existant
-  - Types TypeScript
+- [x] **3.3** Adapter la config/data ✅
+  - `predicates.json` avec termIds testnet:
+    - `has totem` → `0x73a33c74...`
+    - `embodies` → `0x34aa4950...`
+  - `PredicatesTab.tsx` avec export JSON des termIds
 
 ### Phase 4: Panier Amélioré + Prévisualisation
 
@@ -565,20 +567,21 @@ function calculateCartCost(cart: VoteCart, config: MultivaultConfig) {
 - ✅ **Phase 1**: Vote AGAINST
 - ✅ **Phase 1b** (partiel): Panier de Votes (base créée)
 - ✅ **Phase 2**: Système 3 Triples (testnet configuré)
+- ✅ **Phase 3**: Simplification Prédicats (2 prédicats: `has totem`, `embodies`)
 
 ### Ordre d'implémentation
 
 | Phase | Nom | Dépendances | Priorité | Statut |
 |-------|-----|-------------|----------|--------|
 | ~~**2**~~ | ~~Système 3 Triples~~ | - | ~~Haute~~ | ✅ Fait |
-| **3** | Simplification Prédicats | Phase 2 | Haute | En attente |
+| ~~**3**~~ | ~~Simplification Prédicats~~ | Phase 2 | ~~Haute~~ | ✅ Fait |
 | **4** | Panier + Prévisualisation | Phases 2-3 | Moyenne | En attente |
 | **5** | Vote Market | - | Moyenne | En attente |
 | **6** | Batch Triples | Phase 2 | Basse | En attente |
 | **7** | Refonte UI 3 Panneaux | Phases 4-5 | Basse | En attente |
 | **8** | Graphe de Visualisation | - | Nice to have | En attente |
 
-**Prochaine phase à implémenter:** Phase 3 (Simplification Prédicats) ou tester Phase 2 en testnet
+**Prochaine phase à implémenter:** Phase 4 (Panier + Prévisualisation) ou Phase 5 (Vote Market)
 
 ---
 
@@ -591,3 +594,4 @@ function calculateCartCost(cart: VoteCart, config: MultivaultConfig) {
 | 2 déc 2025 | Création [18_Design_Decisions_V2.md](18_Design_Decisions_V2.md) avec toutes les décisions de design |
 | 2 déc 2025 | Renumérotation phases (2-9) dans l'ordre logique d'implémentation |
 | 2 déc 2025 | **Phase 2 complétée**: Système 3 Triples implémenté et configuré sur testnet |
+| 2 déc 2025 | **Phase 3 complétée**: Simplification à 2 prédicats (`has totem`, `embodies`) avec termIds testnet |

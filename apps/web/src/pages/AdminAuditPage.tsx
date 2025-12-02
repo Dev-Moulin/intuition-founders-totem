@@ -30,14 +30,11 @@ interface FounderData {
   image?: string;
 }
 
-// Liste des 6 prédicats à créer
+// Liste des 2 prédicats utilisateur (Phase 3 - Simplification)
+// Ces prédicats sont utilisés dans Triple 1: [Founder] → [predicate] → [Totem]
 const PREDICATES = [
-  { label: 'is represented by', description: 'X est représenté par Y' },
-  { label: 'has totem', description: 'X a pour totem Y' },
-  { label: 'is symbolized by', description: 'X est symbolisé par Y' },
-  { label: 'embodies', description: 'X incarne Y' },
-  { label: 'channels', description: 'X canalise Y' },
-  { label: 'resonates with', description: 'X résonne avec Y' },
+  { id: 'has-totem', label: 'has totem', description: 'Associative/neutral: X has totem Y', isDefault: true },
+  { id: 'embodies', label: 'embodies', description: 'Strong opinion: X embodies/incarnates Y', isDefault: false },
 ];
 
 // Totem categories (mapped to categories.json IDs)
