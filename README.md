@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with INTUITION](https://img.shields.io/badge/Built%20with-INTUITION-purple)](https://www.intuition.systems/)
-[![Deployed on Base](https://img.shields.io/badge/Deployed%20on-Base-blue)](https://base.org/)
+[![Deployed on INTUITION](https://img.shields.io/badge/Deployed%20on-INTUITION%20L3-blue)](https://www.intuition.systems/)
 
 > A collaborative NFT collection representing the totemic symbols of INTUITION's 42 founders through community voting.
 
@@ -19,7 +19,7 @@ This project allows the INTUITION community to propose and vote for totems (obje
 - 🎨 **Community Proposals** - Anyone can propose totems for the founders
 - 📊 **Real-time Results** - Live voting results with GraphQL subscriptions
 - 🔒 **Airdrop Gated** - Only wallets that received the November 5th airdrop can participate
-- ⛓️ **Fully On-chain** - All data stored on Base Network via INTUITION Protocol
+- ⛓️ **Fully On-chain** - All data stored on INTUITION L3 via INTUITION Protocol
 - 🌈 **Beautiful UI** - Modern React interface with RainbowKit wallet connection
 
 ## 🏗️ Tech Stack
@@ -32,11 +32,11 @@ This project allows the INTUITION community to propose and vote for totems (obje
 - **TanStack Query** - Data fetching and caching
 - **Tailwind CSS** - Styling
 - **Framer Motion** - Animations
+- **recharts** - Data visualization
 
 ### Blockchain & Protocol
 - **INTUITION Protocol v2** - On-chain knowledge graph
-- **Base Network** - Ethereum L2 (Mainnet)
-- **Base Sepolia** - Testnet for development
+- **INTUITION L3** - Layer 3 built on Base
 - **$TRUST Token** - Voting mechanism
 
 ### APIs & SDKs
@@ -46,15 +46,12 @@ This project allows the INTUITION community to propose and vote for totems (obje
 
 ## 📚 Documentation
 
-All project documentation is available in the [`/Claude`](./Claude) directory:
+Project documentation is available in [`/Claude/00_GESTION_PROJET`](./Claude/00_GESTION_PROJET):
 
-- **[01_OBJECTIF](./Claude/01_OBJECTIF/)** - Project goals and the 42 founders
-- **[02_FONCTIONNEMENT](./Claude/02_FONCTIONNEMENT/)** - How the platform works for users
-- **[03_TECHNOLOGIES](./Claude/03_TECHNOLOGIES/)** - Technical stack and configuration
-- **[04_VERIFICATION_WALLETS](./Claude/04_VERIFICATION_WALLETS/)** - Wallet eligibility verification
-- **[05_STRUCTURE_DONNEES](./Claude/05_STRUCTURE_DONNEES/)** - Data structures and GraphQL schema
+- **[documentation/](./Claude/00_GESTION_PROJET/documentation/)** - Technical documentation
+- **[Projet00/](./Claude/00_GESTION_PROJET/Projet00/)** - Project management
 
-📖 **[Read the Master Documentation](./Claude/README.md)** for a complete overview.
+📖 **[Read the Documentation](./Claude/00_GESTION_PROJET/README.md)** for a complete overview.
 
 ## 🚀 Getting Started
 
@@ -63,21 +60,20 @@ All project documentation is available in the [`/Claude`](./Claude) directory:
 - Node.js >= 18.0
 - pnpm >= 9.8
 - A wallet (MetaMask, Coinbase Wallet, etc.)
-- Base Sepolia ETH for testnet ([Get from faucet](https://www.alchemy.com/faucets/base-sepolia))
-- Test $TRUST tokens ([INTUITION Testnet Hub](https://testnet.hub.intuition.systems/))
+- ETH on INTUITION L3 for transactions
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/intuition-founders-totem.git
-cd intuition-founders-totem
+git clone https://github.com/Dev-Moulin/Overmind_Founders_Collection.git
+cd Overmind_Founders_Collection
 
 # Install dependencies
 pnpm install
 
 # Copy environment variables
-cp .env.example .env
+cp apps/web/.env.example apps/web/.env
 
 # Edit .env with your API keys
 ```
@@ -120,31 +116,6 @@ The totem with the most $TRUST in its vault wins for each founder!
 
 Joseph Lubin · Andrew Keys · Jonathan Christodoro · Taylor Monahan · Edward Moncada · Cecily Mak · Ric Burton · Rouven Heck · John Paller · Mark Beylin · Ash Egan · Harrison Hines · Ron Patiro · Gonçalo Sá · Tyler Mulvihill · Connor Keenan · Russell Verbeeten · Scott Moore · Jesse Grushack · Georgio Constantinou · Vijay Michalik · Brianna Montgomery · Eric Arsenault · Bryan Peters · Aaron McDonald · Tyler Ward · Keegan Selby · EJ Rogers · Ben Lakoff · Marc Weinstein · Nathan Doctor · Matt Kaye · Matt Slater · Sam Feinberg · Andy Beal · Joshua Lapidus · end0xiii · Alec Gutman · Sharad Malhautra · Jay Gutta · Rohan Handa · Odysseas Lamtzidis
 
-## 🛠️ Development Status
-
-**Current Phase:** Documentation & Research
-**Progress:** See [Project Board](https://github.com/YOUR_USERNAME/intuition-founders-totem/issues)
-
-### Completed ✅
-- [x] Project architecture documentation
-- [x] INTUITION Protocol integration research
-- [x] Frontend stack definition
-- [x] GraphQL schema documentation
-- [x] Testnet configuration
-
-### In Progress 🔄
-- [ ] Backend architecture research
-- [ ] Security implementation
-- [ ] UX/UI design guidelines
-- [ ] Error handling strategy
-- [ ] Testing strategy
-
-### Planned ⏳
-- [ ] Frontend development
-- [ ] Backend development
-- [ ] Smart contract integration
-- [ ] Deployment & DevOps
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
@@ -153,9 +124,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 - **INTUITION Website:** https://www.intuition.systems/
 - **INTUITION Docs:** https://www.docs.intuition.systems/
-- **INTUITION Discord:** [Join here]
-- **Base Network:** https://base.org/
-- **Project Documentation:** [/Claude](./Claude)
+- **Project Documentation:** [/Claude/00_GESTION_PROJET](./Claude/00_GESTION_PROJET)
 
 ## 🙏 Acknowledgments
 
