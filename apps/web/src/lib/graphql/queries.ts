@@ -841,3 +841,43 @@ export const GET_USER_VOTES_FOR_FOUNDER = gql`
     }
   }
 `;
+
+/**
+ * Get founder panel stats: Market Cap, Holders, Claims
+ *
+ * Returns aggregated stats for the left panel:
+ * - Total Market Cap = Σ(FOR + AGAINST) on all founder's triples
+ * - Total Holders = count distinct sender_id
+ * - Claims = count of distinct triples
+ */
+export const GET_FOUNDER_PANEL_STATS = gql`
+  query GetFounderPanelStats($founderName: String!) {
+    # Get all triples for this founder to calculate Market Cap and Claims count
+    triples(
+      where: {
+        subject: { label: { _eq: $founderName } }
+        predicate: { label: { _in: ["has totem", "embodies"] } }
+      }
+    ) {
+      term_id
+      triple_vault {
+        total_assets
+      }
+      counter_term {
+        total_assets
+      }
+    }
+    # Get all deposits to count unique holders
+    deposits(
+      where: {
+        term: {
+          subject: { label: { _eq: $founderName } }
+          predicate: { label: { _in: ["has totem", "embodies"] } }
+        }
+        vault_type: { _in: ["triple_positive", "triple_negative"] }
+      }
+    ) {
+      sender_id
+    }
+  }
+`;

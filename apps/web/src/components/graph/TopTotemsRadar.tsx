@@ -203,9 +203,9 @@ export function TopTotemsRadar({
         <h4 className="text-sm font-medium text-white/70">Top Totems</h4>
         <div className="bg-white/5 rounded-lg p-3" style={{ minHeight: height }}>
           <div className="space-y-2">
-            {totems.map((totem) => (
+            {totems.map((totem, index) => (
               <div
-                key={totem.id}
+                key={totem.id || `totem-${index}`}
                 className="flex items-center justify-between p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10 transition-colors"
                 onClick={() => onTotemClick?.(totem.id, totem.label)}
               >

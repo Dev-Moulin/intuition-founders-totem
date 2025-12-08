@@ -218,13 +218,13 @@ export function FounderCenterPanel({
           ) : section1Tab === 'totems' ? (
             allTotems.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
-                {allTotems.map((totem) => {
+                {allTotems.map((totem, index) => {
                   const isSelected = totem.id === selectedTotemId;
                   const scoreColor = totem.netScore > 0n ? 'text-green-400' : totem.netScore < 0n ? 'text-red-400' : 'text-white/60';
 
                   return (
                     <button
-                      key={totem.id}
+                      key={totem.id || `totem-${index}`}
                       onClick={() => onSelectTotem?.(totem.id, totem.label)}
                       className={`text-left p-2 rounded-lg transition-all ${
                         isSelected
@@ -337,7 +337,7 @@ export function FounderCenterPanel({
             // Best Triples - Top triples by total TRUST
             bestTriples.length > 0 ? (
               <div className="space-y-1.5">
-                {bestTriples.map((totem) => {
+                {bestTriples.map((totem, index) => {
                   const total = BigInt(totem.forVotes) + BigInt(totem.againstVotes);
                   const percentage = totalTrust > 0n
                     ? Number((total * 100n) / totalTrust)
@@ -345,7 +345,7 @@ export function FounderCenterPanel({
 
                   return (
                     <button
-                      key={totem.id}
+                      key={totem.id || `best-${index}`}
                       onClick={() => onSelectTotem?.(totem.id, totem.label)}
                       className={`w-full text-left p-2 rounded-lg transition-all ${
                         totem.id === selectedTotemId

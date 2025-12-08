@@ -108,3 +108,6 @@ export type { TrendDirection, WinningTotem, FounderForHomePage } from '../types/
 
 // Hook for user's votes on a specific founder with triple details (My Votes section)
 export { useUserVotesForFounder, type UserVoteWithDetails } from './useUserVotesForFounder';
+
+// Hook for founder panel stats (Market Cap, Holders, Claims)
+export { useFounderPanelStats, type FounderPanelStats } from './useFounderPanelStats';

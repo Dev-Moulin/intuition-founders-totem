@@ -210,9 +210,9 @@ export function RelationsRadar({
           style={{ maxHeight: height - 16 }}
         >
           {/* Grid circles */}
-          {[0.25, 0.5, 0.75, 1].map((scale) => (
+          {[0.25, 0.5, 0.75, 1].map((scale, index) => (
             <circle
-              key={scale}
+              key={`grid-${index}`}
               cx={centerX}
               cy={centerY}
               r={radius * scale}
@@ -224,9 +224,9 @@ export function RelationsRadar({
           ))}
 
           {/* Grid lines from center to each totem */}
-          {nodes.map((node) => (
+          {nodes.map((node, index) => (
             <line
-              key={`line-${node.id}`}
+              key={`line-${node.id || index}`}
               x1={centerX}
               y1={centerY}
               x2={centerX + Math.cos(node.angle) * radius}
@@ -260,6 +260,13 @@ export function RelationsRadar({
             />
           )}
 
+          {/* Clip path definition */}
+          <defs>
+            <clipPath id="founder-clip">
+              <circle cx={centerX} cy={centerY} r={22} />
+            </clipPath>
+          </defs>
+
           {/* Center - Founder */}
           <g className="cursor-pointer">
             <circle
@@ -271,11 +278,6 @@ export function RelationsRadar({
               strokeWidth={2}
             />
             {founderImage ? (
-              <clipPath id="founder-clip">
-                <circle cx={centerX} cy={centerY} r={22} />
-              </clipPath>
-            ) : null}
-            {founderImage && (
               <image
                 href={founderImage}
                 x={centerX - 22}
@@ -285,8 +287,7 @@ export function RelationsRadar({
                 clipPath="url(#founder-clip)"
                 preserveAspectRatio="xMidYMid slice"
               />
-            )}
-            {!founderImage && (
+            ) : (
               <text
                 x={centerX}
                 y={centerY}
@@ -302,14 +303,14 @@ export function RelationsRadar({
           </g>
 
           {/* Totem nodes */}
-          {nodes.map((node) => {
+          {nodes.map((node, index) => {
             const isHovered = hoveredTotem === node.id;
             const netScore = node.trustFor - node.trustAgainst;
             const nodeColor = netScore >= 0 ? '#3b82f6' : '#f97316';
 
             return (
               <g
-                key={node.id}
+                key={node.id || `node-${index}`}
                 className="cursor-pointer transition-transform"
                 onMouseEnter={() => setHoveredTotem(node.id)}
                 onMouseLeave={() => setHoveredTotem(null)}
