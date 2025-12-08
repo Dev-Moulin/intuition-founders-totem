@@ -129,7 +129,10 @@
     "emptyCart": "Empty cart",
     "addVotesHint": "Add votes to your cart to validate them in batch",
     "validating": "Validating...",
-    "validateCart": "Validate cart"
+    "validateCart": "Validate cart",
+    "creation": "Creation",
+    "createNewTotem": "Create a new totem",
+    "comingSoon": "Coming soon"
   },
   "homePage": {
     "title": "INTUITION",

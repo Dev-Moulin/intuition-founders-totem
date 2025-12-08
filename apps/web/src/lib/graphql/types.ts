@@ -398,3 +398,21 @@ export interface DepositWithTriple {
 export interface GetUserVotesForFounderResult {
   deposits: DepositWithTriple[];
 }
+
+/**
+ * Result type for GET_FOUNDER_PANEL_STATS query
+ */
+export interface GetFounderPanelStatsResult {
+  triples: Array<{
+    term_id: string;
+    triple_vault?: {
+      total_assets: string;
+    } | null;
+    counter_term?: {
+      total_assets: string;
+    } | null;
+  }>;
+  deposits: Array<{
+    sender_id: string;
+  }>;
+}

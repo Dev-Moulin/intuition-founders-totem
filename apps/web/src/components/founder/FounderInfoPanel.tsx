@@ -11,7 +11,6 @@
  * @see Phase 9 in TODO_Implementation.md
  */
 
-import { formatEther } from 'viem';
 import { useTranslation } from 'react-i18next';
 import type { FounderForHomePage } from '../../hooks/useFoundersForHomePage';
 import { getFounderImageUrl } from '../../utils/founderImage';
@@ -20,6 +19,7 @@ import { RefreshIndicator } from '../RefreshIndicator';
 import { TopTotemsRadar } from '../graph/TopTotemsRadar';
 import { RelationsRadar } from '../graph/RelationsRadar';
 import { useTopTotems } from '../../hooks/useTopTotems';
+import { useFounderPanelStats } from '../../hooks/useFounderPanelStats';
 
 interface FounderInfoPanelProps {
   founder: FounderForHomePage;
@@ -30,20 +30,6 @@ interface FounderInfoPanelProps {
   isPaused?: boolean;
   isLoading?: boolean;
   hasNewData?: boolean;
-}
-
-/**
- * Format net score for compact display
- */
-function formatScore(score: bigint): string {
-  const ethValue = parseFloat(formatEther(score));
-  if (ethValue >= 1000) {
-    return `${(ethValue / 1000).toFixed(1)}k`;
-  }
-  if (ethValue >= 1) {
-    return ethValue.toFixed(1);
-  }
-  return ethValue.toFixed(3);
 }
 
 export function FounderInfoPanel({
@@ -60,6 +46,9 @@ export function FounderInfoPanel({
 
   // Fetch top totems for radar chart
   const { topTotems, loading: totemsLoading } = useTopTotems(founder.name, 5);
+
+  // Fetch panel stats (Market Cap, Holders, Claims)
+  const { stats, loading: statsLoading } = useFounderPanelStats(founder.name);
 
   // Extract social links from founder data
   const socialLinks = {
@@ -165,35 +154,34 @@ export function FounderInfoPanel({
       {/* Divider */}
       <div className="border-t border-white/10 my-3" />
 
-      {/* Quick Stats with animation */}
+      {/* Stats: Market Cap, Holders, Claims */}
       <div
         className={`space-y-2 rounded-lg p-2 -mx-2 transition-all duration-300 ${
           hasNewData ? 'bg-slate-500/20 ring-1 ring-slate-500/50' : ''
         }`}
       >
         <div className="flex justify-between text-xs">
-          <span className="text-white/50">{t('common.proposals')}</span>
-          <span className="text-white font-medium">{founder.proposalCount}</span>
+          <span className="text-white/50">Total Market Cap</span>
+          <span className={`text-white font-medium transition-all duration-300 ${
+            hasNewData ? 'scale-110' : ''
+          }`}>
+            {statsLoading ? '...' : `${stats.formattedMarketCap} TRUST`}
+          </span>
         </div>
 
-        {founder.winningTotem && (
-          <>
-            <div className="flex justify-between text-xs">
-              <span className="text-white/50">Top totem</span>
-              <span className="text-slate-400 font-medium truncate ml-2 max-w-[100px]">
-                {founder.winningTotem.label}
-              </span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-white/50">Score</span>
-              <span className={`text-slate-400 font-medium transition-all duration-300 ${
-                hasNewData ? 'scale-110' : ''
-              }`}>
-                {formatScore(founder.winningTotem.netScore)} TRUST
-              </span>
-            </div>
-          </>
-        )}
+        <div className="flex justify-between text-xs">
+          <span className="text-white/50">Total Holders</span>
+          <span className="text-white font-medium">
+            {statsLoading ? '...' : `${stats.totalHolders} voters`}
+          </span>
+        </div>
+
+        <div className="flex justify-between text-xs">
+          <span className="text-white/50">Claims</span>
+          <span className="text-white font-medium">
+            {statsLoading ? '...' : stats.claims}
+          </span>
+        </div>
       </div>
 
       {/* Top Totems Radar Chart */}

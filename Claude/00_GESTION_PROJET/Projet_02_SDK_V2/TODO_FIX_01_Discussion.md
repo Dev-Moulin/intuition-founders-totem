@@ -505,58 +505,71 @@ Afficher les **3 totems** avec le plus de TRUST total (FOR + AGAINST), triés pa
 
 ## 7. PROCHAINES ÉTAPES - Ordre d'implémentation
 
-### 🔴 Étape 0 : FIX CRITIQUE - Totems OFC (PRIORITAIRE)
+### ✅ Étape 0 : FIX CRITIQUE - Totems OFC (COMPLÉTÉ)
 
-**Option A** : Corriger la subscription existante
-- [ ] Modifier `SUBSCRIBE_TOTEM_CATEGORIES` : `has_category` → `has category`
-- [ ] Modifier `SUBSCRIBE_TOTEM_CATEGORIES` : `OFC:%` → liste catégories
-- [ ] Utiliser `useTotemData` existant dans `FounderCenterPanel`
+**Implémenté (Option B)** :
+- [x] Créé requête `GET_ALL_OFC_TOTEMS` dans queries.ts
+- [x] Créé hook `useAllOFCTotems()`
+- [x] Modifié `FounderCenterPanel.tsx` pour utiliser ce hook
+- [x] Fusion avec votes existants pour afficher les scores
 
-**Option B** : Créer nouvelle requête (si subscription pose problème)
-- [ ] Créer requête `GET_ALL_OFC_TOTEMS` dans queries.ts
-- [ ] Créer hook `useAllOFCTotems()`
-- [ ] Modifier `FounderCenterPanel.tsx` pour utiliser ce hook
+**Branche** : `fix/totems-ofc-visibility` - PR #178 MERGED
 
-**Dans les deux cas** :
-- [ ] Afficher TOUS les totems OFC dans l'onglet Totems
-- [ ] Enrichir avec les votes existants si le triple existe
+### ✅ Étape 1 : Setup Evil Charts (COMPLÉTÉ)
 
-### Étape 1 : Setup Evil Charts
-- [ ] Installer les dépendances si nécessaire
-- [ ] Vérifier compatibilité avec le projet
+- [x] recharts déjà installé (dépendance existante)
+- [x] Compatibilité vérifiée avec le projet
 
-### Étape 2 : Graphe Trading (Area Chart)
-- [ ] Créer hook `useVotesTimeline(founderName, totemId?, timeframe)`
-- [ ] Créer composant `TradingChart.tsx`
-- [ ] Intégrer dans panneau central
+### ✅ Étape 2 : Graphe Trading (COMPLÉTÉ)
 
-### Étape 3 : Radar Top Totems
-- [ ] Créer hook `useTopTotems(founderName, limit)`
-- [ ] Créer composant `TopTotemsRadar.tsx`
-- [ ] Intégrer dans panneau (central ou gauche)
+- [x] Créé hook `useVotesTimeline(founderName, totemId?, timeframe)`
+- [x] Créé composant `TradingChart.tsx` avec Area Charts superposés
+- [x] Intégré dans panneau central avec timeframes 12H/24H/7D/All
 
-### Étape 4 : Graphe Relations Radial
-- [ ] Créer composant `RelationsRadar.tsx`
-- [ ] Implémenter zones FOR/AGAINST
-- [ ] Ajouter tooltip prédicat
-- [ ] Intégrer dans panneau gauche
+**Branche** : `feature/trading-chart` - PR #179 MERGED
 
-### Étape 5 : My Votes (ex-Positions)
-- [ ] Renommer onglet "Positions" → "My Votes"
-- [ ] Format simplifié : `[img] Sujet - [img] Prédicat - [img] Objet  +X.XXX`
-- [ ] Supprimer boutons "Ajouter" / "Retirer"
-- [ ] Click → sélectionne l'objet dans panneau droit
+### ✅ Étape 3 : Radar Top Totems (COMPLÉTÉ)
 
-### Étape 6 : Stats Panneau Gauche
-- [ ] Total Market Cap = Σ(FOR + AGAINST) sur le fondateur
-- [ ] Total Holders = count distinct sender_id
-- [ ] Claims = count triples (nombre de totems votés)
-- [ ] Top 3 Totems avec leur score
+- [x] Créé hook `useTopTotems(founderName, limit)`
+- [x] Créé composant `TopTotemsRadar.tsx`
+- [x] Intégré dans panneau gauche (FounderInfoPanel)
+
+**Branche** : `feature/radar-top-totems` - PR #180 MERGED
+
+### ✅ Étape 4 : Graphe Relations Radial (COMPLÉTÉ)
+
+- [x] Créé composant `RelationsRadar.tsx`
+- [x] Implémenté zones FOR (bleu) / AGAINST (orange)
+- [x] Ajouté tooltip prédicat au survol
+- [x] Intégré dans panneau gauche
+
+**Branche** : `feature/relations-radial-graph` - PR #180 MERGED
+
+### ✅ Étape 5 : My Votes (COMPLÉTÉ)
+
+- [x] Format images inline : `[img] Sujet - [img] Prédicat - [img] Objet +X.XXX`
+- [x] Click → sélectionne l'objet dans panneau droit
+- [x] Créé composant `MyVotesItem.tsx`
+- [x] Créé hook `useUserVotesForFounder()`
+- [x] Section My Votes + Best Triples avec 2 onglets
+
+**Branche** : `feature/my-votes-images-inline` - PR #182 MERGED
+
+### ✅ Étape 6 : Stats Panneau Gauche (COMPLÉTÉ)
+
+- [x] Total Market Cap = Σ(FOR + AGAINST) sur le fondateur
+- [x] Total Holders = count distinct sender_id
+- [x] Claims = count triples (nombre de totems votés)
+- [x] Créé hook `useFounderPanelStats()`
+- [x] Créé requête GraphQL `GET_FOUNDER_PANEL_STATS`
+- [x] Intégré dans FounderInfoPanel
+
+**Branche** : `feature/stats-left-panel` - En attente PR
 
 ---
 
-**Dernière mise à jour** : 5 décembre 2025
-**Statut** : Prêt pour implémentation
+**Dernière mise à jour** : 8 décembre 2025
+**Statut** : ✅ PHASE 10 COMPLÉTÉE - Toutes les étapes terminées
 
 ---
 
