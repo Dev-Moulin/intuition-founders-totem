@@ -13,7 +13,7 @@
  * @see Phase 10 - Etape 5 in TODO_FIX_01_Discussion.md
  */
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { formatEther } from 'viem';
 import {
@@ -233,17 +233,19 @@ export function useUserVotesForFounder(
   //   }
   // }, [allVotes.length, normalizedAddress, founderName]);
 
-  // Separate FOR and AGAINST votes
-  const forVotes = allVotes.filter((v) => v.isPositive);
-  const againstVotes = allVotes.filter((v) => !v.isPositive);
+  // Separate FOR and AGAINST votes - memoized to prevent unnecessary re-renders
+  const forVotes = useMemo(() => allVotes.filter((v) => v.isPositive), [allVotes]);
+  const againstVotes = useMemo(() => allVotes.filter((v) => !v.isPositive), [allVotes]);
 
-  // Calculate totals
-  const totalFor = forVotes
-    .reduce((sum, v) => sum + BigInt(v.assets_after_fees), 0n)
-    .toString();
-  const totalAgainst = againstVotes
-    .reduce((sum, v) => sum + BigInt(v.assets_after_fees), 0n)
-    .toString();
+  // Calculate totals - memoized
+  const totalFor = useMemo(
+    () => forVotes.reduce((sum, v) => sum + BigInt(v.assets_after_fees), 0n).toString(),
+    [forVotes]
+  );
+  const totalAgainst = useMemo(
+    () => againstVotes.reduce((sum, v) => sum + BigInt(v.assets_after_fees), 0n).toString(),
+    [againstVotes]
+  );
 
   // Combined loading state
   const loading = depositsLoading || triplesLoading;
@@ -251,11 +253,11 @@ export function useUserVotesForFounder(
   // Combined error
   const error = depositsError || triplesError;
 
-  // Combined refetch
-  const refetch = () => {
+  // Combined refetch - memoized to prevent unnecessary effect triggers
+  const refetch = useCallback(() => {
     refetchDeposits();
     refetchTriples();
-  };
+  }, [refetchDeposits, refetchTriples]);
 
   return {
     votes: allVotes,

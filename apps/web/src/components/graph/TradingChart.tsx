@@ -44,6 +44,10 @@ interface TradingChartProps {
   loading?: boolean;
   /** Optional title */
   title?: string;
+  /** Suggested timeframe if current one has no data */
+  suggestedTimeframe?: Timeframe | null;
+  /** Whether any data exists for this item */
+  hasAnyData?: boolean;
 }
 
 /**
@@ -172,6 +176,8 @@ export function TradingChart({
   height = 200,
   loading = false,
   title = 'Vote Activity',
+  suggestedTimeframe,
+  hasAnyData = true,
 }: TradingChartProps) {
   const { t } = useTranslation();
 
@@ -183,7 +189,7 @@ export function TradingChart({
     }));
   }, [data, timeframe]);
 
-  // Empty state
+  // Empty state - with suggestion if data exists in another timeframe
   if (!loading && data.length === 0) {
     return (
       <div className="space-y-2">
@@ -195,7 +201,7 @@ export function TradingChart({
           className="flex items-center justify-center bg-white/5 rounded-lg"
           style={{ height }}
         >
-          <div className="text-center">
+          <div className="text-center px-4">
             <svg
               className="w-10 h-10 mx-auto text-white/20 mb-2"
               fill="none"
@@ -209,7 +215,21 @@ export function TradingChart({
                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
               />
             </svg>
-            <p className="text-white/40 text-sm">{t('common.noData')}</p>
+            {hasAnyData && suggestedTimeframe ? (
+              <>
+                <p className="text-white/50 text-sm mb-2">
+                  {t('tradingChart.noDataInTimeframe', { timeframe })}
+                </p>
+                <button
+                  onClick={() => onTimeframeChange(suggestedTimeframe)}
+                  className="px-3 py-1.5 bg-slate-500/30 text-slate-300 text-xs rounded-lg hover:bg-slate-500/40 transition-colors"
+                >
+                  {t('tradingChart.switchTo', { timeframe: suggestedTimeframe })}
+                </button>
+              </>
+            ) : (
+              <p className="text-white/40 text-sm">{t('common.noData')}</p>
+            )}
           </div>
         </div>
       </div>

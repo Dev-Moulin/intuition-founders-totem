@@ -143,6 +143,7 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
             isPaused={isPaused}
             isLoading={isLoading}
             hasNewData={hasNewData}
+            onSelectTotem={handleSelectTotem}
           />
         </div>
 

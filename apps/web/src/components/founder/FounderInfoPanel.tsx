@@ -34,6 +34,8 @@ interface FounderInfoPanelProps {
   isPaused?: boolean;
   isLoading?: boolean;
   hasNewData?: boolean;
+  /** Callback when a totem is clicked in the graph */
+  onSelectTotem?: (totemId: string, totemLabel: string) => void;
 }
 
 export function FounderInfoPanel({
@@ -44,6 +46,7 @@ export function FounderInfoPanel({
   isPaused = false,
   isLoading = false,
   hasNewData = false,
+  onSelectTotem,
 }: FounderInfoPanelProps) {
   const { t } = useTranslation();
   const imageUrl = getFounderImageUrl(founder);
@@ -248,6 +251,7 @@ export function FounderInfoPanel({
             totems={topTotems}
             loading={totemsLoading}
             height={340}
+            onTotemClick={onSelectTotem}
           />
         ) : (
           <RelationsRadar
@@ -256,6 +260,7 @@ export function FounderInfoPanel({
             totems={allTotems}
             loading={allTotemsLoading}
             height={360}
+            onTotemClick={onSelectTotem}
           />
         )}
       </div>

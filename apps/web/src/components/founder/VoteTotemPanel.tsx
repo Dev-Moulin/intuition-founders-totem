@@ -16,19 +16,213 @@ import { useAccount, useBalance } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import type { Hex, Address } from 'viem';
+import { formatEther } from 'viem';
 import type { FounderForHomePage } from '../../hooks';
-import { useProtocolConfig } from '../../hooks';
+import { useProtocolConfig, usePreviewRedeem } from '../../hooks';
 import { useVoteCartContext } from '../../hooks/cart/useVoteCart';
 import { useProactiveClaimCheck } from '../../hooks';
 import { usePositionBothSides } from '../../hooks/blockchain/usePositionFromContract';
 import { useWithdraw } from '../../hooks/blockchain/useWithdraw';
 import { GET_ATOMS_BY_LABELS } from '../../lib/graphql/queries';
 import { PresetButtonsCompact } from '../vote/PresetButtons';
-import { PositionModifier } from '../vote/PositionModifier';
 import { SuccessNotification } from '../common/SuccessNotification';
 import { ErrorNotification } from '../common/ErrorNotification';
 import predicatesData from '../../../../../packages/shared/src/data/predicates.json';
 import type { Predicate } from '../../types/predicate';
+
+/**
+ * WithdrawOnlyPanel - Simplified withdraw panel
+ *
+ * WITHDRAW button should ONLY allow withdrawing TRUST.
+ * FOR/AGAINST buttons already handle position changes via the slider.
+ * This component shows:
+ * 1. Current position (FOR or AGAINST + amount)
+ * 2. Slider to choose how much to withdraw (0-100%)
+ * 3. Confirm withdraw button
+ */
+interface WithdrawOnlyPanelProps {
+  position: {
+    direction: 'for' | 'against';
+    shares: bigint;
+  };
+  termId: Hex;
+  onWithdraw: (shares: bigint, percentage: number) => void;
+  disabled?: boolean;
+}
+
+function WithdrawOnlyPanel({
+  position,
+  termId,
+  onWithdraw,
+  disabled = false,
+}: WithdrawOnlyPanelProps) {
+  const { t } = useTranslation();
+  const { preview, currentPreview, loading: previewLoading } = usePreviewRedeem();
+
+  // Total position in TRUST (formatted)
+  const totalPositionFloat = parseFloat(formatEther(position.shares));
+  const formattedTotalPosition = totalPositionFloat.toFixed(4);
+
+  // Slider uses integer scale (x10000) for precision
+  const SCALE = 10000;
+  const maxInt = Math.round(totalPositionFloat * SCALE);
+
+  // Amount to withdraw (in TRUST as float, then converted to shares)
+  const [withdrawAmountInt, setWithdrawAmountInt] = useState(maxInt); // Start at 100%
+  const withdrawAmountFloat = withdrawAmountInt / SCALE;
+  const formattedWithdrawAmount = withdrawAmountFloat.toFixed(4);
+
+  // Calculate shares to withdraw based on amount (proportional to position)
+  const sharesToWithdraw = useMemo(() => {
+    if (totalPositionFloat === 0) return 0n;
+    // shares = position.shares * (withdrawAmount / totalPosition)
+    const ratio = withdrawAmountFloat / totalPositionFloat;
+    return BigInt(Math.floor(Number(position.shares) * ratio));
+  }, [position.shares, withdrawAmountFloat, totalPositionFloat]);
+
+  // Calculate percentage for display
+  const withdrawPercent = totalPositionFloat > 0
+    ? Math.round((withdrawAmountFloat / totalPositionFloat) * 100)
+    : 0;
+
+  // Preview withdrawal when amount changes
+  const handleWithdrawAmountChange = async (newAmountInt: number) => {
+    setWithdrawAmountInt(newAmountInt);
+    const newAmountFloat = newAmountInt / SCALE;
+    if (newAmountFloat > 0 && totalPositionFloat > 0) {
+      const ratio = newAmountFloat / totalPositionFloat;
+      const shares = BigInt(Math.floor(Number(position.shares) * ratio));
+      if (shares > 0n) {
+        await preview(termId, shares);
+      }
+    }
+  };
+
+  // Trigger initial preview on mount (100% withdrawal)
+  useEffect(() => {
+    if (position.shares > 0n) {
+      preview(termId, position.shares);
+    }
+  }, [termId, position.shares]);
+
+  const handleWithdrawSubmit = () => {
+    if (sharesToWithdraw > 0n) {
+      onWithdraw(sharesToWithdraw, withdrawPercent);
+    }
+  };
+
+  // Quick presets
+  const handlePreset = (percent: number) => {
+    const newAmountInt = Math.round((percent / 100) * maxInt);
+    handleWithdrawAmountChange(newAmountInt);
+  };
+
+  const directionLabel = position.direction === 'for' ? 'FOR' : 'AGAINST';
+  const directionColor = position.direction === 'for' ? 'text-green-400' : 'text-red-400';
+  const bgColor = position.direction === 'for' ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30';
+
+  return (
+    <div className={`${bgColor} border rounded-lg p-4 space-y-4`}>
+      {/* Current Position Display */}
+      <div className="text-center">
+        <span className="text-xs text-white/50">{t('founderExpanded.currentPosition')}</span>
+        <div className="flex items-center justify-center gap-2 mt-1">
+          <span className={`text-lg font-bold ${directionColor}`}>{directionLabel}</span>
+          <span className="text-lg font-bold text-white">{formattedTotalPosition} TRUST</span>
+        </div>
+      </div>
+
+      {/* Withdraw Amount Display - Real-time feedback */}
+      <div className="bg-black/30 rounded-lg p-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-white/70">{t('founderExpanded.withdrawAmount')}</span>
+          <span className="text-sm text-orange-300 font-medium">{withdrawPercent}%</span>
+        </div>
+        <div className="text-center">
+          <span className="text-2xl font-bold text-orange-400">{formattedWithdrawAmount}</span>
+          <span className="text-lg text-white/50 ml-1">/ {formattedTotalPosition} TRUST</span>
+        </div>
+      </div>
+
+      {/* Amount Slider */}
+      <div className="space-y-2">
+        <input
+          type="range"
+          min={0}
+          max={maxInt}
+          step={1}
+          value={withdrawAmountInt}
+          onChange={(e) => handleWithdrawAmountChange(parseInt(e.target.value))}
+          className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500"
+        />
+        {/* Quick presets */}
+        <div className="flex justify-between gap-2">
+          <button
+            onClick={() => handlePreset(25)}
+            className={`flex-1 py-1 text-xs rounded transition-colors ${
+              withdrawPercent === 25 ? 'bg-orange-500/30 text-orange-300' : 'bg-white/5 text-white/50 hover:bg-white/10'
+            }`}
+          >
+            25%
+          </button>
+          <button
+            onClick={() => handlePreset(50)}
+            className={`flex-1 py-1 text-xs rounded transition-colors ${
+              withdrawPercent === 50 ? 'bg-orange-500/30 text-orange-300' : 'bg-white/5 text-white/50 hover:bg-white/10'
+            }`}
+          >
+            50%
+          </button>
+          <button
+            onClick={() => handlePreset(75)}
+            className={`flex-1 py-1 text-xs rounded transition-colors ${
+              withdrawPercent === 75 ? 'bg-orange-500/30 text-orange-300' : 'bg-white/5 text-white/50 hover:bg-white/10'
+            }`}
+          >
+            75%
+          </button>
+          <button
+            onClick={() => handlePreset(100)}
+            className={`flex-1 py-1 text-xs rounded transition-colors ${
+              withdrawPercent === 100 ? 'bg-orange-500/30 text-orange-300' : 'bg-white/5 text-white/50 hover:bg-white/10'
+            }`}
+          >
+            MAX
+          </button>
+        </div>
+      </div>
+
+      {/* Preview - What you'll receive */}
+      {previewLoading ? (
+        <div className="text-sm text-white/50 text-center">{t('common.loading')}</div>
+      ) : currentPreview && sharesToWithdraw > 0n ? (
+        <div className="bg-black/20 rounded-lg p-3 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-white/70">{t('founderExpanded.youWillReceive')}</span>
+            <span className="text-green-400 font-semibold">{currentPreview.netAmountFormatted} TRUST</span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-white/50">{t('founderExpanded.exitFee')} ({currentPreview.exitFeePercent})</span>
+            <span className="text-red-400">-{currentPreview.exitFeeFormatted} TRUST</span>
+          </div>
+        </div>
+      ) : withdrawAmountInt === 0 ? (
+        <div className="text-sm text-white/40 text-center">{t('founderExpanded.selectWithdrawAmount')}</div>
+      ) : null}
+
+      {/* Confirm Button */}
+      <button
+        onClick={handleWithdrawSubmit}
+        disabled={disabled || sharesToWithdraw <= 0n}
+        className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {withdrawPercent === 100
+          ? t('founderExpanded.withdrawAll')
+          : t('founderExpanded.confirmWithdraw')}
+      </button>
+    </div>
+  );
+}
 
 interface VoteTotemPanelProps {
   founder: FounderForHomePage;
@@ -193,6 +387,19 @@ export function VoteTotemPanel({
   // Get current user shares based on position direction
   const currentUserShares = positionDirection === 'for' ? forShares : againstShares;
 
+  // Detect if user is trying to vote opposite to their existing position
+  const isVotingOpposite = useMemo(() => {
+    if (!hasAnyPosition || !positionDirection) return false;
+    if (voteDirection === 'withdraw') return false;
+    return positionDirection !== voteDirection;
+  }, [hasAnyPosition, positionDirection, voteDirection]);
+
+  // Format current position amount for display
+  const formattedCurrentPosition = useMemo(() => {
+    if (!currentUserShares || currentUserShares === 0n) return '0';
+    return parseFloat(formatEther(currentUserShares)).toFixed(4);
+  }, [currentUserShares]);
+
   // Handle withdraw from PositionModifier
   const handleWithdraw = async (shares: bigint, _percentage: number) => {
     if (!proactiveClaimInfo) {
@@ -226,54 +433,6 @@ export function VoteTotemPanel({
       refetchPosition();
       resetWithdraw();
     }
-  };
-
-  // Handle add more from PositionModifier (adds to cart)
-  const handleAddMore = (amount: string, direction: 'for' | 'against') => {
-    if (!selectedTotemId || !selectedPredicateWithAtom?.atomId || !proactiveClaimInfo) {
-      setError('Données manquantes');
-      setTimeout(() => setError(null), 3000);
-      return;
-    }
-
-    const cartItem = {
-      totemId: selectedTotemId as Hex,
-      totemName: selectedTotemLabel || 'Unknown',
-      predicateId: selectedPredicateWithAtom.atomId as Hex,
-      termId: proactiveClaimInfo.termId as Hex,
-      counterTermId: proactiveClaimInfo.counterTermId as Hex,
-      direction,
-      amount,
-      isNewTotem: false,
-    };
-
-    try {
-      addItem(cartItem);
-      setSuccess(t('founderExpanded.addedToCart') || 'Ajouté au panier !');
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      console.error('[VoteTotemPanel] Error adding to cart:', err);
-      setError('Erreur lors de l\'ajout au panier');
-      setTimeout(() => setError(null), 3000);
-    }
-  };
-
-  // Handle switch side from PositionModifier
-  const handleSwitchSide = async (newDirection: 'for' | 'against') => {
-    // First withdraw current position, then add opposite to cart
-    if (!proactiveClaimInfo || currentUserShares <= 0n) {
-      setError('Pas de position à changer');
-      setTimeout(() => setError(null), 3000);
-      return;
-    }
-
-    // Withdraw 100% of current position
-    await handleWithdraw(currentUserShares, 100);
-
-    // Then the user can vote in the new direction via the normal flow
-    setVoteDirection(newDirection);
-    setSuccess(`Position retirée. Vous pouvez maintenant voter ${newDirection.toUpperCase()}`);
-    setTimeout(() => setSuccess(null), 5000);
   };
 
   // Handle add to cart - Full integration with useVoteCart
@@ -315,6 +474,12 @@ export function VoteTotemPanel({
     // For existing triples, we use the existing termId/counterTermId
     const isNewTotem = !proactiveClaimInfo;
 
+    // Include current position so cart can detect if withdrawal is needed for opposite-side vote
+    // This enables auto-withdraw when switching from FOR to AGAINST (or vice versa)
+    const currentPositionForCart = hasAnyPosition && positionDirection
+      ? { direction: positionDirection, shares: currentUserShares }
+      : undefined;
+
     const cartItem = {
       totemId: selectedTotemId as Hex,
       totemName: selectedTotemLabel || 'Unknown',
@@ -324,10 +489,17 @@ export function VoteTotemPanel({
       direction: voteDirection as 'for' | 'against',
       amount: trustAmount,
       isNewTotem,
+      currentPosition: currentPositionForCart, // Pass position to detect opposite-side withdrawal
     };
 
     console.log('[VoteTotemPanel] Cart item to add:', cartItem);
     console.log('[VoteTotemPanel] isNewTotem:', isNewTotem, '(triple exists on chain:', !!proactiveClaimInfo, ')');
+
+    // DEBUG: Vérification que totemId est bien un atom ID et pas un triple ID
+    console.log('[VoteTotemPanel] 🔍 DEBUG VERIFICATION:');
+    console.log('  - selectedTotemId (should be ATOM id):', selectedTotemId);
+    console.log('  - proactiveClaimInfo?.termId (TRIPLE id):', proactiveClaimInfo?.termId);
+    console.log('  - Are they different?', selectedTotemId !== proactiveClaimInfo?.termId ? '✅ YES (correct!)' : '⚠️ NO (might be bug if triple exists)');
 
     try {
       addItem(cartItem);
@@ -465,19 +637,101 @@ export function VoteTotemPanel({
           </div>
         </div>
 
-        {/* Show PositionModifier when in withdraw mode AND user has a position */}
+        {/* Alert: User is voting opposite to their existing position */}
+        {isVotingOpposite && !positionLoading && (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-3">
+            <div className="flex items-start gap-2">
+              <svg className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-amber-300 text-sm font-medium">
+                  Position existante détectée
+                </p>
+                <p className="text-white/70 text-xs mt-1">
+                  Vous avez <span className="text-amber-300 font-medium">{formattedCurrentPosition} TRUST</span> en{' '}
+                  <span className={positionDirection === 'for' ? 'text-green-400' : 'text-red-400'}>
+                    {positionDirection?.toUpperCase()}
+                  </span>.
+                </p>
+                <p className="text-white/50 text-xs mt-1">
+                  Pour voter {voteDirection.toUpperCase()}, votre position sera automatiquement retirée.
+                </p>
+              </div>
+            </div>
+
+            {/* Amount input with slider for opposite vote */}
+            <div className="pt-2 border-t border-amber-500/20">
+              <label className="block text-xs text-white/60 mb-2">
+                Montant pour votre nouvelle position {voteDirection.toUpperCase()}
+              </label>
+              {/* Slider - Uses integer scale (x10000) for browser precision */}
+              {(() => {
+                // Calculate slider bounds
+                const minVal = parseFloat(protocolConfig?.formattedMinDeposit || '0.0001');
+                // Max = balance + current position (what user can spend after redeem)
+                const currentPosValue = parseFloat(formattedCurrentPosition) || 0;
+                const balanceVal = parseFloat(balanceData?.formatted || '0');
+                const maxVal = Math.max(minVal, balanceVal + currentPosValue * 0.93); // 93% = after ~7% exit fee
+
+                // Convert to integer scale (x10000) for better slider precision
+                const SCALE = 10000;
+                const minInt = Math.round(minVal * SCALE);
+                const maxInt = Math.round(maxVal * SCALE);
+                const currentAmount = parseFloat(trustAmount) || minVal;
+                const currentInt = Math.min(Math.max(Math.round(currentAmount * SCALE), minInt), maxInt);
+
+                return (
+                  <>
+                    <input
+                      type="range"
+                      min={minInt}
+                      max={maxInt}
+                      step={1}
+                      value={currentInt}
+                      onChange={(e) => {
+                        const intValue = parseInt(e.target.value, 10);
+                        setTrustAmount((intValue / SCALE).toFixed(4));
+                      }}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                    <div className="flex justify-between text-xs text-white/40 mt-1">
+                      <span>{minVal.toFixed(4)}</span>
+                      <span>{maxVal.toFixed(4)}</span>
+                    </div>
+                  </>
+                );
+              })()}
+              {/* Manual input + balance */}
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="text"
+                  value={trustAmount}
+                  onChange={(e) => setTrustAmount(e.target.value)}
+                  placeholder={protocolConfig?.formattedMinDeposit || '0.0001'}
+                  className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500"
+                />
+                <span className="text-xs text-white/50">TRUST</span>
+              </div>
+              {balanceData && (
+                <p className="text-xs text-white/40 mt-1">
+                  Balance: {parseFloat(balanceData.formatted).toFixed(4)} + ~{(parseFloat(formattedCurrentPosition) * 0.93).toFixed(4)} récupérable
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Show WITHDRAW-ONLY panel when in withdraw mode AND user has a position */}
+        {/* WITHDRAW = only withdraw, no add/switch (FOR/AGAINST buttons already handle position changes) */}
         {voteDirection === 'withdraw' && hasAnyPosition && proactiveClaimInfo && positionDirection ? (
-          <PositionModifier
-            termId={proactiveClaimInfo.termId as Hex}
+          <WithdrawOnlyPanel
             position={{
               direction: positionDirection,
               shares: currentUserShares,
             }}
-            minDeposit={protocolConfig?.formattedMinDeposit || '0.0001'}
-            balance={balanceData?.formatted}
-            onAddMore={handleAddMore}
+            termId={proactiveClaimInfo.termId as Hex}
             onWithdraw={handleWithdraw}
-            onSwitchSide={handleSwitchSide}
             disabled={withdrawLoading || positionLoading}
           />
         ) : voteDirection === 'withdraw' && !hasAnyPosition && !positionLoading ? (
@@ -490,8 +744,8 @@ export function VoteTotemPanel({
               {t('founderExpanded.voteFirstToWithdraw') || 'Votez FOR ou AGAINST d\'abord pour pouvoir retirer'}
             </p>
           </div>
-        ) : (
-          /* Normal vote flow - Amount Input */
+        ) : !isVotingOpposite ? (
+          /* Normal vote flow - Amount Input (only when NOT voting opposite) */
           <>
             <div>
               <label className="block text-xs text-white/60 mb-1">
@@ -531,7 +785,7 @@ export function VoteTotemPanel({
               </div>
             )}
           </>
-        )}
+        ) : null}
       </div>
 
       {/* Action Button - only show for FOR/AGAINST, not withdraw (PositionModifier has its own buttons) */}

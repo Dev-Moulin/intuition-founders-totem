@@ -27,6 +27,8 @@ interface RelationsRadarProps {
   loading?: boolean;
   /** Height of the chart */
   height?: number;
+  /** Callback when a totem is clicked */
+  onTotemClick?: (totemId: string, totemLabel: string) => void;
 }
 
 interface TotemNode {
@@ -75,6 +77,7 @@ export function RelationsRadar({
   totems,
   loading = false,
   height = 280,
+  onTotemClick,
 }: RelationsRadarProps) {
   const { t } = useTranslation();
   const [hoveredTotem, setHoveredTotem] = useState<string | null>(null);
@@ -83,20 +86,31 @@ export function RelationsRadar({
   const { nodes, centerX, centerY, radius } = useMemo(() => {
     const cx = 150; // Center X (SVG viewBox is 300x300)
     const cy = 150; // Center Y
-    const r = 120; // Max radius for nodes
+    const r = 145; // Max radius for nodes (increased to use more space)
 
     if (totems.length === 0) {
       return { nodes: [], maxTrust: 1, centerX: cx, centerY: cy, radius: r };
     }
 
     // Find max trust for scaling
-    const max = Math.max(...totems.map((t) => t.totalTrust), 0.001);
+    const trustValues = totems.map((t) => t.totalTrust);
+    const max = Math.max(...trustValues, 0.001);
 
     // Calculate positions for each totem
+    // Use sqrt normalization to compress extreme values
+    // This makes differences visible without extreme clustering
     const angleStep = (2 * Math.PI) / totems.length;
     const calculatedNodes: TotemNode[] = totems.map((totem, index) => {
       const angle = index * angleStep - Math.PI / 2; // Start from top
-      const distance = Math.min(totem.totalTrust / max, 1) * 0.8 + 0.2; // Min 20%, max 100%
+
+      // Normalize with sqrt to compress high values
+      // sqrt(value/max) gives ratio ~3:1 instead of 11:1 for values like 0.55 vs 0.05
+      const normalizedRatio = totem.totalTrust > 0
+        ? Math.sqrt(totem.totalTrust / max)
+        : 0.1; // Minimum for totems with no votes
+
+      // Scale to 30%-100% range (more spread than before)
+      const distance = normalizedRatio * 0.7 + 0.3;
 
       return {
         ...totem,
@@ -263,16 +277,16 @@ export function RelationsRadar({
           {/* Clip path definition */}
           <defs>
             <clipPath id="founder-clip">
-              <circle cx={centerX} cy={centerY} r={22} />
+              <circle cx={centerX} cy={centerY} r={16} />
             </clipPath>
           </defs>
 
-          {/* Center - Founder */}
+          {/* Center - Founder (smaller avatar) */}
           <g className="cursor-pointer">
             <circle
               cx={centerX}
               cy={centerY}
-              r={24}
+              r={18}
               fill="#1f2937"
               stroke="#64748b"
               strokeWidth={2}
@@ -280,10 +294,10 @@ export function RelationsRadar({
             {founderImage ? (
               <image
                 href={founderImage}
-                x={centerX - 22}
-                y={centerY - 22}
-                width={44}
-                height={44}
+                x={centerX - 16}
+                y={centerY - 16}
+                width={32}
+                height={32}
                 clipPath="url(#founder-clip)"
                 preserveAspectRatio="xMidYMid slice"
               />
@@ -314,6 +328,7 @@ export function RelationsRadar({
                 className="cursor-pointer transition-transform"
                 onMouseEnter={() => setHoveredTotem(node.id)}
                 onMouseLeave={() => setHoveredTotem(null)}
+                onClick={() => onTotemClick?.(node.id, node.label)}
               >
                 {/* Node circle */}
                 <circle

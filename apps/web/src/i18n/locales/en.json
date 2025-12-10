@@ -134,7 +134,16 @@
     "createNewTotem": "Create a new totem",
     "comingSoon": "Coming soon",
     "addedToCart": "Added to cart!",
-    "withdrawNotInCart": "Withdraw not available in cart mode"
+    "withdrawNotInCart": "Withdraw not available in cart mode",
+    "currentPosition": "Current position",
+    "withdrawAmount": "Withdrawal",
+    "youWillReceive": "You will receive",
+    "exitFee": "Exit fee",
+    "confirmWithdraw": "Confirm withdrawal",
+    "withdrawAll": "Withdraw all",
+    "selectWithdrawAmount": "Select amount to withdraw",
+    "noPositionToWithdraw": "You don't have a position on this totem",
+    "voteFirstToWithdraw": "Vote FOR or AGAINST first to be able to withdraw"
   },
   "homePage": {
     "title": "INTUITION",
@@ -311,6 +320,24 @@
       "description": "Error loading your votes: {message}",
       "button": "← Back to home"
     }
+  },
+  "tradingChart": {
+    "noDataInTimeframe": "No data in {{timeframe}}",
+    "switchTo": "View {{timeframe}}"
+  },
+  "voteCart": {
+    "insufficientFunds": "Insufficient funds",
+    "insufficientBalance": "Insufficient balance",
+    "missingAmount": "Missing {{amount}} TRUST",
+    "partialInfo": "{{affordable}} vote(s) possible, {{blocked}} blocked",
+    "needMoreFunds": "Insufficient funds",
+    "toggleDirection": "Click to toggle",
+    "adjustToMax": "Adjust to {{amount}}",
+    "max": "MAX",
+    "cannotAfford": "Cannot afford",
+    "autoWithdraw": "Auto withdraw",
+    "newTotem": "New",
+    "autoWithdrawInfo": "Auto withdraw then vote"
   },
   "admin": {
     "loadingAtoms": "Loading atoms...",
