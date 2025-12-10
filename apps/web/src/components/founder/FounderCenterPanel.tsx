@@ -38,7 +38,8 @@ interface DisplayTotem {
 
 /** Best triple type - includes predicate for full triple display */
 interface BestTriple {
-  id: string;
+  id: string; // Object atom term_id (totem atomId)
+  tripleTermId: string; // Triple term_id (for reference)
   subjectLabel: string;
   predicateLabel: string;
   objectLabel: string;
@@ -102,10 +103,23 @@ export function FounderCenterPanel({
   const [section2Tab, setSection2Tab] = useState<'myVotes' | 'bestTriples'>('myVotes');
   const [timeframe, setTimeframe] = useState<Timeframe>('24H');
 
-  // Resizable divider state - height of section 1 in pixels
-  const [section1Height, setSection1Height] = useState(160);
+  // Resizable divider state - height of section 1 in pixels (null = not initialized)
+  const [section1Height, setSection1Height] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Initialize section1Height to ~50% of available space on first render
+  useEffect(() => {
+    if (section1Height === null && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      // Available space = container - chart (~156px) - footer (~40px) - divider (~32px) - margins (~20px)
+      const chartAndOverhead = 248;
+      const availableSpace = containerRect.height - chartAndOverhead;
+      // Split 50/50 between sections
+      const initialHeight = Math.max(80, availableSpace / 2);
+      setSection1Height(initialHeight);
+    }
+  }, [section1Height]);
 
   // Handle resize drag
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -157,6 +171,8 @@ export function FounderCenterPanel({
   const {
     data: timelineData,
     loading: timelineLoading,
+    suggestedTimeframe,
+    hasAnyData,
   } = useVotesTimeline(founder.name, timeframe, selectedTotemId);
 
   // Merge proposals (with votes) and OFC totems (may not have votes)
@@ -232,11 +248,11 @@ export function FounderCenterPanel({
       // Only filter for votes (subject/predicate/object are guaranteed by validProposals)
       .filter((proposal) => proposal.votes)
       .map((proposal) => ({
-        id: proposal.term_id,
+        id: proposal.object.term_id, // Use object atomId, NOT triple term_id!
+        tripleTermId: proposal.term_id, // Keep triple term_id for reference
         subjectLabel: proposal.subject.label,
         predicateLabel: proposal.predicate.label,
         objectLabel: proposal.object.label,
-        objectId: proposal.object.term_id,
         forVotes: proposal.votes!.forVotes,
         againstVotes: proposal.votes!.againstVotes,
         totalTrust: BigInt(proposal.votes!.forVotes) + BigInt(proposal.votes!.againstVotes),
@@ -262,11 +278,13 @@ export function FounderCenterPanel({
           height={120}
           loading={timelineLoading}
           title="Vote Activity"
+          suggestedTimeframe={suggestedTimeframe}
+          hasAnyData={hasAnyData}
         />
       </div>
 
       {/* SECTION 1: Totems / Création */}
-      <div className="shrink-0" style={{ height: section1Height }}>
+      <div className="shrink-0" style={{ height: section1Height ?? 150 }}>
         {/* Section 1 Tabs */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex bg-white/5 rounded-lg p-0.5">
@@ -294,7 +312,7 @@ export function FounderCenterPanel({
         </div>
 
         {/* Section 1 Content - height adapts to section1Height minus tabs (~32px) */}
-        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ height: section1Height - 32, overscrollBehavior: 'contain' }}>
+        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ height: (section1Height ?? 150) - 32, overscrollBehavior: 'contain' }}>
           {loading ? (
             <div className="grid grid-cols-2 gap-2">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -448,7 +466,7 @@ export function FounderCenterPanel({
 
                   return (
                     <button
-                      key={totem.id || `best-${index}`}
+                      key={totem.tripleTermId || `best-${index}`}
                       onClick={() => onSelectTotem?.(totem.id, totem.objectLabel)}
                       className={`w-full text-left p-2 rounded-lg transition-all ${
                         totem.id === selectedTotemId

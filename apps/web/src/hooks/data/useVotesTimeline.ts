@@ -65,6 +65,10 @@ export interface UseVotesTimelineResult {
     netVotes: string;
     voteCount: number;
   };
+  /** Suggested timeframe if current one has no data but others do */
+  suggestedTimeframe: Timeframe | null;
+  /** Whether data exists at all for this totem */
+  hasAnyData: boolean;
 }
 
 /**
@@ -191,6 +195,50 @@ export function useVotesTimeline(
     skip: termIds.length === 0,
     fetchPolicy: 'cache-and-network',
   });
+
+  // Get deposits filtered only by totem (not by timeframe) to check data availability
+  const totemDeposits = useMemo(() => {
+    if (!depositsData?.deposits) return [];
+
+    if (!selectedTotemId) return depositsData.deposits;
+
+    return depositsData.deposits.filter((d) => {
+      const objectId = tripleToObjectMap.get(d.term_id);
+      return objectId === selectedTotemId;
+    });
+  }, [depositsData?.deposits, selectedTotemId, tripleToObjectMap]);
+
+  // Check if data exists at all for this totem
+  const hasAnyData = totemDeposits.length > 0;
+
+  // Find the best timeframe that has data (for suggestion)
+  const suggestedTimeframe = useMemo((): Timeframe | null => {
+    if (!hasAnyData) return null;
+
+    const now = Date.now();
+    const oldestDepositTime = Math.min(
+      ...totemDeposits.map((d) => new Date(d.created_at).getTime())
+    );
+    const dataAge = now - oldestDepositTime;
+
+    // Check which timeframes would show data
+    const timeframes: Timeframe[] = ['12H', '24H', '7D', 'All'];
+
+    for (const tf of timeframes) {
+      const duration = getTimeframeDuration(tf);
+      // If data age is within this timeframe, it would show data
+      if (dataAge <= duration) {
+        // Only suggest if it's different from current timeframe
+        if (tf !== timeframe) {
+          return tf;
+        }
+        return null; // Current timeframe is good
+      }
+    }
+
+    // Data is older than 7D, suggest "All"
+    return timeframe !== 'All' ? 'All' : null;
+  }, [hasAnyData, totemDeposits, timeframe]);
 
   // Process and aggregate data
   const { chartData, stats } = useMemo(() => {
@@ -335,5 +383,7 @@ export function useVotesTimeline(
     error: error ? new Error(error.message) : null,
     refetch: refetchDeposits,
     stats,
+    suggestedTimeframe,
+    hasAnyData,
   };
 }

@@ -19,8 +19,8 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Tooltip,
   Legend,
+  Tooltip,
 } from 'recharts';
 import type { TopTotem } from '../../hooks';
 
@@ -60,54 +60,130 @@ function truncateLabel(label: string, maxLength: number = 10): string {
 }
 
 /**
- * Custom tooltip for radar chart
+ * Custom tick component for clickable axis labels
  */
-function CustomTooltip({
+function ClickableAxisTick({
+  x,
+  y,
+  payload,
+  onTotemClick,
+  chartData,
+}: {
+  x?: string | number;
+  y?: string | number;
+  payload?: { value: string };
+  onTotemClick?: (totemId: string, totemLabel: string) => void;
+  chartData: Array<{ totem: string; totemId: string; fullLabel: string }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}) {
+  if (!payload || x === undefined || y === undefined) return null;
+
+  const totemData = chartData.find((d) => d.totem === payload.value);
+  const numX = typeof x === 'string' ? parseFloat(x) : x;
+  const numY = typeof y === 'string' ? parseFloat(y) : y;
+
+  const handleClick = () => {
+    if (onTotemClick && totemData) {
+      onTotemClick(totemData.totemId, totemData.fullLabel);
+    }
+  };
+
+  return (
+    <g
+      transform={`translate(${numX},${numY})`}
+      onClick={handleClick}
+      style={{ cursor: onTotemClick ? 'pointer' : 'default' }}
+    >
+      <text
+        fill="#9ca3af"
+        fontSize={11}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        className={onTotemClick ? 'hover:fill-white transition-colors' : ''}
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
+}
+
+/**
+ * Custom tooltip for radar chart with quadrant-based positioning
+ */
+function CustomRadarTooltip({
   active,
   payload,
+  coordinate,
+  viewBox,
 }: {
   active?: boolean;
   payload?: Array<{
     value: number;
     name: string;
-    payload: { totem: string; for: number; against: number; fullLabel: string };
+    payload: { totem: string; for: number; against: number; fullLabel: string; rawFor?: number; rawAgainst?: number };
   }>;
+  coordinate?: { x: number; y: number };
+  viewBox?: { cx: number; cy: number; width: number; height: number };
 }) {
   if (!active || !payload || payload.length === 0) return null;
 
   const data = payload[0]?.payload;
   if (!data) return null;
 
-  const net = data.for - data.against;
+  // Use raw values for display if available (before sqrt normalization)
+  const forValue = data.rawFor ?? data.for;
+  const againstValue = data.rawAgainst ?? data.against;
+  const net = forValue - againstValue;
+
+  // Calculate quadrant-based positioning
+  const cx = viewBox?.cx ?? (viewBox?.width ?? 300) / 2;
+  const cy = viewBox?.cy ?? (viewBox?.height ?? 300) / 2;
+  const mouseX = coordinate?.x ?? cx;
+  const mouseY = coordinate?.y ?? cy;
+
+  const isLeft = mouseX < cx;
+  const isTop = mouseY < cy;
+
+  // Position style based on quadrant (opposite corner)
+  const positionStyle: React.CSSProperties = {
+    position: 'absolute',
+    pointerEvents: 'none',
+    zIndex: 10,
+    ...(isTop ? { bottom: 8 } : { top: 8 }),
+    ...(isLeft ? { right: 8 } : { left: 8 }),
+  };
 
   return (
-    <div className="bg-gray-900/95 border border-white/10 rounded-lg p-3 shadow-xl">
-      <p className="text-sm font-medium text-white mb-2">{data.fullLabel}</p>
-      <div className="space-y-1">
-        <div className="flex items-center justify-between gap-4">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
-            <span className="text-xs text-white/70">FOR</span>
-          </span>
-          <span className="text-xs font-medium text-blue-400">
-            {formatTrust(data.for)} TRUST
-          </span>
-        </div>
-        <div className="flex items-center justify-between gap-4">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-orange-500" />
-            <span className="text-xs text-white/70">AGAINST</span>
-          </span>
-          <span className="text-xs font-medium text-orange-400">
-            {formatTrust(data.against)} TRUST
-          </span>
-        </div>
-        <div className="border-t border-white/10 pt-1 mt-1">
+    <div style={positionStyle}>
+      <div className="bg-gray-900/95 border border-white/10 rounded-lg p-3 shadow-xl">
+        <p className="text-sm font-medium text-white mb-2">{data.fullLabel}</p>
+        <div className="space-y-1">
           <div className="flex items-center justify-between gap-4">
-            <span className="text-xs text-white/50">Net</span>
-            <span className={`text-xs font-medium ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {net >= 0 ? '+' : ''}{formatTrust(net)}
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span className="text-xs text-white/70">FOR</span>
             </span>
+            <span className="text-xs font-medium text-blue-400">
+              {formatTrust(forValue)} TRUST
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              <span className="text-xs text-white/70">AGAINST</span>
+            </span>
+            <span className="text-xs font-medium text-orange-400">
+              {formatTrust(againstValue)} TRUST
+            </span>
+          </div>
+          <div className="border-t border-white/10 pt-1 mt-1">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs text-white/50">Net</span>
+              <span className={`text-xs font-medium ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {net >= 0 ? '+' : ''}{formatTrust(net)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -160,22 +236,40 @@ export function TopTotemsRadar({
     };
   }, [measureContainer]);
 
-  // Transform data for recharts
-  const chartData = useMemo(() => {
-    return totems.map((totem) => ({
+  // Transform data for recharts with sqrt normalization
+  // This compresses extreme values so differences are visible but not overwhelming
+  const { chartData, maxValue } = useMemo(() => {
+    if (totems.length === 0) {
+      return { chartData: [], maxValue: 1 };
+    }
+
+    // Find max for normalization
+    const rawMax = Math.max(...totems.map((t) => Math.max(t.trustFor, t.trustAgainst)), 0.001);
+
+    // Apply sqrt normalization to compress extreme values
+    // sqrt(0.55) ≈ 0.74, sqrt(0.05) ≈ 0.22 → ratio 3.4:1 instead of 11:1
+    const normalizedData = totems.map((totem) => ({
       totem: truncateLabel(totem.label),
       fullLabel: totem.label,
       totemId: totem.id,
-      for: totem.trustFor,
-      against: totem.trustAgainst,
+      // Normalized values for chart display
+      for: Math.sqrt(totem.trustFor / rawMax) * rawMax,
+      against: Math.sqrt(totem.trustAgainst / rawMax) * rawMax,
+      // Keep raw values for tooltip
+      rawFor: totem.trustFor,
+      rawAgainst: totem.trustAgainst,
     }));
-  }, [totems]);
 
-  // Calculate max value for scale
-  const maxValue = useMemo(() => {
-    if (totems.length === 0) return 1;
-    const max = Math.max(...totems.map((t) => Math.max(t.trustFor, t.trustAgainst)));
-    return max > 0 ? max * 1.1 : 1; // Add 10% padding
+    // Recalculate max after normalization
+    const normalizedMax = Math.max(
+      ...normalizedData.map((d) => Math.max(d.for, d.against)),
+      0.001
+    );
+
+    return {
+      chartData: normalizedData,
+      maxValue: normalizedMax * 1.1, // Add 10% padding
+    };
   }, [totems]);
 
   const hasValidSize = dimensions.width > 0 && dimensions.height > 0;
@@ -253,62 +347,85 @@ export function TopTotemsRadar({
       );
     }
 
-    // Render radar chart
+    // Handle click on radar point
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleRadarClick = (data: any) => {
+      if (data?.payload && onTotemClick) {
+        const payload = data.payload;
+        onTotemClick(payload.totemId, payload.fullLabel);
+      }
+    };
+
+    // Render radar chart with recharts Tooltip using custom content with quadrant positioning
     return (
-      <RadarChart
-        width={dimensions.width}
-        height={dimensions.height}
-        data={chartData}
-        margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
-      >
-        <PolarGrid
-          stroke="#374151"
-          strokeOpacity={0.5}
-        />
-        <PolarAngleAxis
-          dataKey="totem"
-          tick={{
-            fill: '#9ca3af',
-            fontSize: 11,
-          }}
-        />
-        <PolarRadiusAxis
-          angle={90}
-          domain={[0, maxValue]}
-          tick={false}
-          axisLine={false}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend
-          verticalAlign="bottom"
-          height={24}
-          formatter={(value) => (
-            <span className="text-xs text-white/60">{value}</span>
-          )}
-        />
+      <div className="relative w-full h-full outline-none focus:outline-none" tabIndex={-1}>
+        <RadarChart
+          width={dimensions.width}
+          height={dimensions.height}
+          data={chartData}
+          margin={{ top: 1, right: 1, bottom: 1, left: 1 }}
+          style={{ outline: 'none' }}
+        >
+          <PolarGrid
+            stroke="#374151"
+            strokeOpacity={0.5}
+          />
+          <PolarAngleAxis
+            dataKey="totem"
+            tick={(props) => (
+              <ClickableAxisTick
+                {...props}
+                onTotemClick={onTotemClick}
+                chartData={chartData}
+              />
+            )}
+          />
+          <PolarRadiusAxis
+            angle={90}
+            domain={[0, maxValue]}
+            tick={false}
+            axisLine={false}
+          />
+          <Tooltip
+            content={<CustomRadarTooltip viewBox={{ cx: dimensions.width / 2, cy: dimensions.height / 2, width: dimensions.width, height: dimensions.height }} />}
+            wrapperStyle={{ visibility: 'visible', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}
+            trigger="hover"
+          />
+          <Legend
+            verticalAlign="bottom"
+            height={24}
+            formatter={(value) => (
+              <span className="text-xs text-white/60">{value}</span>
+            )}
+          />
 
-        {/* FOR area (blue) */}
-        <Radar
-          name="FOR"
-          dataKey="for"
-          stroke="#3b82f6"
-          strokeWidth={2}
-          fill="#3b82f6"
-          fillOpacity={0.3}
-          animationDuration={750}
-        />
+          {/* FOR area (blue) - with clickable dots */}
+          <Radar
+            name="FOR"
+            dataKey="for"
+            stroke="#3b82f6"
+            strokeWidth={2}
+            fill="#3b82f6"
+            fillOpacity={0.3}
+            animationDuration={750}
+            dot={{ r: 4, fill: '#3b82f6', stroke: '#1e40af', strokeWidth: 1, cursor: 'pointer' }}
+            activeDot={{ r: 6, fill: '#60a5fa', stroke: '#3b82f6', strokeWidth: 2, cursor: 'pointer', onClick: handleRadarClick }}
+          />
 
-        {/* AGAINST area (orange) */}
-        <Radar
-          name="AGAINST"
-          dataKey="against"
-          stroke="#f97316"
-          strokeWidth={2}
-          fill="#f97316"
-          fillOpacity={0.3}
-          animationDuration={750}
-        />
-      </RadarChart>
+          {/* AGAINST area (orange) - with clickable dots */}
+          <Radar
+            name="AGAINST"
+            dataKey="against"
+            stroke="#f97316"
+            strokeWidth={2}
+            fill="#f97316"
+            fillOpacity={0.3}
+            animationDuration={750}
+            dot={{ r: 4, fill: '#f97316', stroke: '#c2410c', strokeWidth: 1, cursor: 'pointer' }}
+            activeDot={{ r: 6, fill: '#fb923c', stroke: '#f97316', strokeWidth: 2, cursor: 'pointer', onClick: handleRadarClick }}
+          />
+        </RadarChart>
+      </div>
     );
   };
 
@@ -317,8 +434,9 @@ export function TopTotemsRadar({
       <h4 className="text-sm font-medium text-white/70">Top Totems</h4>
       <div
         ref={containerRef}
-        className="bg-gray-900/30 rounded-lg"
+        className="bg-gray-900/30 rounded-lg outline-none focus:outline-none **:outline-none"
         style={{ height }}
+        tabIndex={-1}
       >
         {renderContent()}
       </div>

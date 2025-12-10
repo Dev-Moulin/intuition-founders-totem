@@ -134,7 +134,16 @@
     "createNewTotem": "Créer un nouveau totem",
     "comingSoon": "Bientôt disponible",
     "addedToCart": "Ajouté au panier !",
-    "withdrawNotInCart": "Retrait non disponible en mode panier"
+    "withdrawNotInCart": "Retrait non disponible en mode panier",
+    "currentPosition": "Position actuelle",
+    "withdrawAmount": "Retrait",
+    "youWillReceive": "Vous recevrez",
+    "exitFee": "Frais de sortie",
+    "confirmWithdraw": "Confirmer le retrait",
+    "withdrawAll": "Retirer tout",
+    "selectWithdrawAmount": "Sélectionnez un montant à retirer",
+    "noPositionToWithdraw": "Vous n'avez pas de position sur ce totem",
+    "voteFirstToWithdraw": "Votez FOR ou AGAINST d'abord pour pouvoir retirer"
   },
   "homePage": {
     "title": "INTUITION",
@@ -311,6 +320,24 @@
       "description": "Erreur lors du chargement de vos votes: {message}",
       "button": "← Retour à l'accueil"
     }
+  },
+  "tradingChart": {
+    "noDataInTimeframe": "Aucune donnée sur {{timeframe}}",
+    "switchTo": "Voir {{timeframe}}"
+  },
+  "voteCart": {
+    "insufficientFunds": "Fonds insuffisants",
+    "insufficientBalance": "Balance insuffisante",
+    "missingAmount": "Il manque {{amount}} TRUST",
+    "partialInfo": "{{affordable}} vote(s) possible(s), {{blocked}} bloqué(s)",
+    "needMoreFunds": "Fonds insuffisants",
+    "toggleDirection": "Cliquez pour changer",
+    "adjustToMax": "Ajuster à {{amount}}",
+    "max": "MAX",
+    "cannotAfford": "Non finançable",
+    "autoWithdraw": "Retrait auto",
+    "newTotem": "Nouveau",
+    "autoWithdrawInfo": "Retrait auto puis vote"
   },
   "admin": {
     "loadingAtoms": "Chargement des atoms...",

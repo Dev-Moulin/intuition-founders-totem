@@ -4,8 +4,14 @@
  * Hook for executing a vote cart as batch transactions.
  * Orchestrates the multi-step process:
  * 1. createTriples (for new totem-founder relationships)
- * 2. batchRedeem (if any positions need to be withdrawn)
- * 3. batchDeposit (all votes in one transaction)
+ * 2. redeemBatch (if switching positions)
+ * 3. depositBatch (for existing triples)
+ *
+ * NOTE: Atomic redeem+deposit via Multicall3 is NOT possible because:
+ * - redeemBatch checks `_isApprovedToRedeem(msg.sender, receiver)`
+ * - When called via Multicall3, msg.sender = Multicall3 address (not user wallet)
+ * - Multicall3 is not approved to redeem on behalf of users
+ * - This is a fundamental EVM limitation, not a code bug
  *
  * @see Documentation: Claude/00_GESTION_PROJET/Projet_02_SDK_V2/TODO_Implementation.md
  * @see Contract Reference: Claude/00_GESTION_PROJET/Projet_02_SDK_V2/17_EthMultiVault_V2_Reference.md
@@ -118,73 +124,6 @@ export function useBatchVote(): UseBatchVoteResult {
     setCurrentStep(0);
     setTotalSteps(1);
   }, []);
-
-  /**
-   * Execute batch redeem for items that need withdrawal
-   */
-  const executeBatchRedeem = useCallback(
-    async (itemsToRedeem: VoteCartItem[]): Promise<Hex | null> => {
-      if (!address || !walletClient || !publicClient) return null;
-      if (itemsToRedeem.length === 0) return null;
-
-      // Prepare arrays for batch redeem
-      const termIds: Hex[] = [];
-      const curveIds: bigint[] = [];
-      const shares: bigint[] = [];
-      const minAssets: bigint[] = [];
-
-      for (const item of itemsToRedeem) {
-        if (!item.currentPosition) continue;
-
-        // Use the termId of the current position (opposite to new vote direction)
-        const redeemTermId =
-          item.currentPosition.direction === 'for'
-            ? item.termId
-            : item.counterTermId;
-
-        termIds.push(redeemTermId);
-        curveIds.push(DEFAULT_CURVE_ID);
-        shares.push(item.currentPosition.shares);
-        minAssets.push(0n); // No slippage protection for simplicity
-      }
-
-      console.log('[useBatchVote] Executing batchRedeem:', {
-        receiver: address,
-        termIds,
-        curveIds: curveIds.map((c) => c.toString()),
-        shares: shares.map((s) => s.toString()),
-      });
-
-      // Simulate and execute
-      const { request } = await publicClient.simulateContract({
-        account: walletClient.account,
-        address: multiVaultAddress,
-        abi: MultiVaultAbi,
-        functionName: 'redeemBatch',
-        args: [
-          address as Address, // receiver
-          termIds,
-          curveIds,
-          shares,
-          minAssets,
-        ],
-      });
-
-      const txHash = await walletClient.writeContract(request);
-
-      // Wait for confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-      });
-
-      if (receipt.status !== 'success') {
-        throw new Error('Batch redeem transaction failed');
-      }
-
-      return txHash;
-    },
-    [address, walletClient, publicClient, multiVaultAddress]
-  );
 
   /**
    * Create triples for new totems (items with isNewTotem = true)
@@ -349,101 +288,6 @@ export function useBatchVote(): UseBatchVoteResult {
   );
 
   /**
-   * Execute batch deposit for all items
-   */
-  const executeBatchDeposit = useCallback(
-    async (items: VoteCartItem[]): Promise<Hex> => {
-      if (!address || !walletClient || !publicClient) {
-        throw new Error('Wallet not connected');
-      }
-
-      // Prepare arrays for batch deposit
-      const termIds: Hex[] = [];
-      const curveIds: bigint[] = [];
-      const assets: bigint[] = [];
-      const minShares: bigint[] = [];
-      let totalValue = 0n;
-
-      for (const item of items) {
-        // Use termId for FOR, counterTermId for AGAINST
-        const depositTermId =
-          item.direction === 'for' ? item.termId : item.counterTermId;
-
-        termIds.push(depositTermId);
-        curveIds.push(DEFAULT_CURVE_ID);
-        assets.push(item.amount);
-        minShares.push(0n); // No slippage protection for simplicity
-        totalValue += item.amount;
-      }
-
-      console.log('[useBatchVote] ========== BATCH DEPOSIT START ==========');
-      console.log('[useBatchVote] Executing batchDeposit:', {
-        receiver: address,
-        totalItems: items.length,
-        totalValue: formatEther(totalValue),
-        multiVaultAddress,
-      });
-      console.log('[useBatchVote] Deposit details per item:');
-      items.forEach((item, index) => {
-        console.log(`[useBatchVote] Item #${index + 1}:`, {
-          totemName: item.totemName,
-          direction: item.direction,
-          termId: item.termId,
-          counterTermId: item.counterTermId,
-          depositTermId: termIds[index],
-          amount: formatEther(assets[index]),
-          isNewTotem: item.isNewTotem,
-        });
-      });
-      console.log('[useBatchVote] ⚠️ CRITICAL: Check if termIds are triples or atoms!');
-      console.log('[useBatchVote] - If termId looks like totem atomId → deposit goes to ATOM, not TRIPLE');
-      console.log('[useBatchVote] - Triple termIds are created when triple is claimed on-chain');
-
-      // Simulate and execute
-      const { request } = await publicClient.simulateContract({
-        account: walletClient.account,
-        address: multiVaultAddress,
-        abi: MultiVaultAbi,
-        functionName: 'depositBatch',
-        args: [
-          address as Address, // receiver
-          termIds,
-          curveIds,
-          assets,
-          minShares,
-        ],
-        value: totalValue, // TRUST is native token on Intuition L3
-      });
-
-      console.log('[useBatchVote] Transaction simulated successfully, sending to MetaMask...');
-      const txHash = await walletClient.writeContract(request);
-      console.log('[useBatchVote] Transaction sent! Hash:', txHash);
-      console.log('[useBatchVote] Waiting for confirmation...');
-
-      // Wait for confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-      });
-
-      console.log('[useBatchVote] Transaction receipt:', {
-        status: receipt.status,
-        blockNumber: receipt.blockNumber,
-        gasUsed: receipt.gasUsed.toString(),
-      });
-
-      if (receipt.status !== 'success') {
-        throw new Error('Batch deposit transaction failed');
-      }
-
-      console.log('[useBatchVote] ✅ BATCH DEPOSIT SUCCESS!');
-      console.log('[useBatchVote] ========== BATCH DEPOSIT END ==========');
-
-      return txHash;
-    },
-    [address, walletClient, publicClient, multiVaultAddress]
-  );
-
-  /**
    * Execute the full batch vote process
    */
   const executeBatch = useCallback(
@@ -517,12 +361,12 @@ export function useBatchVote(): UseBatchVoteResult {
 
         // Calculate total steps:
         // - createTriples (if any new) - includes deposit for new items
-        // - redeem (if any withdrawals needed)
-        // - depositBatch (ONLY if there are existing triples to deposit on)
+        // - redeemBatch (if switching positions) - separate tx
+        // - depositBatch (for existing triples) - separate tx
         let steps = 0;
         if (hasNewTriples) steps++; // createTriples (includes deposit)
-        if (hasRedeems) steps++;
-        if (hasExistingTriples) steps++; // depositBatch only for existing triples
+        if (hasRedeems) steps++; // Redeem
+        if (hasExistingTriples) steps++; // Deposit
         if (steps === 0) steps = 1; // At least 1 step
         setTotalSteps(steps);
 
@@ -538,7 +382,6 @@ export function useBatchVote(): UseBatchVoteResult {
         console.log('[useBatchVote] 📝 NOTE: New triples will receive deposit via createTriples (1 tx)');
 
         let createTriplesTxHash: Hex | undefined;
-        let redeemTxHash: Hex | undefined;
         let totalRedeemed = 0n;
         let triplesCreated = 0;
         let stepNum = 0;
@@ -589,47 +432,107 @@ export function useBatchVote(): UseBatchVoteResult {
           toast.success(`${triplesCreated} relation(s) créée(s)!`);
         }
 
-        // Step 2: Batch Redeem (if needed)
-        if (hasRedeems) {
-          stepNum++;
-          setCurrentStep(stepNum);
-          setStatus('withdrawing');
-          toast.info(
-            `Étape ${stepNum}/${steps}: Retrait des positions opposées...`
-          );
-
-          redeemTxHash = (await executeBatchRedeem(itemsToRedeem)) ?? undefined;
-
-          if (redeemTxHash) {
-            totalRedeemed = itemsToRedeem.reduce(
-              (sum, item) => sum + (item.currentPosition?.shares ?? 0n),
-              0n
-            );
-            toast.success(`Retrait de ${formatEther(totalRedeemed)} shares effectué`);
-          }
-        }
-
-        // Step 3: Batch Deposit (ONLY for items that already had triples in the ORIGINAL cart)
-        // New triples already received their deposit via createTriples
-        // IMPORTANT: Use itemsWithExistingTriples from ORIGINAL cart, not updatedItems
+        // Step 2: Handle redeems and deposits (sequential - 2 separate transactions)
+        // NOTE: Atomic via Multicall3 is NOT possible because redeemBatch checks
+        // _isApprovedToRedeem(msg.sender, receiver) and Multicall3 is not approved
+        let redeemTxHash: Hex | undefined;
         let depositTxHash: Hex | undefined;
 
-        if (hasExistingTriples) {
-          stepNum++;
-          setCurrentStep(stepNum);
-          setStatus('depositing');
-          toast.info(`Étape ${stepNum}/${steps}: Dépôt des votes...`);
-
-          console.log('[useBatchVote] Items needing separate deposit:', itemsWithExistingTriples.length);
-          console.log('[useBatchVote] (New triples already received deposit via createTriples)');
-
-          // Use the updated items but only those that were originally existing triples
+        if (hasRedeems || hasExistingTriples) {
+          // Get items to deposit (only those that were originally existing triples)
           const itemsToDeposit = updatedItems.filter(item =>
             itemsWithExistingTriples.some(orig => orig.totemId === item.totemId)
           );
-          depositTxHash = await executeBatchDeposit(itemsToDeposit);
+
+          // Calculate totals
+          const depositTotal = itemsToDeposit.reduce((sum, item) => sum + item.amount, 0n);
+
+          console.log('[useBatchVote] Using SEQUENTIAL transactions (2 tx)');
+
+          // Step 2a: Redeem first (if needed)
+          if (hasRedeems) {
+            stepNum++;
+            setCurrentStep(stepNum);
+            setStatus('withdrawing');
+            toast.info(`Étape ${stepNum}/${steps}: Retrait des positions...`);
+
+            console.log('[useBatchVote] Executing redeemBatch');
+
+            const redeemTermIds: Hex[] = [];
+            const redeemShares: bigint[] = [];
+
+            for (const item of itemsToRedeem) {
+              if (!item.currentPosition) continue;
+              const redeemTermId =
+                item.currentPosition.direction === 'for'
+                  ? item.termId
+                  : item.counterTermId;
+              redeemTermIds.push(redeemTermId);
+              redeemShares.push(item.currentPosition.shares);
+              totalRedeemed += item.currentPosition.shares;
+            }
+
+            const { request: redeemRequest } = await publicClient.simulateContract({
+              account: walletClient.account,
+              address: multiVaultAddress,
+              abi: MultiVaultAbi,
+              functionName: 'redeemBatch',
+              args: [
+                address as Address,
+                redeemTermIds,
+                redeemTermIds.map(() => DEFAULT_CURVE_ID),
+                redeemShares,
+                redeemShares.map(() => 0n),
+              ],
+            });
+
+            redeemTxHash = await walletClient.writeContract(redeemRequest);
+            await publicClient.waitForTransactionReceipt({ hash: redeemTxHash });
+
+            toast.success(`Retrait de ${formatEther(totalRedeemed)} shares effectué!`);
+          }
+
+          // Step 2b: Deposit (if there are existing triples to deposit)
+          if (hasExistingTriples) {
+            stepNum++;
+            setCurrentStep(stepNum);
+            setStatus('depositing');
+            toast.info(`Étape ${stepNum}/${steps}: Dépôt des votes...`);
+
+            console.log('[useBatchVote] Executing depositBatch');
+
+            const depositTermIds: Hex[] = [];
+            const depositAmounts: bigint[] = [];
+
+            for (const item of itemsToDeposit) {
+              const depositTermId =
+                item.direction === 'for' ? item.termId : item.counterTermId;
+              depositTermIds.push(depositTermId);
+              depositAmounts.push(item.amount);
+            }
+
+            const { request: depositRequest } = await publicClient.simulateContract({
+              account: walletClient.account,
+              address: multiVaultAddress,
+              abi: MultiVaultAbi,
+              functionName: 'depositBatch',
+              args: [
+                address as Address,
+                depositTermIds,
+                depositTermIds.map(() => DEFAULT_CURVE_ID),
+                depositAmounts,
+                depositAmounts.map(() => 0n),
+              ],
+              value: depositTotal,
+            });
+
+            depositTxHash = await walletClient.writeContract(depositRequest);
+            await publicClient.waitForTransactionReceipt({ hash: depositTxHash });
+
+            toast.success(`Dépôt de ${formatEther(depositTotal)} TRUST effectué!`);
+          }
         } else {
-          console.log('[useBatchVote] No separate deposit needed - all items were new triples');
+          console.log('[useBatchVote] No redeem/deposit needed - all items were new triples');
         }
 
         const totalDeposited = updatedItems.reduce(
@@ -653,28 +556,38 @@ export function useBatchVote(): UseBatchVoteResult {
           triplesCreated,
         };
       } catch (err: unknown) {
+        // Enhanced error logging to debug empty error objects
         console.error('[useBatchVote] Error:', err);
+        console.error('[useBatchVote] Error details:', {
+          type: typeof err,
+          constructor: err?.constructor?.name,
+          message: (err as Error)?.message,
+          name: (err as Error)?.name,
+          stack: (err as Error)?.stack?.slice(0, 500),
+          stringified: JSON.stringify(err, Object.getOwnPropertyNames(err as object), 2),
+        });
 
         let errorMessage = 'Une erreur inattendue est survenue';
         let errorCode = 'UNKNOWN_ERROR';
 
-        const errWithMessage = err as { message?: string };
+        const errWithMessage = err as { message?: string; shortMessage?: string };
+        const fullMessage = errWithMessage.message || errWithMessage.shortMessage || '';
 
         if (
-          errWithMessage.message?.includes('User rejected') ||
-          errWithMessage.message?.includes('user rejected')
+          fullMessage.includes('User rejected') ||
+          fullMessage.includes('user rejected')
         ) {
           errorMessage = 'Transaction rejetée par l\'utilisateur';
           errorCode = 'USER_REJECTED';
-        } else if (errWithMessage.message?.includes('insufficient funds')) {
+        } else if (fullMessage.includes('insufficient funds')) {
           errorMessage = 'Balance TRUST insuffisante';
           errorCode = 'INSUFFICIENT_BALANCE';
-        } else if (errWithMessage.message?.includes('HasCounterStake')) {
+        } else if (fullMessage.includes('HasCounterStake')) {
           errorMessage =
             'Impossible de voter: position opposée existante. Essayez de retirer d\'abord.';
           errorCode = 'HAS_COUNTER_STAKE';
-        } else if (errWithMessage.message) {
-          errorMessage = errWithMessage.message;
+        } else if (fullMessage) {
+          errorMessage = fullMessage;
         }
 
         setError({
@@ -694,8 +607,6 @@ export function useBatchVote(): UseBatchVoteResult {
       publicClient,
       reset,
       executeCreateTriples,
-      executeBatchRedeem,
-      executeBatchDeposit,
       status,
     ]
   );
