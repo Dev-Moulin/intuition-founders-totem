@@ -176,10 +176,6 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
           <FounderInfoPanel
             founder={founder}
             onClose={onClose}
-            secondsSinceUpdate={secondsSinceUpdate}
-            isConnected={isConnected}
-            isPaused={isPaused}
-            isLoading={isLoading}
             hasNewData={hasNewData}
             onSelectTotem={handleSelectTotem}
             selectedTotemId={selectedTotemId}

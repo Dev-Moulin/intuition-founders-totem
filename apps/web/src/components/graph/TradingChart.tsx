@@ -24,7 +24,7 @@ import { CURVE_LINEAR, type CurveId } from '../../hooks';
 import type { CurveFilter } from '../../hooks/data/useVotesTimeline';
 import { CurveSwitch } from '../common/CurveSwitch';
 import { truncateAmount } from '../../utils/formatters';
-import { SUPPORT_COLORS, OPPOSE_COLORS } from '../../config/colors';
+import { SUPPORT_COLORS, OPPOSE_COLORS, CURVE_COLORS, NET_COLORS } from '../../config/colors';
 
 export type Timeframe = '12H' | '24H' | '7D' | 'All';
 
@@ -151,7 +151,7 @@ function CustomTooltip({
         <div className="border-t border-white/10 pt-1 mt-1">
           <div className="flex items-center justify-between gap-4">
             <span className="text-xs text-white/50">Net</span>
-            <span className={`text-xs font-medium ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <span className="text-xs font-medium" style={{ color: net >= 0 ? NET_COLORS.positive.base : NET_COLORS.negative.base }}>
               {net >= 0 ? '+' : ''}{formatTrust(net)}
             </span>
           </div>
@@ -175,22 +175,22 @@ function DynamicTitle({
     return <span className="text-white/70">{fallbackTitle}</span>;
   }
 
-  // Curve colors: blue for linear, purple for progressive
-  const curveColor = titleInfo.curve === 'linear'
-    ? 'text-blue-400'
-    : 'text-purple-400';
+  // Curve colors from Intuition design system
+  const curveColorHex = titleInfo.curve === 'linear'
+    ? CURVE_COLORS.linear.text
+    : CURVE_COLORS.progressive.text;
 
-  // Direction colors: green for FOR, orange for AGAINST, neutral for balanced
-  const directionColor = titleInfo.direction === 'for'
-    ? 'text-green-400'
+  // Direction colors from Intuition design system
+  const directionColorHex = titleInfo.direction === 'for'
+    ? SUPPORT_COLORS.base
     : titleInfo.direction === 'against'
-      ? 'text-orange-400'
-      : 'text-white/60';
+      ? OPPOSE_COLORS.base
+      : undefined;
 
   return (
     <span className="flex items-center gap-2">
-      <span className={curveColor}>{titleInfo.label}</span>
-      <span className={`${directionColor} text-xs`}>
+      <span style={{ color: curveColorHex }}>{titleInfo.label}</span>
+      <span className="text-xs" style={{ color: directionColorHex || 'rgba(255,255,255,0.6)' }}>
         {formatTrust(titleInfo.trust)} TRUST
       </span>
     </span>
@@ -236,13 +236,20 @@ function TimeframeSelector({
 }) {
   const timeframes: Timeframe[] = ['12H', '24H', '7D', 'All'];
 
+  // Margin classes based on position: left=10/2, middle=2/2, right=2/10
+  const getMarginClass = (index: number, total: number) => {
+    if (index === 0) return 'ml-[10px] mr-[2px]';
+    if (index === total - 1) return 'ml-[2px] mr-[10px]';
+    return 'mx-[2px]';
+  };
+
   return (
     <div className="flex bg-white/5 rounded-full p-0.5">
-      {timeframes.map((tf) => (
+      {timeframes.map((tf, index) => (
         <button
           key={tf}
           onClick={() => onChange(tf)}
-          className={`px-1.5 py-0.5 text-[9px] font-medium rounded-full transition-colors ${
+          className={`px-[10px] py-0 text-[9px] leading-none font-medium rounded-full transition-colors ${getMarginClass(index, timeframes.length)} ${
             selected === tf
               ? 'bg-slate-500/30 text-slate-300'
               : 'text-white/40 hover:text-white/70'

@@ -488,7 +488,7 @@ export function FounderCenterPanel({
         </div>
 
         {/* Section 1 Content - height adapts to section1Height minus tabs (~32px) */}
-        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ height: (section1Height ?? 150) - 32, overscrollBehavior: 'contain' }}>
+        <div className="overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ height: (section1Height ?? 150) - 32, overscrollBehavior: 'contain' }}>
           {loading ? (
             <div className="grid grid-cols-2 gap-2">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -502,7 +502,7 @@ export function FounderCenterPanel({
             allTotems.length > 0 ? (
               <div className="flex gap-2">
                 {/* Left column - even indices (0, 2, 4...) */}
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex-1 min-w-0 flex flex-col gap-2 ml-[10px] mr-[5px]">
                   {allTotems.filter((_, i) => i % 2 === 0).map((totem, colIndex) => {
                     const originalIndex = colIndex * 2; // Map back to original index for cascade
                     const isSelected = totem.id === selectedTotemId;
@@ -530,6 +530,8 @@ export function FounderCenterPanel({
                         key={totem.id || `totem-left-${originalIndex}`}
                         onClick={() => onSelectTotem?.(totem.id, totem.label)}
                         className={`text-left p-2 rounded-lg transition-all ${
+                          colIndex === 0 ? 'mt-[10px]' : ''
+                        } ${
                           isSelected
                             ? 'bg-slate-500/30 ring-1 ring-slate-500/50 animate-ring-pulse'
                             : `bg-white/5 hover:bg-white/10 ${cascadeClass}`
@@ -657,7 +659,7 @@ export function FounderCenterPanel({
                   })}
                 </div>
                 {/* Right column - odd indices (1, 3, 5...) */}
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex-1 min-w-0 flex flex-col gap-2 ml-[5px] mr-[10px]">
                   {allTotems.filter((_, i) => i % 2 === 1).map((totem, colIndex) => {
                     const originalIndex = colIndex * 2 + 1; // Map back to original index for cascade
                     const isSelected = totem.id === selectedTotemId;
@@ -685,6 +687,8 @@ export function FounderCenterPanel({
                         key={totem.id || `totem-right-${originalIndex}`}
                         onClick={() => onSelectTotem?.(totem.id, totem.label)}
                         className={`text-left p-2 rounded-lg transition-all ${
+                          colIndex === 0 ? 'mt-[10px]' : ''
+                        } ${
                           isSelected
                             ? 'bg-slate-500/30 ring-1 ring-slate-500/50 animate-ring-pulse'
                             : `bg-white/5 hover:bg-white/10 ${cascadeClass}`
@@ -871,14 +875,14 @@ export function FounderCenterPanel({
         </div>
 
         {/* Section 2 Content */}
-        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ overscrollBehavior: 'contain' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent" style={{ overscrollBehavior: 'contain' }}>
           {section2Tab === 'myVotes' ? (
             // My Votes - User's votes on this founder
             isConnected ? (
               votesLoading ? (
                 <MyVotesSkeleton />
               ) : userVotes.length > 0 ? (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 px-[10px] pt-[10px]">
                   {userVotes
                     .filter((vote) => vote.term?.object?.term_id)
                     .map((vote) => (
