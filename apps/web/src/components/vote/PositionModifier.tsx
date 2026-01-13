@@ -15,7 +15,7 @@ import type { Hex } from 'viem';
 import { PresetButtons } from './PresetButtons';
 import { usePreviewRedeem } from '../../hooks';
 import { truncateAmount } from '../../utils/formatters';
-import { SUPPORT_COLORS, OPPOSE_COLORS } from '../../config/colors';
+import { SUPPORT_COLORS, OPPOSE_COLORS, NET_COLORS } from '../../config/colors';
 
 interface Position {
   direction: 'for' | 'against';
@@ -266,11 +266,11 @@ export function PositionModifier({
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-white/70">Vous recevrez</span>
-                <span className="text-green-400">{currentPreview.netAmountFormatted} TRUST</span>
+                <span style={{ color: NET_COLORS.positive.base }}>{currentPreview.netAmountFormatted} TRUST</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-white/50">Frais de sortie ({currentPreview.exitFeePercent})</span>
-                <span className="text-red-400">-{currentPreview.exitFeeFormatted} TRUST</span>
+                <span style={{ color: NET_COLORS.negative.base }}>-{currentPreview.exitFeeFormatted} TRUST</span>
               </div>
             </div>
           ) : null}

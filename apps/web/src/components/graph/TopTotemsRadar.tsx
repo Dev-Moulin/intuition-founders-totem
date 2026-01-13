@@ -28,7 +28,7 @@ import {
 } from 'recharts';
 import type { TopTotem } from '../../hooks';
 import { truncateAmount } from '../../utils/formatters';
-import { SUPPORT_COLORS, OPPOSE_COLORS } from '../../config/colors';
+import { SUPPORT_COLORS, OPPOSE_COLORS, NET_COLORS } from '../../config/colors';
 
 /** Display mode for the radar chart */
 export type RadarMode = 'trust' | 'wallets';
@@ -229,7 +229,7 @@ function CustomRadarTooltip({
           <div className="border-t border-white/10 pt-1 mt-1">
             <div className="flex items-center justify-between gap-4">
               <span className="text-xs text-white/50">Net</span>
-              <span className={`text-xs font-medium ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <span className="text-xs font-medium" style={{ color: net >= 0 ? NET_COLORS.positive.base : NET_COLORS.negative.base }}>
                 {net >= 0 ? '+' : ''}{formatValue(Math.abs(net))}
               </span>
             </div>
@@ -600,7 +600,7 @@ export const TopTotemsRadar = memo(function TopTotemsRadar({
                   <span style={{ color: SUPPORT_COLORS.base }}>{totem.walletsFor}</span>
                   <span className="text-white/30">/</span>
                   <span style={{ color: OPPOSE_COLORS.base }}>{totem.walletsAgainst}</span>
-                  <span className={`font-medium ml-1 ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className="font-medium ml-1" style={{ color: isPositive ? NET_COLORS.positive.base : NET_COLORS.negative.base }}>
                     {isPositive ? '+' : ''}{totem.netVotes}
                   </span>
                 </div>

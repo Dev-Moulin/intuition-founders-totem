@@ -33,7 +33,7 @@ import predicatesData from '../../../../../packages/shared/src/data/predicates.j
 import type { Predicate } from '../../types/predicate';
 import type { NewTotemData } from './TotemCreationForm';
 import { getFounderImageUrl } from '../../utils/founderImage';
-import { SUPPORT_COLORS, OPPOSE_COLORS, CURVE_COLORS } from '../../config/colors';
+import { SUPPORT_COLORS, OPPOSE_COLORS, CURVE_COLORS, NET_COLORS } from '../../config/colors';
 
 /**
  * WithdrawOnlyPanel - Multi-position withdraw panel
@@ -346,11 +346,11 @@ function WithdrawOnlyPanel({
             <div className="bg-black/20 rounded-lg p-3 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-white/70">{t('founderExpanded.youWillReceive')}</span>
-                <span className="text-green-400 font-semibold">{currentPreview.netAmountFormatted} TRUST</span>
+                <span className="font-semibold" style={{ color: NET_COLORS.positive.base }}>{currentPreview.netAmountFormatted} TRUST</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-white/50">{t('founderExpanded.exitFee')} ({currentPreview.exitFeePercent})</span>
-                <span className="text-red-400">-{currentPreview.exitFeeFormatted} TRUST</span>
+                <span style={{ color: NET_COLORS.negative.base }}>-{currentPreview.exitFeeFormatted} TRUST</span>
               </div>
             </div>
           ) : selectedPositions.length > 1 && totalSharesToWithdraw > 0n ? (
@@ -1416,9 +1416,9 @@ export function VoteTotemPanel({
       {error && <ErrorNotification message={error} onClose={() => setError(null)} />}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto space-y-4" style={{ overscrollBehavior: 'contain' }}>
+      <div className="flex-1 overflow-y-auto space-y-4 px-[5px]" style={{ overscrollBehavior: 'contain' }}>
         {/* Triple Header: Tags/Bulles style */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 mt-[5px]">
           {/* Founder Tag */}
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/10 rounded-full">
             <img
@@ -1811,7 +1811,7 @@ export function VoteTotemPanel({
                   {' '}({positionCurveId === CURVE_LINEAR ? 'Linear' : 'Progressive'}).
                 </p>
                 {estimatedRecoverable && (
-                  <p className="text-green-400/80 text-xs mt-1">
+                  <p className="text-xs mt-1" style={{ color: `${NET_COLORS.positive.base}cc` }}>
                     Vous récupérerez ~{estimatedRecoverable.net} TRUST (après {estimatedRecoverable.feePercent}% frais)
                   </p>
                 )}
@@ -1922,7 +1922,7 @@ export function VoteTotemPanel({
                   </div>
                 )}
                 {operationMode === 'redeem' && selectedCombinationPosition.hasPosition && (
-                  <div className="text-xs text-violet-400 mt-1">
+                  <div className="text-xs mt-1" style={{ color: CURVE_COLORS.progressive.text }}>
                     {t('founderExpanded.canWithdrawUpTo', 'Vous pouvez retirer jusqu\'à')} {selectedCombinationPosition.formatted} TRUST
                   </div>
                 )}

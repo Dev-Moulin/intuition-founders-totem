@@ -28,9 +28,6 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
   // Real-time subscription for founder proposals
   const {
     secondsSinceUpdate,
-    isConnected,
-    isPaused,
-    isLoading,
     pause,
     resume,
   } = useFounderSubscription(founder.name);
@@ -176,10 +173,6 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
           <FounderInfoPanel
             founder={founder}
             onClose={onClose}
-            secondsSinceUpdate={secondsSinceUpdate}
-            isConnected={isConnected}
-            isPaused={isPaused}
-            isLoading={isLoading}
             hasNewData={hasNewData}
             onSelectTotem={handleSelectTotem}
             selectedTotemId={selectedTotemId}
