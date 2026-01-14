@@ -8,7 +8,13 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{
+        background: 'linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6)), url(/Background_INTUITION_3.png) center center / cover no-repeat fixed',
+        backgroundColor: '#0a0a0a' // Fallback color
+      }}
+    >
       <Header />
       <main className="flex-1 px-6 py-8">
         {children}

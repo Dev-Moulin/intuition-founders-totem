@@ -94,9 +94,10 @@
    transform:
       translate(-50%, -50%)
       rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-      translateZ(800px)  /* Rayon plus grand pour 42 cards */
-      scale(0.35);  /* Plus petit pour éviter chevauchement */
+      translateZ(800px)  /* Rayon agrandi pour éviter chevauchement */
+      scale(0.26);  /* Réduit pour éviter chevauchement */
 
+   transform-style: preserve-3d;  /* Pour le flip des cards */
    transition: transform 0.5s ease-out;
 }
 
@@ -105,8 +106,9 @@
    transform:
       translate(-50%, -50%)
       rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-      translateZ(900px)
-      scale(0.8);  /* Zoom mais pas trop pour rester lisible */
+      translateZ(1200px)
+      scale(0.75);  /* Zoom pour la carte frontale */
+   transform-style: preserve-3d;
    z-index: 100;
 }
 
@@ -174,15 +176,34 @@
 }
 
 /* ========================================
-   Cards arrière-plan - fond opaque (matière à flouter)
+   Cards dans le carrousel - fond transparent (effet glass)
+   Le flip et le dos sont gérés par FlippableCard component
    ======================================== */
 .banner-fullscreen .item .glass-card,
 .banner .item .glass-card {
-   background: rgb(48, 67, 79);
+   background: rgba(30, 30, 30, 0.3);
    border: 1px solid rgba(255, 255, 255, 0.18);
    box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.37),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Effet de flou sur les faces AVANT des cards (pseudo-élément) */
+.banner-fullscreen .item .card-front .glass-card,
+.banner .item .card-front .glass-card {
+   position: relative;
+   overflow: hidden;
+}
+
+.banner-fullscreen .item .card-front .glass-card::before,
+.banner .item .card-front .glass-card::before {
+   content: '';
+   position: absolute;
+   inset: -20px;
+   background: url(/Background_INTUITION_3.png) center center / cover no-repeat fixed;
+   filter: blur(8px);
+   z-index: -1;
+   opacity: 0.4;
 }
 
 /* ========================================
@@ -219,7 +240,7 @@
 /* Apple Liquid Glass Effect - fonctionne ici car hors du contexte 3D */
 .front-card-glass .glass-card {
    background: rgba(30, 30, 30, 0.1);
-   backdrop-filter: blur(2px) saturate(100%);
+   backdrop-filter: blur(10px) saturate(100%);
    -webkit-backdrop-filter: blur(2px) saturate(100%);
    border: 1px solid rgba(255, 255, 255, 0.18);
    box-shadow:
@@ -248,15 +269,17 @@
          translate(-50%, -50%)
          rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
          translateZ(600px)
-         scale(0.30);
+         scale(0.21);
+      transform-style: preserve-3d;
    }
 
    .banner-fullscreen .slider .item.is-front {
       transform:
          translate(-50%, -50%)
          rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-         translateZ(700px)
-         scale(0.7);
+         translateZ(900px)
+         scale(0.58);
+      transform-style: preserve-3d;
    }
 
    .front-card-overlay {
@@ -285,15 +308,17 @@
          translate(-50%, -50%)
          rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
          translateZ(400px)
-         scale(0.25);
+         scale(0.16);
+      transform-style: preserve-3d;
    }
 
    .banner-fullscreen .slider .item.is-front {
       transform:
          translate(-50%, -50%)
          rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-         translateZ(500px)
-         scale(0.6);
+         translateZ(600px)
+         scale(0.45);
+      transform-style: preserve-3d;
    }
 
    .front-card-overlay {
