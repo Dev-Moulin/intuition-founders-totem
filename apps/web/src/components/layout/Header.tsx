@@ -13,6 +13,18 @@ export function Header() {
 
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET.toLowerCase();
 
+  // Handle logo click - scroll to top if on homepage
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      // Scroll the carousel container to top (hero section)
+      const container = document.querySelector('.carousel-page-container');
+      if (container) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -27,7 +39,7 @@ export function Header() {
   return (
     <header className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-black/20 backdrop-blur-sm">
       <div className="flex items-center gap-6">
-        <Link to="/" className="text-xl font-bold text-white hover:text-slate-400 transition-colors">
+        <Link to="/" onClick={handleLogoClick} className="text-xl font-bold text-white hover:text-slate-400 transition-colors">
           {t('header.title')}
         </Link>
 

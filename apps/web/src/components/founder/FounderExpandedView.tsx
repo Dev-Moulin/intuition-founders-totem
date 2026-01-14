@@ -161,12 +161,12 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
 
   return (
     <div
-      className="fixed inset-0 z-50 m-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden"
+      className="fixed inset-0 z-50 m-0 bg-black/40 backdrop-blur-md flex items-start justify-center pt-2 px-4 pb-4 overflow-hidden"
       onClick={handleBackdropClick}
       style={{ margin: 0, overscrollBehavior: 'contain' }}
     >
       {/* Main container - 3-panel layout responsive */}
-      <div className="w-full max-w-[1600px] h-[95vh] max-h-[95vh] flex flex-col lg:flex-row gap-3 xl:gap-4 animate-fade-in overflow-hidden">
+      <div className="w-full max-w-[1600px] h-[93vh] max-h-[93vh] flex flex-col lg:flex-row gap-3 xl:gap-4 animate-fade-in overflow-hidden">
 
         {/* Left Panel - Founder Info (+20% wider for graphs) */}
         <div className="lg:w-[384px] xl:w-[432px] 2xl:w-[480px] shrink-0 h-full min-h-0">

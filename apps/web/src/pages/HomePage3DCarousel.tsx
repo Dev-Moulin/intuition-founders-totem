@@ -38,6 +38,138 @@ function FrontCardOverlay({ founder, topTotems, onSelect, selectedFounderId }: F
 }
 
 /**
+ * Calcule la distance d'une card au centre (position frontale) sur un cercle
+ * Retourne une valeur entre 0 et quantity/2
+ */
+function getDistanceFromFront(position: number, frontPosition: number, quantity: number): number {
+  const diff = Math.abs(position - frontPosition);
+  // Sur un cercle, la distance max est quantity/2
+  return Math.min(diff, quantity - diff);
+}
+
+/**
+ * Calcule l'angle de flip basé sur la distance au centre
+ * Transition progressive sur 5 cartes (positions 3-7)
+ * - Distance 0-2 : 0° (face visible)
+ * - Distance 3 : 36°
+ * - Distance 4 : 72°
+ * - Distance 5 : 108°
+ * - Distance 6 : 144°
+ * - Distance 7+ : 180° (dos visible)
+ */
+function getFlipAngle(distance: number): number {
+  if (distance <= 2) return 0;
+  if (distance === 3) return 36;
+  if (distance === 4) return 72;
+  if (distance === 5) return 108;
+  if (distance === 6) return 144;
+  return 180;
+}
+
+/**
+ * FlippableCard - Card avec deux faces (front/back) et flip progressif
+ */
+interface FlippableCardProps {
+  founder: FounderForHomePage;
+  topTotems: TopTotem[];
+  flipAngle: number;
+  isFront: boolean;
+  isSelected: boolean;
+  onClick: (e: React.MouseEvent) => void;
+}
+
+function FlippableCard({ founder, topTotems, flipAngle, isFront, isSelected, onClick }: FlippableCardProps) {
+  // Calculer l'opacité basée sur l'angle pour une transition fluide
+  // Entre 70° et 110°, on fait une transition progressive
+  const getFrontOpacity = (angle: number) => {
+    if (angle <= 70) return 1;
+    if (angle >= 110) return 0;
+    return 1 - (angle - 70) / 40; // Transition linéaire de 70° à 110°
+  };
+
+  const getBackOpacity = (angle: number) => {
+    if (angle <= 70) return 0;
+    if (angle >= 110) return 1;
+    return (angle - 70) / 40; // Transition linéaire de 70° à 110°
+  };
+
+  const frontOpacity = getFrontOpacity(flipAngle);
+  const backOpacity = getBackOpacity(flipAngle);
+
+  return (
+    <div
+      className="card-flipper"
+      style={{
+        width: '430px',
+        height: '600px',
+        position: 'relative',
+        perspective: '2000px'
+      }}
+      onClick={onClick}
+    >
+      {/* Container qui tourne */}
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          transformStyle: 'preserve-3d',
+          transform: `rotateY(${flipAngle}deg)`,
+          transition: 'transform 0.6s ease-out'
+        }}
+      >
+        {/* Face avant - Contenu founder */}
+        <div
+          className="card-face card-front"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            opacity: frontOpacity,
+            transition: 'opacity 0.3s ease-out',
+            pointerEvents: frontOpacity > 0.5 ? 'auto' : 'none'
+          }}
+        >
+          <FounderHomeCard
+            founder={founder}
+            onSelect={() => {}}
+            isSelected={isSelected}
+            isFront={isFront}
+            topTotems={topTotems}
+          />
+        </div>
+
+        {/* Face arrière - Image INTUITION */}
+        <div
+          className="card-face card-back"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            opacity: backOpacity,
+            transition: 'opacity 0.3s ease-out',
+            pointerEvents: backOpacity > 0.5 ? 'auto' : 'none',
+            background: 'url(/Backcard_1.png) center center / cover no-repeat',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
  * HomePage3DCarousel - Version avec carrousel 3D unique et scroll snap
  * 2 écrans: Hero+Stats puis Carrousel uniquement
  */
@@ -301,22 +433,29 @@ export function HomePage3DCarousel() {
                   transform: `rotateY(${carouselRotation}deg)`
                 } as React.CSSProperties}
               >
-                {founders.map((founder, index) => (
-                  <div
-                    key={founder.id}
-                    className={`item ${index + 1 === frontCardPosition ? 'is-front' : ''}`}
-                    style={{ '--position': index + 1 } as React.CSSProperties}
-                    onClick={handleCardClick(index + 1, founders.length, founder.id)}
-                  >
-                    <FounderHomeCard
-                      founder={founder}
-                      onSelect={() => {}}
-                      isSelected={founder.id === selectedFounderId}
-                      isFront={index + 1 === frontCardPosition}
-                      topTotems={topTotemsMap.get(founder.name) || []}
-                    />
-                  </div>
-                ))}
+                {founders.map((founder, index) => {
+                  const position = index + 1;
+                  const distance = getDistanceFromFront(position, frontCardPosition, founders.length);
+                  const flipAngle = getFlipAngle(distance);
+                  const isFront = position === frontCardPosition;
+
+                  return (
+                    <div
+                      key={founder.id}
+                      className={`item ${isFront ? 'is-front' : ''}`}
+                      style={{ '--position': position } as React.CSSProperties}
+                    >
+                      <FlippableCard
+                        founder={founder}
+                        topTotems={topTotemsMap.get(founder.name) || []}
+                        flipAngle={flipAngle}
+                        isFront={isFront}
+                        isSelected={founder.id === selectedFounderId}
+                        onClick={handleCardClick(position, founders.length, founder.id)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
