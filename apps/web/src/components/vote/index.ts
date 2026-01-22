@@ -1,31 +1,19 @@
 /**
- * Vote components - Décomposition de VotePanel.tsx
+ * Vote components
  *
- * Exports:
- * - VotePanel: Composant principal (orchestrateur)
- * - Sous-composants réutilisables
+ * Composants actifs du système de vote.
+ * (Code mort supprimé le 21/01/2026 - voir 12_Audit/vote_code_mort.md)
  */
 
-// Main component (will be updated as we extract)
-export { VotePanel } from './VotePanel';
-
-// Sub-components
-export { NotConnected } from './NotConnected';
-export { RecentActivity } from './RecentActivity';
-export { VotePreview } from './VotePreview';
-export { ClaimExistsWarning } from './ClaimExistsWarning';
-export { PredicateSelector } from './PredicateSelector';
-export { TrustAmountInput } from './TrustAmountInput';
-export { TotemSelector } from './TotemSelector';
+// Re-exports depuis common/
 export { SuccessNotification } from '../common/SuccessNotification';
 export { ErrorNotification } from '../common/ErrorNotification';
-export { SubmitButton } from './SubmitButton';
 
-// Phase 4 - Cart & Preview components
+// PresetButtons - utilisé par VoteTotemPanel
 export { PresetButtons, PresetButtonsCompact } from './PresetButtons';
-export { PositionModifier } from './PositionModifier';
-export { CartBadge, CartIconWithBadge, FloatingCartButton } from './CartBadge';
+
+// VoteCartPanel - utilisé par FounderExpandedView
 export { VoteCartPanel } from './VoteCartPanel';
 
-// Phase 7 - Vote Market
+// VoteMarket - utilisé par FounderInfoPanel
 export { VoteMarket, VoteMarketCompact } from './VoteMarket';

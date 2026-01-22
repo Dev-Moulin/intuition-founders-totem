@@ -22,7 +22,7 @@ export {
   type VoteOptions,
   CURVE_LINEAR,
   CURVE_PROGRESSIVE,
-} from './blockchain/useVote';
+} from './blockchain/vault/useVote';
 export type { VoteStatus, VoteError, VoteWithDetails } from '../types/vote';
 
 // Hook for withdrawing TRUST from vaults
@@ -30,13 +30,12 @@ export {
   useWithdraw,
   estimateWithdrawAmount,
   type UseWithdrawResult,
-} from './blockchain/useWithdraw';
+} from './blockchain/vault/useWithdraw';
 export type { WithdrawStatus, WithdrawError, WithdrawPreview } from '../types/withdraw';
 
-// Batch operations
-export { useBatchVote, type UseBatchVoteResult, type BatchVoteResult } from './blockchain/useBatchVote';
-export { useBatchDeposit } from './blockchain/useBatchDeposit';
-export { useBatchRedeem } from './blockchain/useBatchRedeem';
+// Batch operations - Version refactorisée (15.8/15.9)
+// useBatchVote.ts, useBatchDeposit.ts, useBatchRedeem.ts supprimés le 21/01/2026
+export { useBatchVote, type UseBatchVoteResult, type BatchVoteResult } from './blockchain/batch/useBatchVote.refactored';
 export {
   useBatchTriples,
   type BatchTripleItem,
@@ -44,7 +43,7 @@ export {
   type BatchTripleCost,
   type BatchTripleResult,
   type UseBatchTriplesResult,
-} from './blockchain/useBatchTriples';
+} from './blockchain/batch/useBatchTriples';
 
 // Hook for INTUITION protocol operations (atoms, triples, claims)
 export {
@@ -57,10 +56,20 @@ export {
 } from './blockchain/useIntuition';
 export type { CategoryConfig } from '../types/intuition';
 
+// Hook for creating new totems (atom + category triple) without deposit
+// NEW: Séparation création/dépôt pour résoudre bug counterTermId (15.9)
+export {
+  useCreateTotemWithTriples,
+  type TotemCreationInput,
+  type TotemCreationResult,
+  type CreationStep,
+  type UseCreateTotemWithTriplesResult,
+} from './blockchain/claims/useCreateTotemWithTriples';
+
 // Preview hooks
-export { usePreviewDeposit } from './blockchain/usePreviewDeposit';
-export { usePreviewRedeem } from './blockchain/usePreviewRedeem';
-export { usePositionFromContract, usePositionBothSides } from './blockchain/usePositionFromContract';
+export { usePreviewDeposit } from './blockchain/vault/usePreviewDeposit';
+export { usePreviewRedeem } from './blockchain/vault/usePreviewRedeem';
+export { usePositionFromContract, usePositionBothSides } from './blockchain/vault/usePositionFromContract';
 
 // ============================================================================
 // DATA - GraphQL queries and subscriptions
@@ -92,9 +101,6 @@ export { useUserVotesForFounder, type UserVoteWithDetails } from './data/useUser
 // Hook for founder panel stats (Market Cap, Holders, Claims)
 export { useFounderPanelStats, type FounderPanelStats } from './data/useFounderPanelStats';
 
-// Hook for totem data
-export { useTotemData } from './data/useTotemData';
-
 // Hook for top totems
 export { useTopTotems, type TopTotem } from './data/useTopTotems';
 
@@ -109,9 +115,6 @@ export {
 
 // Hook for all OFC totems
 export { useAllOFCTotems } from './data/useAllOFCTotems';
-
-// Hook for vote graph data
-export { useVoteGraph, type GraphNode, type GraphEdge, type GraphData } from './data/useVoteGraph';
 
 // Hook for vote market stats
 export { useVoteMarketStats } from './data/useVoteMarketStats';
@@ -157,9 +160,6 @@ export type {
   VoteCartError,
 } from '../types/voteCart';
 
-// Cart execution
-export { useCartExecution } from './cart/useCartExecution';
-
 // Proactive claim check
 export { useProactiveClaimCheck } from './cart/useProactiveClaimCheck';
 
@@ -180,8 +180,96 @@ export {
   useAutoSubscriptionPause,
 } from './utils/useWindowFocus';
 
-// Hook for vote submission
-export { useVoteSubmit } from './utils/useVoteSubmit';
+// ============================================================================
+// VOTE - Vote panel hooks (extracted from VoteTotemPanel)
+// ============================================================================
 
-// Hook for WebGL liquid glass effect
-export { useLiquidGlass, type LiquidGlassOptions } from './utils/useLiquidGlass';
+// Form step management (blur, pulsation, progression)
+export {
+  useFormSteps,
+  type FormStep,
+  type UseFormStepsParams,
+  type UseFormStepsResult,
+} from './vote/useFormSteps';
+
+// INTUITION protocol curve availability rules
+export {
+  useCurveAvailability,
+  type CurveAvailability,
+  type UseCurveAvailabilityParams,
+} from './vote/useCurveAvailability';
+
+// Cross-predicate blocking rules
+export {
+  usePredicateBlocking,
+  type VotesByPredicate,
+  type PredicateRedeemInfo,
+  type UsePredicateBlockingParams,
+  type UsePredicateBlockingResult,
+} from './vote/usePredicateBlocking';
+
+// Direction change flow management
+export {
+  useDirectionChange,
+  type DirectionChangeInfo,
+  type PendingRedeemInfo,
+  type UseDirectionChangeParams,
+  type UseDirectionChangeResult,
+} from './vote/useDirectionChange';
+
+// Minimum required amount calculation
+export {
+  useMinRequired,
+  type MinRequiredAmount,
+  type UseMinRequiredParams,
+} from './vote/useMinRequired';
+
+// Add to cart logic (cart item builder)
+export {
+  useAddToCart,
+  type AddToCartFormState,
+  type AddToCartFounderInfo,
+  type AddToCartPositionInfo,
+  type AddToCartPendingInfo,
+  type UseAddToCartParams,
+  type UseAddToCartResult,
+} from './vote/useAddToCart';
+
+// Multiple position withdrawal
+export {
+  useWithdrawMultiple,
+  type WithdrawRequest,
+  type UseWithdrawMultipleParams,
+  type UseWithdrawMultipleResult,
+} from './vote/useWithdrawMultiple';
+
+// Cross-predicate redemption
+export {
+  useCrossPredicateRedeem,
+  type UseCrossPredicateRedeemParams,
+  type UseCrossPredicateRedeemResult,
+} from './vote/useCrossPredicateRedeem';
+
+// All user positions for withdraw panel
+export {
+  useAllUserPositions,
+  type UserPositionInfo,
+  type ClaimInfoForPositions,
+  type UseAllUserPositionsParams,
+  type UseAllUserPositionsResult,
+} from './vote/useAllUserPositions';
+
+// Position display calculations
+export {
+  usePositionDisplay,
+  type SelectedCombinationPosition,
+  type PendingCartAmount,
+  type UsePositionDisplayParams,
+  type UsePositionDisplayResult,
+} from './vote/usePositionDisplay';
+
+// Auto-select position based on user's existing position
+export {
+  useAutoSelectPosition,
+  type UseAutoSelectPositionParams,
+} from './vote/useAutoSelectPosition';

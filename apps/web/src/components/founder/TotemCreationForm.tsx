@@ -4,19 +4,29 @@
  * Allows users to:
  * - Enter a totem name
  * - Select an existing category OR create a new one via input
+ * - Create the totem directly (atom + category triple) without deposit
  *
  * Data is transmitted in real-time to the parent (VoteTotemPanel)
  * Predicate selection and validation happen in the right panel
- * Actual blockchain creation happens when the cart is validated
+ *
+ * NEW FLOW (Test pour résoudre bug counterTermId):
+ * - Le bouton "Créer le Totem" crée atom + triple avec assets=0
+ * - L'utilisateur peut ensuite voter sur le totem comme s'il existait déjà
  *
  * @see 18_Design_Decisions_V2.md section 13 - Onglet "Création"
+ * @see 15.9_REFACTORISATION_useBatchVote.md - Nouvelle approche création/dépôt séparés
  */
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import categoriesData from '../../../../../packages/shared/src/data/categories.json';
 import type { CategoryConfigType } from '../../types/category';
 import type { DynamicCategory } from '../../hooks/data/useAllOFCTotems';
+import {
+  useCreateTotemWithTriples,
+  type TotemCreationResult,
+} from '../../hooks/blockchain/claims/useCreateTotemWithTriples';
 
 // Type the JSON imports
 const typedCategoriesConfig = categoriesData as CategoryConfigType;
@@ -34,18 +44,30 @@ interface TotemCreationFormProps {
   onChange: (data: NewTotemData | null) => void;
   /** Dynamic categories from blockchain (user-created) */
   dynamicCategories?: DynamicCategory[];
+  /** Called when a totem is successfully created on-chain */
+  onTotemCreated?: (result: TotemCreationResult) => void;
 }
 
 /** Initial categories from the system (static JSON) */
 const STATIC_CATEGORIES = typedCategoriesConfig.categories;
 
-export function TotemCreationForm({ onChange, dynamicCategories = [] }: TotemCreationFormProps) {
+export function TotemCreationForm({
+  onChange,
+  dynamicCategories = [],
+  onTotemCreated,
+}: TotemCreationFormProps) {
   const { t } = useTranslation();
 
   // Form state
   const [totemName, setTotemName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [customCategoryInput, setCustomCategoryInput] = useState('');
+
+  // State for handling "totem already exists" confirmation
+  const [pendingResult, setPendingResult] = useState<TotemCreationResult | null>(null);
+
+  // Hook for creating totem (atom + category triple) without deposit
+  const { createTotem, step, error: createError, isLoading, reset: resetCreate } = useCreateTotemWithTriples();
 
   // Merge static categories with dynamic ones (from blockchain)
   // Dynamic categories that match static ones are skipped (static has priority for termId)
@@ -113,6 +135,82 @@ export function TotemCreationForm({ onChange, dynamicCategories = [] }: TotemCre
     setCustomCategoryInput(value);
     if (value.trim().length > 0) {
       setSelectedCategory(''); // Deselect chip when typing custom category
+    }
+  };
+
+  // Handle totem creation (NEW: create atom + category triple without deposit)
+  const handleCreateTotem = async () => {
+    if (!isValid) return;
+
+    // Show info toast for atom creation
+    toast.info('Vérification du totem...', { id: 'totem-creation' });
+
+    const result = await createTotem({
+      name: totemName.trim(),
+      category: effectiveCategory,
+      categoryTermId: effectiveCategoryTermId,
+      isNewCategory,
+    });
+
+    if (result) {
+      // Check if totem already existed - ask user confirmation
+      if (result.totemAlreadyExisted) {
+        toast.info(
+          `Le totem "${result.totemName}" existe déjà.`,
+          { id: 'totem-creation', duration: 3000 }
+        );
+        // Store result for confirmation dialog
+        setPendingResult(result);
+        return;
+      }
+
+      // Success - show what was created
+      toast.success(
+        `Totem "${result.totemName}" créé avec succès!\n` +
+        `Catégorie: ${result.categoryName}\n` +
+        `Vous pouvez maintenant voter sur ce totem.`,
+        { id: 'totem-creation', duration: 5000 }
+      );
+
+      // Reset form and notify parent
+      handleConfirmAndRedirect(result);
+    } else if (createError) {
+      // Error occurred
+      toast.error(`Erreur: ${createError}`, { id: 'totem-creation' });
+    }
+  };
+
+  // Confirm using existing totem or newly created one
+  const handleConfirmAndRedirect = (result: TotemCreationResult) => {
+    // Reset form
+    setTotemName('');
+    setSelectedCategory('');
+    setCustomCategoryInput('');
+    setPendingResult(null);
+    resetCreate();
+
+    // Notify parent to redirect to vote panel with totem pre-filled
+    onTotemCreated?.(result);
+  };
+
+  // Cancel using existing totem
+  const handleCancelPending = () => {
+    setPendingResult(null);
+    resetCreate();
+    toast.info('Création annulée. Vous pouvez modifier le nom du totem.', { id: 'totem-creation' });
+  };
+
+  // Get button label based on creation step
+  const getCreateButtonLabel = () => {
+    switch (step) {
+      case 'creating_totem':
+        return t('creation.creatingTotem') || 'Création du totem...';
+      case 'creating_category':
+        return t('creation.creatingCategory') || 'Création de la catégorie...';
+      case 'creating_triple':
+        return t('creation.creatingTriple') || 'Création de la relation...';
+      default:
+        return t('creation.createTotem') || 'Créer le Totem';
     }
   };
 
@@ -204,6 +302,66 @@ export function TotemCreationForm({ onChange, dynamicCategories = [] }: TotemCre
             <p className="text-[10px] text-white/30 mt-2">
               {t('creation.selectPredicateInPanel') || 'Sélectionnez la relation dans le panneau de droite'}
             </p>
+          </div>
+        )}
+
+        {/* Confirmation dialog when totem already exists */}
+        {pendingResult && (
+          <div className="mt-4 pt-4 border-t border-orange-500/30">
+            <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3">
+              <p className="text-sm text-orange-300 mb-2">
+                {t('creation.totemExists') || 'Ce totem existe déjà !'}
+              </p>
+              <p className="text-xs text-white/60 mb-3">
+                <span className="text-white font-medium">{pendingResult.totemName}</span>
+                <span className="text-white/40"> • </span>
+                <span className="text-slate-400">{pendingResult.categoryName}</span>
+              </p>
+              <p className="text-[10px] text-white/50 mb-3">
+                {t('creation.useExistingTotem') || 'Voulez-vous utiliser ce totem existant pour voter ?'}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleConfirmAndRedirect(pendingResult)}
+                  className="flex-1 py-2 px-3 rounded-lg text-sm font-medium bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white transition-all"
+                >
+                  {t('creation.useThisTotem') || 'Utiliser ce totem'}
+                </button>
+                <button
+                  onClick={handleCancelPending}
+                  className="flex-1 py-2 px-3 rounded-lg text-sm font-medium bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                >
+                  {t('common.cancel') || 'Annuler'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Create Totem Button - NEW: Creates atom + category triple without deposit */}
+        {isValid && !pendingResult && (
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-[10px] text-white/50 mb-2">
+              {t('creation.createTotemInfo') ||
+                'Créez le totem maintenant pour pouvoir voter dessus. La relation avec le founder sera créée lors du vote.'}
+            </p>
+            <button
+              onClick={handleCreateTotem}
+              disabled={isLoading}
+              className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                isLoading
+                  ? 'bg-slate-600/30 text-white/50 cursor-wait'
+                  : 'bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-500/20'
+              }`}
+            >
+              {isLoading && (
+                <span className="inline-block w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              )}
+              {getCreateButtonLabel()}
+            </button>
+            {createError && (
+              <p className="text-[10px] text-red-400 mt-2">{createError}</p>
+            )}
           </div>
         )}
       </div>

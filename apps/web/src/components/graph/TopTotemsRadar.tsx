@@ -15,7 +15,7 @@
  * @see Phase 10 - Étape 3 in TODO_FIX_01_Discussion.md
  */
 
-import { useMemo, useState, useEffect, useRef, useCallback, memo } from 'react';
+import { useMemo, useState, useEffect, useRef, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   RadarChart,
@@ -261,30 +261,22 @@ export const TopTotemsRadar = memo(function TopTotemsRadar({
   // Track container dimensions for RadarChart (avoiding ResponsiveContainer issues)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  const measureContainer = useCallback(() => {
-    if (containerRef.current) {
-      const { clientWidth, clientHeight } = containerRef.current;
-      // Only update if dimensions actually changed to avoid unnecessary re-renders
-      if (clientWidth > 0 && clientHeight > 0) {
-        setDimensions((prev) => {
-          if (prev.width === clientWidth && prev.height === clientHeight) {
-            return prev; // Return same reference if unchanged
-          }
-          return { width: clientWidth, height: clientHeight };
-        });
-      }
-    }
-  }, []);
-
   useEffect(() => {
-    // Use requestAnimationFrame to ensure DOM is ready
-    const rafId = requestAnimationFrame(() => {
-      measureContainer();
-    });
-
-    // Use ResizeObserver to handle resize
-    const observer = new ResizeObserver(() => {
-      measureContainer();
+    // Use ResizeObserver to get dimensions without forcing reflow
+    // ResizeObserver provides dimensions directly in entries, no need to read DOM
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setDimensions((prev) => {
+            if (prev.width === width && prev.height === height) {
+              return prev; // Return same reference if unchanged
+            }
+            return { width, height };
+          });
+        }
+      }
     });
 
     if (containerRef.current) {
@@ -292,10 +284,9 @@ export const TopTotemsRadar = memo(function TopTotemsRadar({
     }
 
     return () => {
-      cancelAnimationFrame(rafId);
       observer.disconnect();
     };
-  }, [measureContainer]);
+  }, []);
 
   // Transform data for recharts with sqrt normalization
   // This compresses extreme values so differences are visible but not overwhelming
