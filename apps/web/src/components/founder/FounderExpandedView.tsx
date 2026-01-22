@@ -12,6 +12,7 @@ import { useVoteCart, useVoteCartContext, VoteCartContext } from '../../hooks/ca
 import { FounderInfoPanel, FounderCenterPanel, VoteTotemPanel } from './index';
 import { VoteCartPanel } from '../vote/VoteCartPanel';
 import type { NewTotemData } from './TotemCreationForm';
+import type { TotemCreationResult } from '../../hooks/blockchain/claims/useCreateTotemWithTriples';
 import type { CurveFilter } from '../../hooks/data/useVotesTimeline';
 
 interface FounderExpandedViewProps {
@@ -134,6 +135,15 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
     }
   }, []);
 
+  // Handle totem created (from creation form) - select it for voting
+  const handleTotemCreated = useCallback((result: TotemCreationResult) => {
+    // Select the newly created (or existing) totem for voting
+    setSelectedTotemId(result.totemId);
+    setSelectedTotemLabel(result.totemName);
+    // Clear new totem form data since we now have a real totem
+    setNewTotemData(null);
+  }, []);
+
   // Cart panel state
   const [isCartPanelOpen, setIsCartPanelOpen] = useState(false);
 
@@ -187,6 +197,7 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
             selectedTotemId={selectedTotemId}
             refetchTrigger={refetchTrigger}
             onNewTotemChange={handleNewTotemChange}
+            onTotemCreated={handleTotemCreated}
             curveFilter={curveFilter}
             onCurveFilterChange={setCurveFilter}
             userPositionCurveId={userPositionCurveId}

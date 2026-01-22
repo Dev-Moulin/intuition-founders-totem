@@ -8,7 +8,7 @@
  */
 
 import type { Hex } from 'viem';
-import type { CurveId } from '../hooks/blockchain/useVote';
+import type { CurveId } from '../hooks/blockchain/vault/useVote';
 
 /**
  * Information about an existing position that may need to be redeemed

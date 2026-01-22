@@ -1,7 +1,8 @@
 /**
  * Graph visualization components
  *
- * @see Phase 10 in TODO_Implementation.md
+ * Components are imported directly from their files:
+ * - TradingChart from './TradingChart'
+ * - TopTotemsRadar from './TopTotemsRadar'
+ * - RelationsRadar from './RelationsRadar'
  */
-
-export { VoteGraph, VoteGraphCompact, VoteGraphWithStats } from './VoteGraph';

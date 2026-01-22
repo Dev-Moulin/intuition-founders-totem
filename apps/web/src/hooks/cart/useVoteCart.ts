@@ -16,7 +16,7 @@
 import { useState, useCallback, useMemo, useEffect, createContext, useContext } from 'react';
 import { type Hex, parseEther, formatEther } from 'viem';
 import { useProtocolConfig } from '../config/useProtocolConfig';
-import { type CurveId, CURVE_LINEAR } from '../blockchain/useVote';
+import { type CurveId, CURVE_LINEAR } from '../blockchain/vault/useVote';
 import { truncateAmount } from '../../utils/formatters';
 import type {
   VoteCart,
@@ -24,147 +24,15 @@ import type {
   VoteCartCostSummary,
 } from '../../types/voteCart';
 
-// localStorage key prefix for vote carts
-const STORAGE_KEY_PREFIX = 'ofc_vote_cart_';
+// Storage helpers (extracted to storage/)
+import {
+  loadCartFromStorage,
+  saveCartToStorage,
+  removeCartFromStorage,
+} from './storage';
 
-/**
- * Serializable version of VoteCartItem for localStorage
- * bigint values are stored as strings
- */
-interface SerializedVoteCartItem {
-  id: string;
-  totemId: Hex | null;
-  totemName: string;
-  predicateId: Hex;
-  termId: Hex | null;
-  counterTermId: Hex | null;
-  direction: 'for' | 'against';
-  curveId: CurveId; // 1 = Linear, 2 = Progressive
-  amount: string; // bigint as string
-  currentPosition?: {
-    direction: 'for' | 'against';
-    shares: string; // bigint as string
-    curveId: CurveId; // curveId of existing position (for correct redeem)
-  };
-  needsWithdraw: boolean;
-  isNewTotem: boolean;
-  newTotemData?: {
-    name: string;
-    category: string;
-    categoryTermId: string | null;
-    isNewCategory: boolean;
-  };
-}
-
-interface SerializedVoteCart {
-  founderId: Hex;
-  founderName: string;
-  items: SerializedVoteCartItem[];
-  savedAt: number; // timestamp
-}
-
-/**
- * Serialize cart for localStorage
- */
-function serializeCart(cart: VoteCart): SerializedVoteCart {
-  return {
-    founderId: cart.founderId,
-    founderName: cart.founderName,
-    items: cart.items.map((item) => ({
-      ...item,
-      amount: item.amount.toString(),
-      currentPosition: item.currentPosition
-        ? {
-            direction: item.currentPosition.direction,
-            shares: item.currentPosition.shares.toString(),
-            curveId: item.currentPosition.curveId,
-          }
-        : undefined,
-    })),
-    savedAt: Date.now(),
-  };
-}
-
-/**
- * Deserialize cart from localStorage
- */
-function deserializeCart(data: SerializedVoteCart): VoteCart {
-  return {
-    founderId: data.founderId,
-    founderName: data.founderName,
-    items: data.items.map((item) => ({
-      ...item,
-      // Default to Linear for old cart items that don't have curveId
-      curveId: (item as { curveId?: CurveId }).curveId ?? CURVE_LINEAR,
-      amount: BigInt(item.amount),
-      currentPosition: item.currentPosition
-        ? {
-            direction: item.currentPosition.direction,
-            shares: BigInt(item.currentPosition.shares),
-            // Default to Linear for old cart items that don't have position curveId
-            curveId: item.currentPosition.curveId ?? CURVE_LINEAR,
-          }
-        : undefined,
-    })),
-  };
-}
-
-/**
- * Get storage key for a founder
- */
-function getStorageKey(founderId: Hex): string {
-  return `${STORAGE_KEY_PREFIX}${founderId}`;
-}
-
-/**
- * Load cart from localStorage
- */
-function loadCartFromStorage(founderId: Hex): VoteCart | null {
-  try {
-    const key = getStorageKey(founderId);
-    const stored = localStorage.getItem(key);
-    if (!stored) return null;
-
-    const data: SerializedVoteCart = JSON.parse(stored);
-
-    // Check if cart is older than 24 hours (expired)
-    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-    if (Date.now() - data.savedAt > maxAge) {
-      localStorage.removeItem(key);
-      return null;
-    }
-
-    return deserializeCart(data);
-  } catch (error) {
-    console.warn('[useVoteCart] Error loading cart from storage:', error);
-    return null;
-  }
-}
-
-/**
- * Save cart to localStorage
- */
-function saveCartToStorage(cart: VoteCart): void {
-  try {
-    const key = getStorageKey(cart.founderId);
-    const serialized = serializeCart(cart);
-    localStorage.setItem(key, JSON.stringify(serialized));
-  } catch (error) {
-    console.warn('[useVoteCart] Error saving cart to storage:', error);
-  }
-}
-
-/**
- * Remove cart from localStorage
- */
-function removeCartFromStorage(founderId: Hex): void {
-  try {
-    const key = getStorageKey(founderId);
-    localStorage.removeItem(key);
-  } catch (error) {
-    console.warn('[useVoteCart] Error removing cart from storage:', error);
-  }
-}
+// Helpers (extracted to helpers/)
+import { calculateCostSummary, validateCart } from './helpers';
 
 /**
  * Input for adding an item to the cart
@@ -593,72 +461,11 @@ export function useVoteCart(): UseVoteCartResult {
   );
 
   /**
-   * Calculate cost summary
+   * Calculate cost summary (logic extracted to helpers/calculateCostSummary.ts)
    */
   const costSummary = useMemo((): VoteCartCostSummary | null => {
     if (!cart || !config) return null;
-
-    let totalDeposits = 0n;
-    let totalWithdrawable = 0n;
-    let atomCreationCosts = 0n;
-    let tripleCreationCosts = 0n; // NEW: Cost to create triples
-    let withdrawCount = 0;
-    let newTotemCount = 0;
-    let newTripleCount = 0; // NEW: Count of new triples
-
-    for (const item of cart.items) {
-      totalDeposits += item.amount;
-
-      if (item.needsWithdraw && item.currentPosition) {
-        // Approximate withdrawable amount (actual uses previewRedeem)
-        // Apply exit fee (e.g., 7%)
-        const exitFeePercent = BigInt(config.exitFee);
-        const feeDenominator = BigInt(config.feeDenominator);
-        const grossWithdrawable = item.currentPosition.shares;
-        const feeAmount = (grossWithdrawable * exitFeePercent) / feeDenominator;
-        totalWithdrawable += grossWithdrawable - feeAmount;
-        withdrawCount++;
-      }
-
-      // isNewTotem means the triple doesn't exist yet (needs createTriples)
-      // This costs tripleCost (~0.001) which is taken from the user's amount
-      if (item.isNewTotem) {
-        tripleCreationCosts += BigInt(config.tripleCost);
-        newTripleCount++;
-
-        // If also creating a new atom (newTotemData exists), add atom cost
-        if (item.newTotemData) {
-          atomCreationCosts += BigInt(config.atomCost);
-          newTotemCount++;
-        }
-      }
-    }
-
-    // Calculate entry fees on the effective deposit (after triple costs)
-    // The tripleCreationCosts are taken from user's amount before deposit
-    const effectiveDeposits = totalDeposits > tripleCreationCosts
-      ? totalDeposits - tripleCreationCosts
-      : 0n;
-    const entryFeePercent = BigInt(config.entryFee);
-    const feeDenominator = BigInt(config.feeDenominator);
-    const estimatedEntryFees = (effectiveDeposits * entryFeePercent) / feeDenominator;
-
-    // Net cost = deposits + entry fees + atom costs - withdrawable
-    // Note: tripleCreationCosts are already included in totalDeposits (taken from user's amount)
-    const netCost =
-      totalDeposits + estimatedEntryFees + atomCreationCosts - totalWithdrawable;
-
-    return {
-      totalDeposits,
-      totalWithdrawable,
-      estimatedEntryFees,
-      atomCreationCosts,
-      tripleCreationCosts, // NEW
-      netCost,
-      withdrawCount,
-      newTotemCount,
-      newTripleCount, // NEW
-    };
+    return calculateCostSummary(cart.items, config);
   }, [cart, config]);
 
   /**
@@ -696,69 +503,10 @@ export function useVoteCart(): UseVoteCartResult {
   }, [costSummary]);
 
   /**
-   * Validate cart
+   * Validate cart (logic extracted to helpers/validateCart.ts)
    */
   const validationResult = useMemo(() => {
-    const errors: string[] = [];
-
-    if (!cart) {
-      errors.push('Panier non initialisé');
-      return { isValid: false, errors };
-    }
-
-    if (cart.items.length === 0) {
-      errors.push('Le panier est vide');
-      return { isValid: false, errors };
-    }
-
-    if (!config) {
-      errors.push('Configuration du protocole non chargée');
-      return { isValid: false, errors };
-    }
-
-    const minDepositWei = BigInt(config.minDeposit);
-    const tripleCostWei = BigInt(config.tripleCost);
-
-    // Small tolerance for protocol's non-round tripleCost (e.g., 0.001000000002 instead of 0.001)
-    // This allows "0.0020" to pass validation even if exact minimum is "0.002000000002"
-    const tolerance = 100000000000n; // 0.0000001 TRUST - covers any rounding dust
-
-    for (const item of cart.items) {
-      // For new totems, minimum = tripleCost + minDeposit
-      // For existing totems, minimum = minDeposit
-      const minRequired = item.isNewTotem
-        ? tripleCostWei + minDepositWei
-        : minDepositWei;
-
-      if (item.amount + tolerance < minRequired) {
-        const missing = minRequired - item.amount;
-        const missingValue = parseFloat(formatEther(missing));
-        // Show clean truncated minimum for display
-        const minRequiredFloat = parseFloat(formatEther(minRequired));
-        const minRequiredFormatted = truncateAmount(minRequiredFloat);
-
-        if (missingValue < 0.0001) {
-          // Very small difference - show the minimum required instead
-          errors.push(
-            `"${item.totemName}" : minimum requis ${minRequiredFormatted} TRUST`
-          );
-        } else {
-          const missingFormatted = truncateAmount(missingValue);
-          errors.push(
-            `"${item.totemName}" : il manque ${missingFormatted} TRUST`
-          );
-        }
-      }
-
-      if (item.amount <= 0n) {
-        errors.push(`${item.totemName}: montant invalide`);
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+    return validateCart(cart?.items ?? null, config);
   }, [cart, config]);
 
   // IMPORTANT: Memoize the return value to prevent unnecessary re-renders

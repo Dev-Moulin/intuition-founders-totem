@@ -11,13 +11,15 @@
  * @see Phase 9 in TODO_Implementation.md
  */
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { FounderForHomePage } from '../../hooks';
 import { getFounderImageUrl } from '../../utils/founderImage';
 import { truncateAmount } from '../../utils/formatters';
 import { VoteMarketCompact } from '../vote/VoteMarket';
-import { TopTotemsRadar } from '../graph/TopTotemsRadar';
+
+// Lazy load TopTotemsRadar to defer recharts (~1.2MB)
+const TopTotemsRadar = lazy(() => import('../graph/TopTotemsRadar').then(m => ({ default: m.TopTotemsRadar })));
 import { RelationsRadar } from '../graph/RelationsRadar';
 import { useTopTotems } from '../../hooks';
 import { useFounderPanelStats } from '../../hooks';
@@ -468,12 +470,14 @@ export function FounderInfoPanel({
 
         {/* Graph content */}
         {graphTab === 'topTotems' ? (
-          <TopTotemsRadar
-            totems={topTotems}
-            loading={totemsLoading}
-            height={340}
-            onTotemClick={onSelectTotem}
-          />
+          <Suspense fallback={<div className="h-[340px] flex items-center justify-center"><div className="w-32 h-32 rounded-full border-2 border-white/10 animate-pulse" /></div>}>
+            <TopTotemsRadar
+              totems={topTotems}
+              loading={totemsLoading}
+              height={340}
+              onTotemClick={onSelectTotem}
+            />
+          </Suspense>
         ) : (
           <RelationsRadar
             founderName={founder.name}

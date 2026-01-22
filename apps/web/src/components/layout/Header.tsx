@@ -43,27 +43,11 @@ export function Header() {
           {t('header.title')}
         </Link>
 
-        {isConnected && (
+        {isConnected && isAdmin && (
           <nav className="flex items-center gap-4 flex-wrap">
-            {/* Pages cachées temporairement - seront supprimées plus tard
-            <Link to="/propose" className={navLinkClass('/propose')}>
-              {t('header.nav.propose')}
+            <Link to="/admin/audit" className={navLinkClass('/admin/audit')}>
+              {t('header.nav.admin')}
             </Link>
-            <Link to="/vote" className={navLinkClass('/vote')}>
-              {t('header.nav.vote')}
-            </Link>
-            <Link to="/results" className={navLinkClass('/results')}>
-              {t('header.nav.results')}
-            </Link>
-            <Link to="/my-votes" className={navLinkClass('/my-votes')}>
-              {t('header.nav.myVotes')}
-            </Link>
-            */}
-            {isAdmin && (
-              <Link to="/admin/audit" className={navLinkClass('/admin/audit')}>
-                {t('header.nav.admin')}
-              </Link>
-            )}
           </nav>
         )}
       </div>
