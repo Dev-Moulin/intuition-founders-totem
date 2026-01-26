@@ -458,6 +458,158 @@ button:focus-visible {
   }
 }
 
+/* ========================================
+   Slide Animations - iOS style with elastic bounce
+   ======================================== */
+
+/* Slide down from top with elastic bounce - iOS contact list style */
+@keyframes slideDownElastic {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(8%);
+  }
+  80% {
+    transform: translateY(-3%);
+  }
+  90% {
+    transform: translateY(1%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide up to disappear with soft bounce */
+@keyframes slideUpElastic {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(5%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+/* Simple slide down (no bounce - for supporting content movement) */
+@keyframes slideDownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDownElastic 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUpElastic 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ========================================
+   Cart Button Animations
+   ======================================== */
+
+/* Cart button slide down with elastic bounce */
+@keyframes cartButtonAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(10%) scale(1.02);
+  }
+  70% {
+    transform: translateY(-4%) scale(0.98);
+  }
+  85% {
+    transform: translateY(2%) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Cart button disappear with soft bounce up */
+@keyframes cartButtonDisappear {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(8%) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.8);
+  }
+}
+
+/* Cart button pulse - slide in with bounce then pulse */
+.animate-cart-pulse {
+  animation: cartButtonAppear 3s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+             ringPulseSelection 2s ease-in-out 3s infinite;
+}
+
+/* Green flash animation when item is added to cart - with elastic bounce */
+@keyframes cartItemAdded {
+  0% {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.9), 0 0 20px 8px rgba(34, 197, 94, 0.7);
+    transform: scale(1.08);
+  }
+  30% {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.7), 0 0 35px 15px rgba(34, 197, 94, 0.5);
+    transform: scale(1.15);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.5), 0 0 25px 10px rgba(34, 197, 94, 0.3);
+    transform: scale(0.98);
+  }
+  70% {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3), 0 0 15px 5px rgba(34, 197, 94, 0.2);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 8px 2px rgba(255, 255, 255, 0.15);
+    transform: scale(1);
+  }
+}
+
+.animate-cart-item-added {
+  animation: cartItemAdded 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Cart button hidden state (for disappearing animation) */
+.animate-cart-disappear {
+  animation: cartButtonDisappear 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* Totem grid - items align to top to prevent neighbor stretching */
 .totem-grid {
   align-items: start;

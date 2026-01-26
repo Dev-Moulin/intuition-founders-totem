@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { type Hex } from 'viem';
 import type { FounderForHomePage } from '../../hooks';
 import {
@@ -9,8 +8,8 @@ import {
   type CurveId,
 } from '../../hooks';
 import { useVoteCart, useVoteCartContext, VoteCartContext } from '../../hooks/cart/useVoteCart';
-import { FounderInfoPanel, FounderCenterPanel, VoteTotemPanel } from './index';
-import { VoteCartPanel } from '../vote/VoteCartPanel';
+import { FounderInfoPanel, FounderCenterPanel } from './index';
+import { FlippableRightPanel } from './FlippableRightPanel';
 import type { NewTotemData } from './TotemCreationForm';
 import type { TotemCreationResult } from '../../hooks/blockchain/claims/useCreateTotemWithTriples';
 import type { CurveFilter } from '../../hooks/data/useVotesTimeline';
@@ -24,8 +23,6 @@ interface FounderExpandedViewProps {
  * Inner component that uses the cart context
  */
 function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps) {
-  const { t } = useTranslation();
-
   // Real-time subscription for founder proposals
   const {
     secondsSinceUpdate,
@@ -39,18 +36,8 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
     resumeDelay: 100,
   });
 
-  // Vote Cart - from context (shared with VoteTotemPanel)
-  const {
-    cart,
-    itemCount,
-    costSummary,
-    initCart,
-    removeItem,
-    updateAmount,
-    clearCart,
-    validationErrors,
-    isValid: isCartValid,
-  } = useVoteCartContext();
+  // Vote Cart - from context (shared with FlippableRightPanel)
+  const { initCart } = useVoteCartContext();
 
   // Initialize cart for this founder
   useEffect(() => {
@@ -78,11 +65,7 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (isCartPanelOpen) {
-          setIsCartPanelOpen(false);
-        } else {
-          onClose();
-        }
+        onClose();
       }
     };
     window.addEventListener('keydown', handleEscape);
@@ -144,11 +127,13 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
     setNewTotemData(null);
   }, []);
 
-  // Cart panel state
-  const [isCartPanelOpen, setIsCartPanelOpen] = useState(false);
-
   // Trigger to refetch user votes after cart validation
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+
+  // Handler for refetch (called by FlippableRightPanel after cart success)
+  const handleRefetch = useCallback(() => {
+    setRefetchTrigger(prev => prev + 1);
+  }, []);
 
   // Curve filter state - shared between CenterPanel and InfoPanel
   const [curveFilter, setCurveFilter] = useState<CurveFilter>('progressive');
@@ -204,70 +189,20 @@ function FounderExpandedViewInner({ founder, onClose }: FounderExpandedViewProps
           />
         </div>
 
-        {/* Right Panel - Vote Action (adaptive width) */}
+        {/* Right Panel - Vote Action with flip animation (adaptive width) */}
         <div className="lg:w-[320px] xl:w-[360px] 2xl:w-[400px] shrink-0 h-full min-h-0">
-          <VoteTotemPanel
+          <FlippableRightPanel
             founder={founder}
             selectedTotemId={selectedTotemId}
             selectedTotemLabel={selectedTotemLabel}
             newTotemData={newTotemData}
             onClearSelection={handleClearSelection}
-            onOpenCart={() => setIsCartPanelOpen(true)}
             onUserPositionDetected={handleUserPositionDetected}
             refetchTrigger={refetchTrigger}
+            onRefetch={handleRefetch}
           />
         </div>
       </div>
-
-      {/* Cart Panel Slide-over */}
-      {isCartPanelOpen && (
-        <div className="fixed inset-0 z-60 overflow-hidden">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsCartPanelOpen(false)}
-          />
-
-          {/* Panel */}
-          <div className="absolute right-0 top-0 h-full w-full max-w-md">
-            <div className="h-full bg-gray-900/95 border-l border-white/10 shadow-xl flex flex-col">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
-                <h2 className="text-lg font-semibold text-white">
-                  {t('founderExpanded.voteCart')} ({itemCount})
-                </h2>
-                <button
-                  onClick={() => setIsCartPanelOpen(false)}
-                  className="p-2 text-white/60 hover:text-white transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 overflow-y-auto p-4" style={{ overscrollBehavior: 'contain' }}>
-                <VoteCartPanel
-                  cart={cart}
-                  costSummary={costSummary}
-                  onRemoveItem={removeItem}
-                  onClearCart={clearCart}
-                  onUpdateAmount={updateAmount}
-                  onSuccess={() => {
-                    setIsCartPanelOpen(false);
-                    clearCart();
-                    // Trigger refetch of user votes in FounderCenterPanel
-                    setRefetchTrigger(prev => prev + 1);
-                  }}
-                  validationErrors={validationErrors}
-                  isValid={isCartValid}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

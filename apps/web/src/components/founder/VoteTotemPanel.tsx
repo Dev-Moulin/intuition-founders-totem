@@ -104,6 +104,38 @@ export function VoteTotemPanel({
   } = useVoteCartContext();
   // Note: initCart is called by FounderExpandedView which provides the context
 
+  // Cart button animation - flash green when item is added + exit animation
+  const [cartItemAdded, setCartItemAdded] = useState(false);
+  const [cartButtonVisible, setCartButtonVisible] = useState(false);
+  const [cartButtonLeaving, setCartButtonLeaving] = useState(false);
+  const prevItemCountRef = useRef(itemCount);
+
+  useEffect(() => {
+    // Handle cart button visibility with enter/exit animations
+    if (itemCount > 0 && !cartButtonVisible && !cartButtonLeaving) {
+      // Show button with enter animation
+      setCartButtonVisible(true);
+    } else if (itemCount === 0 && cartButtonVisible && !cartButtonLeaving) {
+      // Start exit animation
+      setCartButtonLeaving(true);
+      setTimeout(() => {
+        setCartButtonVisible(false);
+        setCartButtonLeaving(false);
+      }, 3000); // Wait for exit animation
+    }
+  }, [itemCount, cartButtonVisible, cartButtonLeaving]);
+
+  useEffect(() => {
+    // Detect when itemCount increases (item added) - green flash
+    if (itemCount > prevItemCountRef.current && itemCount > 0) {
+      setCartItemAdded(true);
+      // Remove animation class after animation completes (3s)
+      const timer = setTimeout(() => setCartItemAdded(false), 3000);
+      return () => clearTimeout(timer);
+    }
+    prevItemCountRef.current = itemCount;
+  }, [itemCount]);
+
   // Get user's existing votes for this founder (to detect if totem has votes)
   const { votes: userVotesForFounder } = useUserVotesForFounder(address, founder.name);
 
@@ -608,10 +640,18 @@ export function VoteTotemPanel({
       {/* Header with cart button */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-white">Vote Totem</h3>
-        {itemCount > 0 && (
+        {/* Cart button - animated appearance/disappearance with elastic bounce */}
+        {cartButtonVisible && (
           <button
             onClick={onOpenCart}
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-500/20 hover:bg-slate-500/30 rounded-lg transition-colors"
+            disabled={cartButtonLeaving}
+            className={`flex items-center gap-2 px-3 py-1.5 bg-slate-500/20 hover:bg-slate-500/30 rounded-lg transition-colors ${
+              cartButtonLeaving
+                ? 'animate-cart-disappear'
+                : cartItemAdded
+                  ? 'animate-cart-item-added'
+                  : 'animate-cart-pulse'
+            }`}
           >
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
